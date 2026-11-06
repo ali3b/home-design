@@ -16,9 +16,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def main(outdir, key):
     dst = os.path.join(ROOT, 'docs', 'img', key)
     os.makedirs(dst, exist_ok=True)
-    items = [{'src': 'img/concept1.png', 'caption': 'Concept 1 brief image'}]
+    n = key[1:]
+    items = [{'src': 'img/concept1.png' if key == 'c1' else 'img/concept%s.png' % n, 'caption': 'Concept %s brief image' % n}]
     groups = [
-        ('render', ['street', 'garden', 'riverside', 'aerial', 'balcony', 'massing'], 'Blender · '),
+        ('render', ['street', 'carport', 'atrium', 'garden', 'riverside', 'aerial', 'balcony', 'massing'], 'Blender · '),
         ('unity', None, 'Walkthrough · '),
         ('sheets', ['01_site', '02_plans_a', '03_roof', '04_section', '05_schedule'], 'Drawing · '),
     ]
@@ -44,7 +45,7 @@ def main(outdir, key):
     vj = os.path.join(outdir, 'validate.json')
     if os.path.exists(vj):
         shutil.copy(vj, os.path.join(ROOT, 'docs', key + '_validate.json'))
-    json.dump(items, open(os.path.join(ROOT, 'docs', 'gallery.json'), 'w'), indent=1)
+    json.dump(items, open(os.path.join(ROOT, 'docs', 'gallery.json' if key == 'c1' else 'gallery_%s.json' % key), 'w'), indent=1)
     print('PUBLISH_OK', len(items), 'images')
 
 

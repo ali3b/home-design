@@ -22,6 +22,10 @@ namespace HomeWalk.EditorTools
 
         public static void BatchBuild() { HomeSetup.Configure(); BuildC1(); }
 
+        public const string ScenePathC2 = "Assets/Home/Scenes/C2_Walkthrough.unity";
+        [MenuItem("Home/Build Concept 2")]
+        public static void BuildC2() => Build("c2_multigen_house", "c2_furnishing", "Assets/Home/Models/c2_architecture.fbx", ScenePathC2);
+
         static Vector3 U(double x, double y, double z) => new Vector3((float)x, (float)z, (float)y);
 
         // ------------------------------------------------------------------ build --
@@ -85,6 +89,7 @@ namespace HomeWalk.EditorTools
                 var target = new Vector3(x, floorY, y);
                 float baseY = floorY;
                 if (mode == "ceiling") baseY = ceilY - b.size.y;
+                else if (mode == "ground") baseY = 0.02f;
                 else if (mode.StartsWith("on:"))
                 {
                     var host = placed.LastOrDefault(p => p.name == mode.Substring(3) && Vector2.Distance(new Vector2(p.go.transform.position.x, p.go.transform.position.z), new Vector2(x, y)) < 1f);
@@ -99,7 +104,7 @@ namespace HomeWalk.EditorTools
                     var rect = Rect.MinMaxRect((float)rr[1] - 0.15f, (float)rr[2] - 0.15f, (float)rr[3] + 0.15f, (float)rr[4] + 0.15f);
                     if (rect.Contains(new Vector2(fb.min.x, fb.min.z)) && rect.Contains(new Vector2(fb.max.x, fb.max.z))) { inside = true; break; }
                 }
-                if (!inside) Debug.LogWarning($"[Home] ITEM-OUTSIDE-ROOM {pf} at ({x},{y}) L{lvl} bounds {fb.min:F2}-{fb.max:F2} size {fb.size:F2}");
+                if (!inside && mode != "ground") Debug.LogWarning($"[Home] ITEM-OUTSIDE-ROOM {pf} at ({x},{y}) L{lvl} bounds {fb.min:F2}-{fb.max:F2} size {fb.size:F2}");
                 if (mode != "ceiling" && b.size.y > 0.35f && !pf.Contains("Rug") && !pf.Contains("Lamp") && !go.GetComponentInChildren<Collider>())
                 {
                     var bc = go.AddComponent<BoxCollider>();
@@ -215,7 +220,7 @@ namespace HomeWalk.EditorTools
 
             // walkthrough
             var wt = new GameObject("Walkthrough").AddComponent<Walkthrough>();
-            wt.conceptTitle = ((string)C["title"]).Replace("CONCEPT 1 — ", "Concept 1 · ");
+            wt.conceptTitle = ((string)C["title"]).Replace("CONCEPT 1 — ", "Concept 1 · ").Replace("CONCEPT 2 — ", "Concept 2 · ");
             wt.player = fpc; wt.sun = sun;
             wt.roofObjects = roof.ToArray();
             wt.upperObjects = upper.ToArray();
@@ -226,8 +231,9 @@ namespace HomeWalk.EditorTools
             wt.ontRect = Rect.MinMaxRect(0, (float)ont["y0"], (float)S["site"]["width"], (float)ont["y1"]);
             wt.siteRect = Rect.MinMaxRect(0, 0, (float)S["site"]["width"], (float)S["site"]["depth_west"]);
             var vps = new List<Viewpoint>();
-            var order = new[] { "street", "entry", "living", "kitchen", "master", "lounge", "balcony", "garden", "aerial", "riverside" };
             var V = (JObject)C["viewpoints"];
+            var order = concept.StartsWith("c1") ? new[] { "street", "entry", "living", "kitchen", "master", "lounge", "balcony", "garden", "aerial", "riverside" }
+                                                 : V.Properties().Select(pp => pp.Name).ToArray();
             foreach (var key in order)
             {
                 if (V[key] == null) continue;
@@ -246,7 +252,8 @@ namespace HomeWalk.EditorTools
 
             Directory.CreateDirectory(Path.GetDirectoryName(scenePath));
             EditorSceneManager.SaveScene(scene, scenePath);
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(scenePath, true) };
+            if (!EditorBuildSettings.scenes.Any(sc => sc.path == scenePath))
+                EditorBuildSettings.scenes = EditorBuildSettings.scenes.Append(new EditorBuildSettingsScene(scenePath, true)).ToArray();
             foreach (var n in new[] { "SM_Prop_Couch_01", "SM_Prop_Couch_02", "SM_Prop_Couch_04", "SM_Prop_Couch_05", "SM_Prop_Couch_06", "SM_Prop_Couch_07", "SM_Prop_CeilingFan_01", "SM_Prop_DiningTable_01", "SM_Prop_Bed_Double_01" })
             {
                 var pfb = FindPrefab(n); if (!pfb) continue;

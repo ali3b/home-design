@@ -71,13 +71,16 @@ def main(concept, outdir):
     im, d = page(C['title'], C.get('tagline', ''))
     root = os.path.dirname(os.path.dirname(os.path.abspath(concept)))
     brief = os.path.join(root, 'Concepts and Plan', 'concept.png')
+    if C.get('brief'):
+        # publishable copy with the header (place names) cropped off
+        brief = os.path.join(root, C['brief']['published'])
     street = os.path.join(outdir, 'render', 'street.png')
     if os.path.exists(street):
         p, xy = fit(street, (M, 170, 1460, 900)); im.paste(p, xy)
         d.text((M, 1080), 'Blender render — street view (golden hour)', fill=GREY, font=font(22))
     if os.path.exists(brief):
         p, xy = fit(brief, (1580, 170, 830, 560)); im.paste(p, xy)
-        d.text((1580, 740), 'Concept 1 brief image (inspiration)', fill=GREY, font=font(22))
+        d.text((1580, 740), 'Concept %s brief image (inspiration)' % C['key'][1:], fill=GREY, font=font(22))
     y = 800
     d.text((1580, y), 'THE CONCEPT IN NUMBERS', fill=INK, font=font(28, True)); y += 46
     rows = [('Footprint', '%.1f m²  (%.0f%% of ONT band)' % (rep['footprint_m2'], rep['ont_coverage_pct'])),
@@ -94,10 +97,11 @@ def main(concept, outdir):
     if os.path.exists(wt):
         last = [l for l in open(wt).read().splitlines() if 'rooms reachable' in l]
         d.text((1580, 1130), 'Walkthrough test: ' + (last[0] if last else ''), fill=INK, font=font(24, True))
-    wrap(d, 'The concept image asked for about 230–250 m² on the ground floor. The ONT band is only about 266 m², '
+    note = C.get('review_note') or ('The concept image asked for about 230–250 m² on the ground floor. The ONT band is only about 266 m², '
             'so the plan is fitted inside it with a 1.5 m west service passage, a 2.4 m forecourt and 0.6 m eaves. '
             'That gives ' + '%.0f m²' % rep['Ground']['gfa'] + ' enclosed on the ground floor. '
-            'The house sits on the east boundary, which needs a boundary/setback check.', (1580, 1180), 830, font(22), GREY)
+            'The house sits on the east boundary, which needs a boundary/setback check.')
+    wrap(d, note, (1580, 1180), 830, font(22), GREY)
     pages.append(im)
 
     # drawing sheets
@@ -109,7 +113,7 @@ def main(concept, outdir):
 
     # renders
     rnd = [('street', 'Street view'), ('garden', 'From the garden (DNN land, planting only)'),
-           ('riverside', 'From the river end, between the boundary walls'), ('aerial', 'Aerial'), ('balcony', 'Upper balcony looking north'), ('massing', 'Clay massing')]
+           ('riverside', 'From the river end, between the boundary walls'), ('carport', 'Drive-through carport / service bay'), ('atrium', 'Stair atrium under the skylight'), ('aerial', 'Aerial'), ('balcony', 'Upper balcony looking north'), ('massing', 'Clay massing')]
     have = [(os.path.join(outdir, 'render', k + '.png'), t) for k, t in rnd if os.path.exists(os.path.join(outdir, 'render', k + '.png'))]
     for i in range(0, len(have), 2):
         im, d = page('Blender views', 'Cycles renders from the same data as the drawings and the walkthrough')

@@ -19,12 +19,27 @@ namespace HomeWalk.EditorTools
     ///   -executeMethod HomeWalk.EditorTools.HomeTools.BuildLinux | BuildWindows | BuildWebGL
     public static class HomeTools
     {
-        static string OutDir => Path.Combine(HomeBuilder.Root, "out", "c1", "unity");
+        // Current concept (defaults to Concept 1, so the original commands are unchanged).
+        static string Key = "c1";
+        static string Scene = HomeBuilder.ScenePath;
+        static string OutDir => Path.Combine(HomeBuilder.Root, "out", Key, "unity");
+
+        static void UseC2() { Key = "c2"; Scene = HomeBuilder.ScenePathC2; }
+
+        // ---- Concept 2 (separate scene, separate players, WebGL at docs/play2) ----
+        public static void BuildAndShootC2() { HomeSetup.Configure(); HomeBuilder.BuildC2(); UseC2(); Shoot(); WalkTest(); }
+        public static void ReleaseC2()
+        {
+            BuildAndShootC2();
+            UseC2(); Build(BuildTarget.StandaloneLinux64, "Builds/C2/Linux/HomeWalk-C2.x86_64");
+            UseC2(); Build(BuildTarget.StandaloneWindows64, "Builds/C2/Windows/HomeWalk-C2.exe");
+            UseC2(); Build(BuildTarget.WebGL, Path.Combine(HomeBuilder.Root, "docs", "play2"));
+        }
 
         [MenuItem("Home/Review/Render Viewpoint Shots")]
         public static void Shoot()
         {
-            if (EditorSceneManager.GetActiveScene().path != HomeBuilder.ScenePath) EditorSceneManager.OpenScene(HomeBuilder.ScenePath);
+            if (EditorSceneManager.GetActiveScene().path != Scene) EditorSceneManager.OpenScene(Scene);
             var wt = Object.FindAnyObjectByType<Walkthrough>();
             Directory.CreateDirectory(OutDir);
             var go = new GameObject("ShotCam");
@@ -126,7 +141,7 @@ namespace HomeWalk.EditorTools
         [MenuItem("Home/Review/Walk Test")]
         public static void WalkTest()
         {
-            if (EditorSceneManager.GetActiveScene().path != HomeBuilder.ScenePath) EditorSceneManager.OpenScene(HomeBuilder.ScenePath);
+            if (EditorSceneManager.GetActiveScene().path != Scene) EditorSceneManager.OpenScene(Scene);
             var wt = Object.FindAnyObjectByType<Walkthrough>();
             var navGo = new GameObject("NavSurface");
             var surf = navGo.AddComponent<NavMeshSurface>();
@@ -166,7 +181,8 @@ namespace HomeWalk.EditorTools
             foreach (var r in wt.rooms)
             {
                 if (r.kind == "plant") continue;
-                if (r.label == "Stair") continue;
+                if (r.label.StartsWith("Stair")) continue;
+                if (r.label.Contains("Lift")) continue;   // reserved shaft, deliberately closed
                 total++;
                 var qf = new NavMeshQueryFilter { agentTypeID = settings.agentTypeID, areaMask = NavMesh.AllAreas };
                 int walk = 0, samples = 0; Vector3 first = Vector3.zero; bool found = false;
@@ -199,7 +215,7 @@ namespace HomeWalk.EditorTools
             }
             sb.AppendLine($"{ok}/{total} rooms reachable");
             // stair diagnostics: navmesh heights along both flights
-            var stairPts = new[] { new Vector3(3.8f, 0.5f, 8.6f), new Vector3(2.2f, 0.5f, 8.4f), new Vector3(2.2f, 1.0f, 9.4f), new Vector3(3.0f, 2.1f, 11.5f), new Vector3(3.8f, 2.9f, 9.8f), new Vector3(3.8f, 3.8f, 8.4f), new Vector3(3.8f, 3.8f, 7.5f) };
+            var stairPts = Key == "c2" ? new[] { new Vector3(6.6f, 0.5f, 11.2f), new Vector3(5.7f, 1.0f, 10.2f), new Vector3(6.5f, 2.1f, 7.8f), new Vector3(7.2f, 3.0f, 9.6f), new Vector3(7.2f, 3.8f, 11.2f), new Vector3(7.2f, 3.8f, 12.2f) } : new[] { new Vector3(3.8f, 0.5f, 8.6f), new Vector3(2.2f, 0.5f, 8.4f), new Vector3(2.2f, 1.0f, 9.4f), new Vector3(3.0f, 2.1f, 11.5f), new Vector3(3.8f, 2.9f, 9.8f), new Vector3(3.8f, 3.8f, 8.4f), new Vector3(3.8f, 3.8f, 7.5f) };
             foreach (var spt in stairPts)
             {
                 var qf2 = new NavMeshQueryFilter { agentTypeID = settings.agentTypeID, areaMask = NavMesh.AllAreas };
@@ -286,7 +302,7 @@ namespace HomeWalk.EditorTools
                     : new[] { UnityEngine.Rendering.GraphicsDeviceType.Vulkan, UnityEngine.Rendering.GraphicsDeviceType.OpenGLCore });
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             }
-            var opts = new BuildPlayerOptions { scenes = new[] { HomeBuilder.ScenePath }, locationPathName = path, target = target, options = BuildOptions.None };
+            var opts = new BuildPlayerOptions { scenes = new[] { Scene }, locationPathName = path, target = target, options = BuildOptions.None };
             var desktopPipe = GraphicsSettings.defaultRenderPipeline;
             if (target == BuildTarget.WebGL) UsePipeline(WebGLPipeline());
             BuildReport report;
