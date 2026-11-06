@@ -143,7 +143,7 @@ namespace HomeWalk.EditorTools
             for (int i = 0; i < 26; i++)
             {
                 float side = i % 2 == 0 ? -1 : 1;
-                ctx.Add(new JArray(side < 0 ? -4 - rnd.Next(30) : 17.5f + rnd.Next(30), rnd.Next(-2, 64), "tree"));
+                ctx.Add(new JArray(side < 0 ? -16 - rnd.Next(30) : 26f + rnd.Next(30), rnd.Next(4, 64), "tree"));
             }
             Plant(ctx);
 
