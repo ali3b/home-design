@@ -385,8 +385,8 @@ def build_fence(S, M):
                         box(xa, y - 0.06, zz - 0.03, xb, y + 0.06, zz + 0.03, M['breeze'], cn)
         # gate: two timber leaves standing open (inward) so the walkthrough can pass
         L = (g1 - g0) / 2
-        box(g0 - 0.02, y + 0.1, 0.05, g0 + 0.06, y + 0.1 + L * 0.95, 1.8, M['timber_dk'], cn)
-        box(g1 - 0.06, y + 0.1, 0.05, g1 + 0.02, y + 0.1 + L * 0.95, 1.8, M['timber_dk'], cn)
+        box(g0 - 0.02, y + 0.1, 0.05, g0 + 0.06, y + 0.1 + L * 0.95, h - 0.15, M['timber_dk'], cn)
+        box(g1 - 0.06, y + 0.1, 0.05, g1 + 0.02, y + 0.1 + L * 0.95, h - 0.15, M['timber_dk'], cn)
         box(g0 - 0.25, y - 0.25, 0, g0, y + 0.25, h + 0.5, M['brick'], cn)
         box(g1, y - 0.25, 0, g1 + 0.25, y + 0.25, h + 0.5, M['brick'], cn)
         # gate canopy (small tiled hood, inside ONT)
@@ -395,7 +395,7 @@ def build_fence(S, M):
         for x in (g0 - 0.125, g1 + 0.125):
             box(x - 0.09, y - 0.32, h - 0.1, x + 0.09, y - 0.25, h + 0.2, M['white'], cn)
         # passage door (timber)
-        box(p0, y - 0.04, 0.02, p1, y + 0.04, 1.8, M['timber_dk'], cn)
+        box(p0, y - 0.04, 0.02, p1, y + 0.04, h - 0.15, M['timber_dk'], cn)
     sd = f.get('sides')
     if sd:
         y0 = fr['y'] + 0.2 if fr else 0.0
@@ -475,10 +475,10 @@ def build_front_gates(fr, W, M, cn):
         if g['kind'] == 'vehicle':
             # two leaves folded back inward against the piers
             L = (g1 - g0) / 2
-            box(g0 + 0.02, y + 0.12, 0.05, g0 + 0.1, y + 0.12 + L * 0.95, 1.8, M['timber_dk'], cn)
-            box(g1 - 0.1, y + 0.12, 0.05, g1 - 0.02, y + 0.12 + L * 0.95, 1.8, M['timber_dk'], cn)
+            box(g0 + 0.02, y + 0.12, 0.05, g0 + 0.1, y + 0.12 + L * 0.95, h - 0.15, M['timber_dk'], cn)
+            box(g1 - 0.1, y + 0.12, 0.05, g1 - 0.02, y + 0.12 + L * 0.95, h - 0.15, M['timber_dk'], cn)
         else:
-            box(g0 + 0.02, y + 0.12, 0.05, g0 + 0.1, y + 0.12 + (g1 - g0) * 0.95, 2.0, M['timber_dk'], cn)
+            box(g0 + 0.02, y + 0.12, 0.05, g0 + 0.1, y + 0.12 + (g1 - g0) * 0.95, h - 0.15, M['timber_dk'], cn)
             box(g0 - 0.35, y - 0.35, top, g1 + 0.35, y + 0.4, top + 0.12, M['tile_roof'], cn)
             for x in (g0 - 0.125, g1 + 0.125):
                 box(x - 0.09, y - 0.32, h - 0.1, x + 0.09, y - 0.25, h + 0.2, M['white'], cn)

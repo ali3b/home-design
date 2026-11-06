@@ -658,7 +658,7 @@ def _site_layers(v, S, bb):
                 if b > a:
                     v.line((x, a), (x, b), 0.9, (140, 62, 40))
         if bb[1] < 40 and bb[3] > 36:
-            v.text(PLOT_W + 0.6, 40, 'BOUNDARY WALLS\nto the water\n(owner instruction:\nconfirm on DNN)', 1.7, 'ls', True, (140, 62, 40))
+            v.text(PLOT_W + 0.6, 40, 'BOUNDARY WALLS\n%.1f m solid brick\nto the water\n(owner instruction:\nconfirm on DNN)' % sd.get('height', 0), 1.7, 'ls', True, (140, 62, 40))
     nw = st.get('existing_nw_building')
     if nw and on((nw['x0'] + nw['x1']) / 2, (nw['y0'] + nw['y1']) / 2):
         cr((nw['x0'], nw['y0'], nw['x1'], nw['y1']), (215, 213, 208), GREY, 0.4, (1.6, 1.2))
