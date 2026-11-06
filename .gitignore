@@ -27,3 +27,8 @@ HomeWalk/Assets/ThirdParty.meta
 __pycache__/
 out/**/*.blend
 .autopush.stop
+
+# Source briefs can carry place names in the image itself: never commit them raw.
+# Publish a cropped/scrubbed copy into docs/img instead (pipeline/scrub_image.py).
+Concepts and Plan/*
+!Concepts and Plan/concept.png

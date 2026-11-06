@@ -29,13 +29,22 @@ def load(concept_path, site_path=None):
     S = dict(
         key=C['key'], title=C['title'], tagline=C.get('tagline', ''), idea=C.get('idea', ''),
         footprint=tuple(C['footprint']), kind_of=kind_of, levels=levels, site=site,
-        massing=dict(roofs=roofs, fascia=[]), section_cut=C.get('section_cut', 7.0),
+        massing=dict(roofs=[r for r in roofs if r.get('kind', 'hip') in ('hip', 'gable')], fascia=[]), section_cut=C.get('section_cut', 7.0),
         storeys=len(levels), concept=C,
         site_notes=[], index_notes=[
             'Concept fitted wholly inside the ONT road-side band. The DNN land is shown '
             'as existing garden and planting only.'],
         schedule_notes=[],
     )
+    # west strip (service passage / carport) for the site plan
+    from lib import sheetgen
+    sp = C.get('service_passage', [0.0, 1.5])
+    sheetgen.LANE_X = (sp[0], sp[1])
+    S['passage_label'] = 'CARPORT /\nSERVICE BAY' if C.get('carport') else 'SERVICE\nPASSAGE'
+    extra = [r for r in roofs if r.get('kind') in ('skylight', 'lean')]
+    if extra:
+        S['index_notes'].append('Also shown in the 3D model but not on the roof plan: ' + ', '.join(
+            'central skylight lantern' if r['kind'] == 'skylight' else 'lean-to carport roof' for r in extra) + '.')
     # labels for the drawing engine
     from lib import rectwalls
     rectwalls.PRETTY.update(C.get('labels', {}))

@@ -630,7 +630,7 @@ def _site_layers(v, S, bb):
     if LANE_X[1] - LANE_X[0] > 0.2:
         cr((LANE_X[0], 0, LANE_X[1], min(ont, bb[3])), (227, 223, 208), None)
         if bb[1] < 12 and bb[3] > 8:
-            v.text((LANE_X[0] + LANE_X[1]) / 2, 10, '%.1f m\nSERVICE\nPASSAGE' % (LANE_X[1] - LANE_X[0]),
+            v.text((LANE_X[0] + LANE_X[1]) / 2, 10, '%.1f m\n' % (LANE_X[1] - LANE_X[0]) + S.get('passage_label', 'SERVICE\nPASSAGE'),
                    1.6, 'mm', c=GREY)
     cr((0, ont, PLOT_W, ont), None, RED, 0.55, (3, 2))
     if bb[1] < ont + 4 and bb[3] > ont + 1.5:

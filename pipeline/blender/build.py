@@ -177,6 +177,12 @@ def build_stair(st, M):
     flight 2 south (east half) -> arrival slab at the upper floor over the bottom landing."""
     cn = 'STAIR'
     x0, y0, x1, y1 = st['x0'], st['y0'], st['x1'], st['y1']
+    if st.get('first_dir', 'north') == 'south':
+        # mirrored: bottom landing + arrival at the north side, flight 1 runs south
+        def sb(xa, ya, za, xb, yb, zb, m, c):
+            return box(xa, y0 + y1 - yb, za, xb, y0 + y1 - ya, zb, m, c)
+    else:
+        sb = box
     z0, z1, n = st['z0'], st['z1'], st['risers']
     rise = (z1 - z0) / n
     tread = st['tread']
@@ -189,26 +195,26 @@ def build_stair(st, M):
     zl = z0 + half * rise
     # flight 1: west half, going north, solid
     for i in range(half - 1):
-        box(x0 + 0.02, ys + i * tread, z0, xm - 0.02, ys + (i + 1) * tread, z0 + (i + 1) * rise, M['timber'], cn)
+        sb(x0 + 0.02, ys + i * tread, z0, xm - 0.02, ys + (i + 1) * tread, z0 + (i + 1) * rise, M['timber'], cn)
     # half landing
-    box(x0 + 0.02, ya, zl - 0.25, x1 - 0.02, y1 - 0.02, zl, M['timber'], cn)
+    sb(x0 + 0.02, ya, zl - 0.25, x1 - 0.02, y1 - 0.02, zl, M['timber'], cn)
     # flight 2: east half, from the landing going south, floating treads
     for i in range(half - 1):
         zt = zl + (i + 1) * rise
         yb = ya - (i + 1) * tread
-        box(xm + 0.02, yb, zt - 0.22, x1 - 0.02, yb + tread, zt, M['timber'], cn)
+        sb(xm + 0.02, yb, zt - 0.22, x1 - 0.02, yb + tread, zt, M['timber'], cn)
     # arrival slab at upper floor level over the bottom landing (east half)
-    box(xm + 0.02, y0 - 0.02, z1 - 0.22, x1 - 0.02, ys, z1, M['timber'], cn)
+    sb(xm + 0.02, y0 - 0.02, z1 - 0.22, x1 - 0.02, ys, z1, M['timber'], cn)
     # timber screen between flights (full height) from the first riser to the half landing
     k = int((ya - ys) / 0.12)
     for j in range(k + 1):
         y = ys + j * 0.12
-        box(xm - 0.03, y - 0.02, z0, xm + 0.03, y + 0.02, z1, M['timber_dk'], cn)
+        sb(xm - 0.03, y - 0.02, z0, xm + 0.03, y + 0.02, z1, M['timber_dk'], cn)
     # guard on the arrival slab's west edge (over the bottom landing void)
     for y in (y0 + 0.05, y0 + bl / 2, ys - 0.03):
-        box(xm - 0.03, y - 0.03, z1, xm + 0.03, y + 0.03, z1 + 0.95, M['timber_dk'], cn)
-    box(xm - 0.03, y0, z1 + 0.88, xm + 0.03, ys, z1 + 0.95, M['timber_dk'], cn)
-    box(xm - 0.03, y0, z1 + 0.40, xm + 0.03, ys, z1 + 0.45, M['timber_dk'], cn)
+        sb(xm - 0.03, y - 0.03, z1, xm + 0.03, y + 0.03, z1 + 0.95, M['timber_dk'], cn)
+    sb(xm - 0.03, y0, z1 + 0.88, xm + 0.03, ys, z1 + 0.95, M['timber_dk'], cn)
+    sb(xm - 0.03, y0, z1 + 0.40, xm + 0.03, ys, z1 + 0.45, M['timber_dk'], cn)
 
 
 # --------------------------------------------------------------------- house --
@@ -245,7 +251,7 @@ def build_house(S, M):
         # upper slab edge band where lower level has no slab (court/stair void handled by walls)
     # wall-head band between top storey and roof
     zt = levels[-1]['ztop']
-    ze = max(r['ze'] for r in C['roofs'] if r['x0'] <= fx0 + 0.01)
+    ze = max(r['ze'] for r in C['roofs'] if r['x0'] <= fx0 + 0.01 and r.get('kind', 'hip') in ('hip', 'gable'))
     t = 0.25
     for (a0, b0, a1, b1) in ((fx0 - t / 2, fy0 - t / 2, fx1 + t / 2, fy0 + t / 2),
                              (fx0 - t / 2, fy1 - t / 2, fx1 + t / 2, fy1 + t / 2),
@@ -261,6 +267,13 @@ def build_house(S, M):
                 box(x - 0.09, y1 - 0.2, levels[-1]['z'], x + 0.09, y1 - 0.02, ze + 0.25, M['timber_dk'], 'L1')
     # roofs
     for r in C['roofs']:
+        kind = r.get('kind', 'hip')
+        if kind == 'skylight':
+            build_skylight(r, M)
+            continue
+        if kind == 'lean':
+            build_lean(r, C.get('carport', {}), M)
+            continue
         B.hip(r['x0'], r['y0'], r['x1'], r['y1'], r['ze'], r['zr'], M[r.get('mat', 'tile_roof')],
               'ROOF', overhang=r.get('overhang', 0.6), thick=0.12)
         o = r.get('overhang', 0.6)
@@ -280,10 +293,61 @@ def build_house(S, M):
             yy = p['y0'] + 0.6 - (ns - s) * 0.3 + 0.3
             box(p['x0'] + 0.6, yy - 0.3, 0.0, p['x1'] - 0.6, yy, h, M['terracotta'], 'PORCH')
         for (x, y) in p['posts']:
-            box(x - 0.12, y + 0.4, z_gf, x + 0.12, y + 0.64, C['roofs'][1]['ze'], M['timber_dk'], 'PORCH')
+            box(x - 0.12, y + 0.4, z_gf, x + 0.12, y + 0.64, p.get('post_top', C['roofs'][1]['ze']), M['timber_dk'], 'PORCH')
             box(x - 0.2, y + 0.32, z_gf, x + 0.2, y + 0.72, z_gf + 0.3, M['stone'], 'PORCH')
     if C.get('stair'):
         build_stair(C['stair'], M)
+
+
+def build_skylight(r, M):
+    """Flat roof strip between two pitched roofs with a raised glazed lantern over r['glass']."""
+    cn = 'ROOF'
+    x0, y0, x1, y1, ze, zr = r['x0'], r['y0'], r['x1'], r['y1'], r['ze'], r['zr']
+    gx0, gy0, gx1, gy1 = r['glass']
+    zd = ze + 0.25                      # roof deck
+    # deck around the lantern opening
+    box(x0, y0, zd - 0.2, gx0, y1, zd, M['tile_roof'], cn)
+    box(gx1, y0, zd - 0.2, x1, y1, zd, M['tile_roof'], cn)
+    box(gx0, y0, zd - 0.2, gx1, gy0, zd, M['tile_roof'], cn)
+    box(gx0, gy1, zd - 0.2, gx1, y1, zd, M['tile_roof'], cn)
+    # lantern: timber frame, glass sides and top
+    for (a0, b0, a1, b1) in ((gx0 - 0.1, gy0 - 0.1, gx1 + 0.1, gy0), (gx0 - 0.1, gy1, gx1 + 0.1, gy1 + 0.1),
+                             (gx0 - 0.1, gy0, gx0, gy1), (gx1, gy0, gx1 + 0.1, gy1)):
+        box(a0, b0, zd, a1, b1, zd + 0.15, M['timber_dk'], cn)
+        box(a0, b0, zr - 0.1, a1, b1, zr, M['timber_dk'], cn)
+    for (xx, yy) in ((gx0, gy0), (gx1, gy0), (gx0, gy1), (gx1, gy1)):
+        box(xx - 0.06, yy - 0.06, zd, xx + 0.06, yy + 0.06, zr, M['timber_dk'], cn)
+    box(gx0, gy0, zr - 0.04, gx1, gy1, zr - 0.01, M['glass'], 'GLASS')
+    box(gx0, gy0 - 0.02, zd + 0.15, gx1, gy0 + 0.02, zr - 0.1, M['glass'], 'GLASS')
+    box(gx0, gy1 - 0.02, zd + 0.15, gx1, gy1 + 0.02, zr - 0.1, M['glass'], 'GLASS')
+    box(gx0 - 0.02, gy0, zd + 0.15, gx0 + 0.02, gy1, zr - 0.1, M['glass'], 'GLASS')
+    box(gx1 - 0.02, gy0, zd + 0.15, gx1 + 0.02, gy1, zr - 0.1, M['glass'], 'GLASS')
+    k = max(1, int((gy1 - gy0) / 0.9))
+    for i in range(1, k):
+        yy = gy0 + (gy1 - gy0) * i / k
+        box(gx0, yy - 0.03, zr - 0.08, gx1, yy + 0.03, zr, M['timber_dk'], cn)
+    # light-well lining through the roof space down to the upper ceiling
+    for (a0, b0, a1, b1) in ((gx0 - 0.06, gy0 - 0.06, gx1 + 0.06, gy0), (gx0 - 0.06, gy1, gx1 + 0.06, gy1 + 0.06),
+                             (gx0 - 0.06, gy0, gx0, gy1), (gx1, gy0, gx1 + 0.06, gy1)):
+        box(a0, b0, ze - 0.2, a1, b1, zd, M['plaster_w'], cn)
+
+
+def build_lean(r, cp, M):
+    """Lean-to carport roof falling west, on timber posts and a beam."""
+    cn = 'ROOF'
+    x0, y0, x1, y1, zl, zh = r['x0'], r['y0'], r['x1'], r['y1'], r['zlow'], r['zhigh']
+    B._plate([(x0, y0, zl), (x1, y0, zh), (x1, y1, zh), (x0, y1, zl)], 0.1, M[r.get('mat', 'tile_roof')], cn)
+    px = cp.get('posts_x', x0 + 0.15)
+    step = cp.get('post_step', 3.0)
+    n = max(1, int(round((y1 - y0) / step)))
+    zp = zl + (zh - zl) * (px - x0) / max(0.01, x1 - x0) - 0.12
+    for i in range(n + 1):
+        y = y0 + 0.12 + (y1 - y0 - 0.24) * i / n
+        box(px - 0.1, y - 0.1, 0, px + 0.1, y + 0.1, zp, M['timber_dk'], 'PORCH')
+        box(px - 0.2, y - 0.2, 0, px + 0.2, y + 0.2, 0.25, M['stone'], 'PORCH')
+    box(px - 0.08, y0, zp - 0.25, px + 0.08, y1, zp, M['timber_dk'], 'PORCH')       # beam
+    box(x0 - 0.02, y0, zl - 0.22, x0 + 0.05, y1, zl + 0.02, M['timber_dk'], cn)     # fascia
+    box(x0, y0 - 0.05, zl - 0.2, x1, y0 + 0.01, zh, M['timber_dk'], cn)            # front fascia
 
 
 # --------------------------------------------------------------------- fence --
@@ -292,7 +356,9 @@ def build_fence(S, M):
     f = C.get('fence', {})
     cn = 'FENCE'
     fr = f.get('front')
-    if fr:
+    if fr and 'gates' in fr:
+        build_front_gates(fr, W, M, cn)
+    elif fr:
         y, h = fr['y'], fr['height']
         g0, g1 = fr['gate']
         p0, p1 = fr['passage_gate']
@@ -367,6 +433,57 @@ def build_fence(S, M):
             box(x - 0.22, sd['y1'] - 0.4, 0, x + 0.22, sd['y1'], h + 0.25, M['brick'], cn)
 
 
+def fence_span(a, b, y, h, M, cn, breeze=True):
+    box(a, y - 0.11, 0, b, y + 0.11, 0.9, M['brick'], cn)
+    box(a, y - 0.13, h - 0.08, b, y + 0.13, h, M['stone'], cn)
+    n = max(1, int(round((b - a) / 1.6)))
+    for i in range(n + 1):
+        x = a + (b - a) * i / n
+        box(x - 0.18, y - 0.18, 0, x + 0.18, y + 0.18, h + 0.12, M['brick'], cn)
+    for i in range(n):
+        xa = a + (b - a) * i / n + 0.18
+        xb = a + (b - a) * (i + 1) / n - 0.18
+        if xb - xa < 0.1:
+            continue
+        if breeze:
+            k = max(1, int((xb - xa) / 0.2))
+            for j in range(k + 1):
+                xx = xa + (xb - xa) * j / k
+                box(xx - 0.03, y - 0.06, 0.9, xx + 0.03, y + 0.06, h - 0.08, M['breeze'], cn)
+            for zz in (1.12, 1.36, 1.6):
+                box(xa, y - 0.06, zz - 0.03, xb, y + 0.06, zz + 0.03, M['breeze'], cn)
+        else:
+            box(xa, y - 0.09, 0.9, xb, y + 0.09, h - 0.08, M['brick'], cn)
+
+
+def build_front_gates(fr, W, M, cn):
+    """Front wall with any number of gate openings; all gates stand open so the walkthrough can pass."""
+    y, h = fr['y'], fr['height']
+    gates = sorted(fr['gates'], key=lambda g: g['x0'])
+    cur = 0.0
+    for g in gates:
+        if g['x0'] - cur > 0.05:
+            fence_span(cur, g['x0'], y, h, M, cn, fr.get('breeze_panels', True))
+        cur = g['x1']
+    if W - cur > 0.05:
+        fence_span(cur, W, y, h, M, cn, fr.get('breeze_panels', True))
+    for g in gates:
+        g0, g1 = g['x0'], g['x1']
+        top = h + (0.5 if g['kind'] == 'pedestrian' else 0.25)
+        box(g0 - 0.25, y - 0.25, 0, g0, y + 0.25, top, M['brick'], cn)
+        box(g1, y - 0.25, 0, g1 + 0.25, y + 0.25, top, M['brick'], cn)
+        if g['kind'] == 'vehicle':
+            # two leaves folded back inward against the piers
+            L = (g1 - g0) / 2
+            box(g0 + 0.02, y + 0.12, 0.05, g0 + 0.1, y + 0.12 + L * 0.95, 1.8, M['timber_dk'], cn)
+            box(g1 - 0.1, y + 0.12, 0.05, g1 - 0.02, y + 0.12 + L * 0.95, 1.8, M['timber_dk'], cn)
+        else:
+            box(g0 + 0.02, y + 0.12, 0.05, g0 + 0.1, y + 0.12 + (g1 - g0) * 0.95, 2.0, M['timber_dk'], cn)
+            box(g0 - 0.35, y - 0.35, top, g1 + 0.35, y + 0.4, top + 0.12, M['tile_roof'], cn)
+            for x in (g0 - 0.125, g1 + 0.125):
+                box(x - 0.09, y - 0.32, h - 0.1, x + 0.09, y - 0.25, h + 0.2, M['white'], cn)
+
+
 def build_neighbours(S, M):
     """Assumed 3-storey neighbours (typical Vietnamese tube houses) built to the property line."""
     cn = 'NEIGHBOURS'
@@ -406,8 +523,9 @@ def build_site(S, M, trees=True):
     box(-60, -1.6, -0.10, 75, 0.0, 0.03, M['paver'], cn, frame=False)            # verge / footpath
     # ONT ground: paved forecourt + service passage gravel + planting beds
     fx0, fy0, fx1, fy1 = S['footprint']
-    box(1.5, 0.2, 0.0, W - 0.2, fy0, 0.02, M['paver'], cn)
-    box(0.22, 0.2, 0.0, 1.5, fy1 + 0.4, 0.02, M['gravel'], cn)
+    sp = S['concept'].get('service_passage', [0.0, 1.5])[1]
+    box(sp, 0.2, 0.0, W - 0.2, fy0, 0.02, M['paver'], cn)
+    box(0.22, 0.2, 0.0, sp, fy1 + 0.4, 0.02, M['paver'] if sp > 2.5 else M['gravel'], cn)
     box(fx1, 0.2, 0.0, W - 0.22, fy1, 0.02, M['gravel'], cn)
     # river and bank
     box(-60, ry - 0.5, -1.2, 75, ry + 0.6, -0.05, M['stone_dk'], cn, frame=False)
@@ -512,11 +630,15 @@ def render_views(S, outdir):
     res = (960, 600) if FAST else (1800, 1125)
     shots = {
         'street': dict(V['street'], lens=24),
-        'garden': dict(V['garden'], lens=30),
+        **({'garden': dict(V['garden'], lens=30)} if 'garden' in V else {}),
         'aerial': dict(V['aerial'], lens=35),
         'balcony': dict(V['balcony'], lens=22),
         'riverside': dict(V['riverside'], lens=30),
     }
+    shots = {k: v for k, v in shots.items() if True}
+    for extra, lens in (('carport', 28), ('atrium', 22)):
+        if extra in V:
+            shots[extra] = dict(V[extra], lens=lens)
     # pass 1 — clay massing
     sc, M = build_all(S, massing=True, trees=False)
     B.studio_world(sc, 0.34, (0.63, 0.66, 0.72))

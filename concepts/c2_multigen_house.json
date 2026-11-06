@@ -1,0 +1,117 @@
+{
+  "key": "C2",
+  "title": "CONCEPT 2 — MULTIGENERATIONAL HOUSE",
+  "tagline": "Two storeys · drive-through west carport · central skylight stair + reserved lift · ground-floor suite for the older couple",
+  "idea": "A two-storey multigenerational house for three generations. A covered drive-through carport and service bay runs down the west side, open to the road at the front and to the garden at the back. The entrance hall (Huyền Quan) opens to a central stair under a skylight, with a 1.6 × 1.6 m shaft beside it reserved for a future lift. The ground floor works on its own for the older couple: a master suite, an accessible bathroom and a flexible room that can become a bedroom or study. Living and dining face the north garden through large openings, with the kitchen and a compact wet kitchen beside them. Upstairs there are three bedrooms for the daughter's family, a family lounge and a shaded north balcony. The east wall is blank against the assumed 3-storey neighbour. Nothing is built on the DNN land except the boundary walls down to the water.",
+  "footprint": [3.6, 2.4, 13.2, 18.9],
+  "service_passage": [0.0, 3.5],
+  "facade_rules": {"east": "blind"},
+  "labels": {
+    "genkan": "Entry (Huyền Quan)", "flex": "Flexible Room / Study", "accbath": "Accessible Bath",
+    "utility": "Utility", "hall": "Hall", "master": "Master Suite (older couple)", "hall2": "Hall",
+    "stair": "Stair (skylight)", "lift": "Future Lift (reserved)", "wetkitchen": "Wet Kitchen",
+    "kitchen": "Kitchen", "atrium": "Stair Atrium", "living": "Living", "dining": "Dining",
+    "bedroom1": "Bedroom 1", "bedroom2": "Bedroom 2", "bath2": "Bath 2", "linen": "Linen",
+    "landing": "Landing", "bedroom3": "Bedroom 3", "family": "Family Lounge", "balcony": "Shaded Balcony"
+  },
+  "levels": [
+    {
+      "name": "GROUND FLOOR", "short": "Ground", "z": 0.45, "ztop": 3.75, "floor": "cement_tile",
+      "open": ["hall", "hall2", "atrium", "living", "dining", "kitchen"],
+      "rooms": [
+        ["genkan",     3.6,  2.4,  6.2,  5.0, "circ"],
+        ["flex",       6.2,  2.4,  9.6,  5.0, "hab"],
+        ["accbath",    9.6,  2.4, 12.0,  5.0, "serv"],
+        ["utility",   12.0,  2.4, 13.2,  5.0, "store"],
+        ["hall",       3.6,  5.0,  9.6,  7.2, "circ"],
+        ["master",     9.6,  5.0, 13.2,  9.6, "hab"],
+        ["hall2",      3.6,  7.2,  5.0, 11.6, "circ"],
+        ["stair",      5.0,  7.2,  8.0, 11.6, "circ"],
+        ["lift",       8.0,  7.2,  9.6,  8.8, "spec"],
+        ["wetkitchen", 8.0,  8.8,  9.6, 11.6, "serv"],
+        ["kitchen",    9.6,  9.6, 13.2, 14.7, "serv"],
+        ["atrium",     3.6, 11.6,  9.6, 14.7, "circ"],
+        ["living",     3.6, 14.7,  9.6, 18.9, "hab"],
+        ["dining",     9.6, 14.7, 13.2, 18.9, "hab"]
+      ],
+      "doors": [
+        ["x", 2.4,  4.9, 1.6, "door"],
+        ["x", 5.0,  4.9, 1.4, "door"],
+        ["y", 3.6,  3.7, 0.9, "door"],
+        ["x", 5.0,  7.9, 0.9, "door"],
+        ["y", 9.6,  3.7, 0.9, "door"],
+        ["x", 5.0, 10.8, 0.9, "door"],
+        ["x", 5.0, 12.6, 0.8, "door"],
+        ["y", 9.6,  6.1, 0.9, "door"],
+        ["x", 11.6, 6.5, 2.0, "door"],
+        ["y", 9.6, 10.6, 0.8, "door"],
+        ["y", 3.6, 16.8, 1.0, "door"]
+      ]
+    },
+    {
+      "name": "UPPER FLOOR", "short": "Upper", "z": 3.75, "ztop": 6.85, "floor": "timber",
+      "open": ["hall", "hall2", "landing", "family"],
+      "voids": ["stair"],
+      "rooms": [
+        ["bedroom1",   3.6,  2.4,  8.0,  6.0, "hab"],
+        ["bedroom2",   8.0,  2.4, 13.2,  6.0, "hab"],
+        ["hall",       3.6,  6.0, 13.2,  7.2, "circ"],
+        ["hall2",      3.6,  7.2,  5.0, 11.6, "circ"],
+        ["stair",      5.0,  7.2,  8.0, 11.6, "circ"],
+        ["lift",       8.0,  7.2,  9.6,  8.8, "spec"],
+        ["linen",      8.0,  8.8,  9.6, 11.6, "store"],
+        ["bath2",      9.6,  7.2, 13.2,  9.6, "serv"],
+        ["bedroom3",   9.6,  9.6, 13.2, 13.6, "hab"],
+        ["landing",    3.6, 11.6,  9.6, 13.6, "circ"],
+        ["family",     3.6, 13.6, 13.2, 16.7, "hab"],
+        ["balcony",    3.6, 16.7, 13.2, 18.9, "out"]
+      ],
+      "doors": [
+        ["x", 6.0,  6.0, 0.9, "door"],
+        ["x", 6.0, 11.0, 0.9, "door"],
+        ["x", 7.2, 11.0, 0.8, "door"],
+        ["x", 11.6, 8.8, 0.8, "door"],
+        ["y", 9.6, 12.6, 0.9, "door"],
+        ["x", 11.6, 7.25, 1.4, "door"],
+        ["x", 16.7, 5.4, 2.4, "sldoor"],
+        ["x", 16.7, 8.4, 2.4, "sldoor"],
+        ["x", 16.7, 11.4, 2.4, "sldoor"]
+      ]
+    }
+  ],
+  "stair": {"x0": 5.0, "y0": 7.2, "x1": 8.0, "y1": 11.6, "z0": 0.45, "z1": 3.75,
+            "risers": 20, "tread": 0.25, "bottom_landing": 0.75, "type": "U", "first_dir": "south"},
+  "roofs": [
+    {"kind": "hip", "x0": 3.6, "y0": 2.4, "x1": 13.2, "y1": 7.2, "ze": 7.0, "zr": 8.9, "overhang": 0.3, "mat": "tile_roof"},
+    {"kind": "skylight", "x0": 3.6, "y0": 7.2, "x1": 13.2, "y1": 11.6, "ze": 7.0, "zr": 8.2, "glass": [5.0, 7.2, 8.0, 11.6], "overhang": 0.0},
+    {"kind": "hip", "x0": 3.6, "y0": 11.6, "x1": 13.2, "y1": 18.9, "ze": 7.0, "zr": 9.4, "overhang": 0.3, "mat": "tile_roof"},
+    {"kind": "hip", "x0": 3.6, "y0": 1.2, "x1": 6.8, "y1": 2.4, "ze": 3.35, "zr": 4.05, "overhang": 0.25, "mat": "tile_roof"},
+    {"kind": "lean", "x0": 0.3, "y0": 0.5, "x1": 3.6, "y1": 18.9, "zlow": 3.0, "zhigh": 3.55, "overhang": 0.0, "mat": "tile_roof"}
+  ],
+  "carport": {"x0": 0.3, "y0": 0.5, "x1": 3.6, "y1": 18.9, "posts_x": 0.45, "post_step": 3.0},
+  "porch": {"x0": 3.6, "y0": 1.2, "x1": 6.8, "y1": 2.4, "posts": [[3.75, 0.65], [6.65, 0.65]], "steps": 3},
+  "plinth": {"height": 0.45},
+  "fence": {
+    "front": {"y": 0.15, "height": 1.9, "breeze_panels": true,
+              "gates": [{"x0": 0.35, "x1": 3.45, "kind": "vehicle"}, {"x0": 4.3, "x1": 5.5, "kind": "pedestrian"}]},
+    "sides": {"y1": 65.0, "height": 1.9, "breeze_panels": true, "breaks": [["west", 58.5, 64.5]],
+              "note": "Boundary walls run to the water on both property lines (owner instruction)."}
+  },
+  "planting_ont": [[12.6, 0.9, "shrub"], [9.5, 1.0, "palm"], [11.0, 1.0, "shrub"], [7.4, 1.0, "palm"]],
+  "planting_dnn": [[1.4, 26.0, "tree"], [12.3, 25.0, "tree"], [0.9, 37.0, "tree"], [12.0, 40.0, "tree"],
+                   [1.4, 50.0, "tree"], [12.0, 52.0, "tree"], [6.8, 45.0, "tree"],
+                   [1.2, 30.0, "shrub"], [12.4, 33.0, "shrub"], [12.4, 47.0, "shrub"], [3.0, 21.5, "shrub"], [10.5, 21.0, "shrub"]],
+  "section_cut": 6.5,
+  "viewpoints": {
+    "street":    {"pos": [6.6, -7.5, 1.65], "look": [6.6, 6.0, 3.2]},
+    "carport":   {"pos": [1.9, -1.0, 1.65], "look": [1.9, 18.0, 1.4]},
+    "entry":     {"pos": [4.9, 3.0, 2.1], "look": [6.3, 14.0, 2.4]},
+    "atrium":    {"pos": [8.6, 14.2, 2.1], "look": [6.2, 8.5, 4.6]},
+    "living":    {"pos": [4.3, 15.2, 2.1], "look": [10.5, 18.9, 1.5]},
+    "master":    {"pos": [12.7, 5.6, 2.1], "look": [10.0, 9.4, 1.3]},
+    "lounge":    {"pos": [4.4, 13.0, 5.4], "look": [11.5, 17.5, 4.8]},
+    "balcony":   {"pos": [4.3, 17.6, 5.4], "look": [12.0, 26.0, 4.2]},
+    "aerial":    {"pos": [-14.0, -16.0, 24.0], "look": [6.6, 14.0, 2.0]},
+    "riverside": {"pos": [6.8, 63.0, 1.65], "look": [6.6, 12.0, 4.5]}
+  }
+}

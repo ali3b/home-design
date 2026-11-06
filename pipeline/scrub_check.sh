@@ -6,7 +6,7 @@ staged=$(git diff --cached --name-only --diff-filter=ACM)
 fail=0
 while IFS= read -r f; do
   case "$f" in
-    *Architect_Property_Pack*|*.unitypackage|*.zip|*/Synty/*|*.private.json)
+    *Architect_Property_Pack*|*.unitypackage|*.zip|*/Synty/*|*.private.json|"Concepts and Plan/concept"[2-9]*)
       echo "scrub_check: blocked file $f"; fail=1;;
   esac
 done <<< "$staged"
