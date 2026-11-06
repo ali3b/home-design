@@ -288,12 +288,14 @@ namespace HomeWalk.EditorTools
         {
             var mi = AssetImporter.GetAtPath(path) as ModelImporter;
             if (mi == null) { Debug.LogError("[Home] no FBX at " + path); return; }
-            bool dirty = mi.materialImportMode != ModelImporterMaterialImportMode.None || mi.importAnimation || !mi.bakeAxisConversion;
+            bool dirty = mi.materialImportMode != ModelImporterMaterialImportMode.None || mi.importAnimation || !mi.bakeAxisConversion || mi.importNormals != ModelImporterNormals.Calculate;
             mi.materialImportMode = ModelImporterMaterialImportMode.None;
             mi.importAnimation = false;
             mi.importCameras = false; mi.importLights = false;
             mi.bakeAxisConversion = true;
-            mi.importNormals = ModelImporterNormals.Import;
+            mi.importNormals = ModelImporterNormals.Calculate;   // rebuild from winding: the axis bake left imported normals inverted
+            mi.normalSmoothingAngle = 1f;
+            mi.normalCalculationMode = ModelImporterNormalCalculationMode.Unweighted;
             if (dirty) mi.SaveAndReimport();
         }
 

@@ -148,15 +148,20 @@ def wall_piece(p, z0, z1, M, cn, skin=None):
             if sill > 0.01:
                 bx(o0 - 0.05, o1 + 0.05, sill - 0.04, sill, M['timber_dk'])
             # mullions every ~0.9 m
-            k = max(1, int(round((o1 - o0) / 0.9)))
+            k = max(1, int(round((o1 - o0) / 0.9))) if kind == 'window' else 1
             for i in range(1, k):
                 s = o0 + (o1 - o0) * i / k
                 bx(s - 0.03, s + 0.03, sill, head, M['timber_dk'])
             gt = 0.015
+            g0, g1 = o0 + fw, o1 - fw
+            if kind == 'sldoor':
+                # one fixed glazed panel, the other bay slid open so the walkthrough can pass
+                g1 = (o0 + o1) / 2
+                bx(g1 - 0.03, g1 + 0.03, sill, head, M['timber_dk'])
             if p['axis'] == 'x':
-                box(o0 + fw, c - gt, z0 + sill, o1 - fw, c + gt, z0 + head - fw, M['glass'], 'GLASS')
+                box(g0, c - gt, z0 + sill, g1, c + gt, z0 + head - fw, M['glass'], 'GLASS')
             else:
-                box(c - gt, o0 + fw, z0 + sill, c + gt, o1 - fw, z0 + head - fw, M['glass'], 'GLASS')
+                box(c - gt, g0, z0 + sill, c + gt, g1, z0 + head - fw, M['glass'], 'GLASS')
         elif kind == 'door':
             bx(o0 - 0.05, o0, 0, head + 0.05, M['timber_dk'])
             bx(o1, o1 + 0.05, 0, head + 0.05, M['timber_dk'])
@@ -166,39 +171,42 @@ def wall_piece(p, z0, z1, M, cn, skin=None):
 
 # --------------------------------------------------------------------- stair --
 def build_stair(st, M):
+    """U-stair: bottom landing (y0..y0+bl) -> flight 1 north (west half) -> half landing ->
+    flight 2 south (east half) -> arrival slab at the upper floor over the bottom landing."""
     cn = 'STAIR'
     x0, y0, x1, y1 = st['x0'], st['y0'], st['x1'], st['y1']
     z0, z1, n = st['z0'], st['z1'], st['risers']
     rise = (z1 - z0) / n
     tread = st['tread']
+    bl = st.get('bottom_landing', 0.75)
     half = n // 2
     xm = (x0 + x1) / 2
+    ys = y0 + bl                       # first riser of flight 1
     run = (half - 1) * tread
-    ya = y0 + run                      # top of flight 1 / start of landing
+    ya = ys + run                      # top of flight 1 / start of half landing
     zl = z0 + half * rise
     # flight 1: west half, going north, solid
     for i in range(half - 1):
-        box(x0 + 0.02, y0 + i * tread, z0, xm - 0.02, y0 + (i + 1) * tread, z0 + (i + 1) * rise,
-            M['timber'], cn)
-    # landing
+        box(x0 + 0.02, ys + i * tread, z0, xm - 0.02, ys + (i + 1) * tread, z0 + (i + 1) * rise, M['timber'], cn)
+    # half landing
     box(x0 + 0.02, ya, zl - 0.25, x1 - 0.02, y1 - 0.02, zl, M['timber'], cn)
-    # flight 2: east half, from landing going south, floating treads
+    # flight 2: east half, from the landing going south, floating treads
     for i in range(half - 1):
         zt = zl + (i + 1) * rise
         yb = ya - (i + 1) * tread
         box(xm + 0.02, yb, zt - 0.22, x1 - 0.02, yb + tread, zt, M['timber'], cn)
-    # last riser lands on the upper floor at y0 (upper landing room)
-    # timber screen between flights (leave the first 0.8 m open as the way in)
-    for k in range(int((ya - (y0 + 0.8)) / 0.12) + 1):
-        y = y0 + 0.8 + k * 0.12
-        if y > ya:
-            break
+    # arrival slab at upper floor level over the bottom landing (east half)
+    box(xm + 0.02, y0 - 0.02, z1 - 0.22, x1 - 0.02, ys, z1, M['timber'], cn)
+    # timber screen between flights (full height) from the first riser to the half landing
+    k = int((ya - ys) / 0.12)
+    for j in range(k + 1):
+        y = ys + j * 0.12
         box(xm - 0.03, y - 0.02, z0, xm + 0.03, y + 0.02, z1, M['timber_dk'], cn)
-    # guard on flight 2's west edge over the open first 0.8 m
-    for y in (y0 + 0.05, y0 + 0.4, y0 + 0.78):
-        zt = zl + (half - 1 - (y - y0) / tread) * rise
-        box(xm - 0.03, y - 0.03, zt, xm + 0.03, y + 0.03, z1 + 0.92, M['timber_dk'], cn)
-    box(xm - 0.03, y0, z1 + 0.85, xm + 0.03, y0 + 0.8, z1 + 0.92, M['timber_dk'], cn)
+    # guard on the arrival slab's west edge (over the bottom landing void)
+    for y in (y0 + 0.05, y0 + bl / 2, ys - 0.03):
+        box(xm - 0.03, y - 0.03, z1, xm + 0.03, y + 0.03, z1 + 0.95, M['timber_dk'], cn)
+    box(xm - 0.03, y0, z1 + 0.88, xm + 0.03, ys, z1 + 0.95, M['timber_dk'], cn)
+    box(xm - 0.03, y0, z1 + 0.40, xm + 0.03, ys, z1 + 0.45, M['timber_dk'], cn)
 
 
 # --------------------------------------------------------------------- house --

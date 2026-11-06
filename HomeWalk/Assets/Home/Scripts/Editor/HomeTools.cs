@@ -38,6 +38,10 @@ namespace HomeWalk.EditorTools
             // dollhouse views (roof + upper hidden) for plan reading
             extra.Add(new Viewpoint { name = "Dollhouse_ground", pos = new Vector3(-6f, 16f, -6f), yaw = 40f, pitch = 48f });
             int i = 0;
+            Debug.Log($"[Home] DIAG sun.forward={wt.sun.transform.forward:F2} euler={wt.sun.transform.eulerAngles:F1}");
+            foreach (var r in Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
+                if (r.name.StartsWith("SITE__asphalt") || r.name.StartsWith("SITE__river") || r.name.StartsWith("SITE__existing"))
+                    Debug.Log($"[Home] DIAG {r.name} bounds {r.bounds.min:F1}..{r.bounds.max:F1} lossyScale={r.transform.lossyScale}");
             foreach (var v in extra)
             {
                 bool doll = v.name.StartsWith("Dollhouse");
@@ -46,6 +50,7 @@ namespace HomeWalk.EditorTools
                 go.transform.position = v.pos + new Vector3(0, 1.6f, 0);
                 go.transform.rotation = Quaternion.Euler(v.pitch, v.yaw, 0);
                 cam.fieldOfView = v.name == "Aerial" ? 50 : 70;
+                if (v.name == "Aerial") Debug.Log($"[Home] DIAG aerial cam pos={go.transform.position:F1} fwd={go.transform.forward:F2}");
                 cam.Render();
                 RenderTexture.active = rt;
                 tex.ReadPixels(new Rect(0, 0, W, H), 0, 0); tex.Apply();
@@ -75,11 +80,32 @@ namespace HomeWalk.EditorTools
             var surf = navGo.AddComponent<NavMeshSurface>();
             surf.collectObjects = CollectObjects.All;
             surf.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
-            var settings = NavMesh.CreateSettings();
-            settings.agentRadius = 0.22f; settings.agentHeight = 1.7f; settings.agentClimb = 0.3f; settings.agentSlope = 45f;
-            surf.agentTypeID = settings.agentTypeID;
-            surf.overrideVoxelSize = true; surf.voxelSize = 0.04f;
+            // Configure the built-in Humanoid agent (id 0) to human size; NavMesh.CreateSettings() types are ignored by NavMeshSurface builds.
+            var navSo = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/NavMeshAreas.asset")[0]);
+            var agents = navSo.FindProperty("m_Settings");
+            var a0 = agents.GetArrayElementAtIndex(0);
+            a0.FindPropertyRelative("agentRadius").floatValue = 0.22f;
+            a0.FindPropertyRelative("agentHeight").floatValue = 1.7f;
+            a0.FindPropertyRelative("agentClimb").floatValue = 0.3f;
+            a0.FindPropertyRelative("agentSlope").floatValue = 45f;
+            navSo.ApplyModifiedPropertiesWithoutUndo();
+            AssetDatabase.SaveAssets();
+            surf.agentTypeID = 0;
+            var settings = NavMesh.GetSettingsByID(0);
+            surf.overrideVoxelSize = true; surf.voxelSize = 0.04f; surf.minRegionArea = 0.3f;
             surf.BuildNavMesh();
+            foreach (var (nm, c, ext) in new[] { ("laundry door", new Vector3(4.5f, 1.45f, 3.6f), new Vector3(0.3f, 0.9f, 0.3f)), ("stair bottom gap", new Vector3(3.0f, 1.45f, 8.4f), new Vector3(0.1f, 0.9f, 0.3f)), ("pantry door", new Vector3(8.7f, 1.45f, 3.6f), new Vector3(0.3f, 0.9f, 0.3f)) })
+            {
+                var cs = Physics.OverlapBox(c, ext);
+                Debug.Log($"[Home] DOORPROBE {nm}: " + string.Join(", ", cs.Select(x => x.name + (x is MeshCollider mc ? "(mesh)" : "(" + x.GetType().Name + ")"))));
+                foreach (var dir in new[] { Vector3.left, Vector3.right, Vector3.forward, Vector3.back })
+                    if (Physics.Raycast(c, dir, out var hh, 1.5f)) Debug.Log($"[Home] DOORPROBE   {nm} ray {dir} hits {hh.collider.name} at {hh.distance:F2}");
+            }
+            var tri = NavMesh.CalculateTriangulation();
+            Debug.Log($"[Home] NAV triangulation verts={tri.vertices.Length} tris={tri.indices.Length / 3}");
+            int inLaundry = tri.vertices.Count(vv => vv.x > 1.5f && vv.x < 4.5f && vv.z > 2.4f && vv.z < 4.8f);
+            int inBed1 = tri.vertices.Count(vv => vv.x > 4.5f && vv.x < 8.7f && vv.z > 2.4f && vv.z < 6.2f && vv.y > 3f && vv.y < 4.5f);
+            Debug.Log($"[Home] NAV verts in laundry={inLaundry} bedroom1={inBed1}; bounds {(tri.vertices.Length > 0 ? new Bounds(tri.vertices[0], Vector3.zero) : new Bounds())}");
             var start = new Vector3(6.6f, 0.05f, -3f);   // on the footpath outside the gate
             NavMesh.SamplePosition(start, out var sh, 2f, new NavMeshQueryFilter { agentTypeID = settings.agentTypeID, areaMask = NavMesh.AllAreas });
             var sb = new StringBuilder();
@@ -90,16 +116,45 @@ namespace HomeWalk.EditorTools
                 if (r.kind == "plant") continue;
                 if (r.label == "Stair") continue;
                 total++;
-                var c = new Vector3(r.rect.center.x, r.floorY + 0.05f, r.rect.center.y);
                 var qf = new NavMeshQueryFilter { agentTypeID = settings.agentTypeID, areaMask = NavMesh.AllAreas };
-                bool found = NavMesh.SamplePosition(c, out var hit, Mathf.Max(r.rect.width, r.rect.height) * 0.5f, qf) && Mathf.Abs(hit.position.y - r.floorY) < 0.4f && r.rect.Contains(new Vector2(hit.position.x, hit.position.z));
+                int walk = 0, samples = 0; Vector3 first = Vector3.zero; bool found = false;
+                for (float gx = r.rect.xMin + 0.3f; gx < r.rect.xMax - 0.29f; gx += 0.3f)
+                    for (float gz = r.rect.yMin + 0.3f; gz < r.rect.yMax - 0.29f; gz += 0.3f)
+                    {
+                        samples++;
+                        if (NavMesh.SamplePosition(new Vector3(gx, r.floorY + 0.05f, gz), out var h, 0.2f, qf) && Mathf.Abs(h.position.y - r.floorY) < 0.25f)
+                        {
+                            walk++;
+                            var ctr = new Vector3(r.rect.center.x, h.position.y, r.rect.center.y);
+                            if (!found || (h.position - ctr).sqrMagnitude < (first - ctr).sqrMagnitude) { found = true; first = h.position; }
+                        }
+                    }
                 var path = new NavMeshPath();
-                bool reach = found && NavMesh.CalculatePath(sh.position, hit.position, qf, path) && path.status == NavMeshPathStatus.PathComplete;
+                bool reach = found && NavMesh.CalculatePath(sh.position, first, qf, path) && path.status == NavMeshPathStatus.PathComplete;
+                if (walk == 0)
+                {
+                    var cpt = new Vector3(r.rect.center.x, r.floorY + 2.2f, r.rect.center.y);
+                    var hits = Physics.RaycastAll(cpt, Vector3.down, 3f);
+                    System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+                    sb.AppendLine($"     probe down from {cpt}: " + string.Join(", ", hits.Select(hh => $"{hh.collider.name}@{hh.point.y:F2} n={hh.normal.y:F2}")));
+                    var cols = Physics.OverlapBox(new Vector3(r.rect.center.x, r.floorY + 0.9f, r.rect.center.y), new Vector3(r.rect.width / 2 - 0.2f, 0.75f, r.rect.height / 2 - 0.2f));
+                    sb.AppendLine("     overlapping: " + string.Join(", ", cols.Select(cc => cc.name).Distinct().Take(12)));
+                }
                 float len = 0; for (int k = 1; k < path.corners.Length; k++) len += Vector3.Distance(path.corners[k - 1], path.corners[k]);
                 if (reach) ok++;
-                sb.AppendLine($"  {(reach ? "OK  " : "FAIL")} L{r.level} {r.label,-22} path {len,5:F1} m{(found ? "" : "  (no navmesh in room)")}");
+                else if (found && path.corners.Length > 0) sb.AppendLine($"     partial path ends at {path.corners[path.corners.Length - 1]:F2} (target {first:F2})");
+                sb.AppendLine($"  {(reach ? "OK  " : "FAIL")} L{r.level} {r.label,-22} path {len,5:F1} m  walkable {100f * walk / Mathf.Max(1, samples),3:F0}% of floor{(found ? "" : "  (no navmesh in room)")}");
             }
             sb.AppendLine($"{ok}/{total} rooms reachable");
+            // stair diagnostics: navmesh heights along both flights
+            var stairPts = new[] { new Vector3(3.8f, 0.5f, 8.6f), new Vector3(2.2f, 0.5f, 8.4f), new Vector3(2.2f, 1.0f, 9.4f), new Vector3(3.0f, 2.1f, 11.5f), new Vector3(3.8f, 2.9f, 9.8f), new Vector3(3.8f, 3.8f, 8.4f), new Vector3(3.8f, 3.8f, 7.5f) };
+            foreach (var spt in stairPts)
+            {
+                var qf2 = new NavMeshQueryFilter { agentTypeID = settings.agentTypeID, areaMask = NavMesh.AllAreas };
+                bool f2 = NavMesh.SamplePosition(spt, out var h2, 0.35f, qf2);
+                var p2 = new NavMeshPath(); bool r2 = f2 && NavMesh.CalculatePath(sh.position, h2.position, qf2, p2) && p2.status == NavMeshPathStatus.PathComplete;
+                sb.AppendLine($"  stair probe {spt}: {(f2 ? "navmesh y=" + h2.position.y.ToString("F2") : "none")} {(r2 ? "reachable" : "")}");
+            }
             Object.DestroyImmediate(navGo);
             NavMesh.RemoveAllNavMeshData();
             Directory.CreateDirectory(OutDir);
