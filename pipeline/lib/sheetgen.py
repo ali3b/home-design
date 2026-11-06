@@ -637,6 +637,28 @@ def _site_layers(v, S, bb):
         v.text(PLOT_W + 0.5, ont + 1.1, 'ONT / DNN LINE (schematic)', 2.0, 'ls', True, RED)
     if bb[1] < ont + 10 and bb[3] > ont + 8:
         v.text(PLOT_W + 0.6, ont + 9, 'DNN  609 m²\nexisting land — planting only\nNO buildings · pools · decks', 1.9, 'ls', True, (60, 110, 60))
+    for nb in st.get('neighbours', []):
+        r = (nb['x0'], nb['y0'], nb['x1'], nb['y1'])
+        if on((r[0] + r[2]) / 2, (r[1] + r[3]) / 2) or (bb[0] < r[2] and bb[2] > r[0] and bb[1] < r[3]):
+            cr(r, (214, 210, 202), GREY, 0.4, (1.6, 1.2))
+            cy = max(r[1] + 2, min(r[3] - 4, (max(r[1], bb[1]) + min(r[3], bb[3])) / 2))
+            v.text((r[0] + r[2]) / 2, cy, 'ASSUMED\n%d-STOREY\nNEIGHBOUR\n(party wall)' % nb.get('storeys', 3), 1.6, 'mm', c=GREY)
+    C = S.get('concept', {})
+    sd = C.get('fence', {}).get('sides')
+    if sd:
+        for side, x in (('west', 0.0), ('east', PLOT_W)):
+            cur = max(0.0, bb[1])
+            brk = sorted(b for b in sd.get('breaks', []) if b[0] == side)
+            segs, c0 = [], 0.0
+            for _, b0, b1 in brk:
+                segs.append((c0, b0)); c0 = b1
+            segs.append((c0, sd['y1']))
+            for a, b in segs:
+                a, b = max(a, bb[1]), min(b, bb[3])
+                if b > a:
+                    v.line((x, a), (x, b), 0.9, (140, 62, 40))
+        if bb[1] < 40 and bb[3] > 36:
+            v.text(PLOT_W + 0.6, 40, 'BOUNDARY WALLS\nto the water\n(owner instruction:\nconfirm on DNN)', 1.7, 'ls', True, (140, 62, 40))
     nw = st.get('existing_nw_building')
     if nw and on((nw['x0'] + nw['x1']) / 2, (nw['y0'] + nw['y1']) / 2):
         cr((nw['x0'], nw['y0'], nw['x1'], nw['y1']), (215, 213, 208), GREY, 0.4, (1.6, 1.2))
@@ -709,6 +731,10 @@ def draw_site(sh, S, sheet_no):
         'Structures are shown ONLY inside the ONT road-side band (3 × 88.8 = 266.4 m²). '
         'The 609 m² DNN band is existing land, shown as planting only.',
         'The title sketch shows 6.5 m to the road centreline. It is NOT treated as a verified setback.',
+        'Assumed: a 3-storey house on each side built to the property line to about the same 20 m depth. '
+        'So the east wall is blank (party wall) and the west wall has high-level windows only.',
+        'Side boundary walls run the full length to the water on both property lines (owner instruction). '
+        'This is the only structure on DNN land. Confirm it is permitted.',
         'The existing north-west building is an existing condition only. Its position and '
         'ownership are to be surveyed. It is not altered.',
         'Subject to legal merger of the three ONT sections, setbacks, river corridor and permits.',
@@ -717,6 +743,8 @@ def draw_site(sh, S, sheet_no):
                      ((226, 236, 216), 'none', 'DNN — land / planting only'),
                      ((227, 223, 208), 'none', 'service passage'),
                      ((215, 213, 208), 'none', 'existing NW building'),
+                     ((214, 210, 202), 'none', 'assumed 3-storey neighbours'),
+                     ((140, 62, 40), 'none', 'boundary walls'),
                      (PAPER, 'none', 'house footprint'),
                      (LGREY, 'none', 'assumed / context')])
     sh.title_block(S, '1:200 at A3', 'site plan')

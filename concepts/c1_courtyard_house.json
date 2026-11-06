@@ -1,115 +1,765 @@
 {
   "key": "C1",
   "title": "CONCEPT 1 — TERRACOTTA COURTYARD HOUSE",
-  "tagline": "Two storeys in the ONT band · 1.5 m west service passage · east light court · shaded north balcony",
-  "idea": "A two-storey family house in northern Vietnamese timber, brick and terracotta, kept wholly inside the 13.5 × 19.7 m road-side ONT band. The entrance hall (Huyền Quan) is on the road. Living space runs north towards the garden. A 2.5 × 4 m east light court brings daylight and air into the middle of the deep plan. A 1.5 m service passage on the west side serves the wet kitchen and laundry without crossing the living rooms. Upstairs, three bedrooms, an altar room and a family lounge open onto a 2.2 m shaded balcony that looks over the existing garden land towards the river. Nothing is built on the DNN land.",
-  "footprint": [1.5, 2.4, 12.9, 18.9],
-  "service_passage": [0.0, 1.5],
+  "tagline": "Two storeys in the ONT band between 3-storey neighbours · 1.5 m west service passage · east light court · shaded north balcony",
+  "idea": "A two-storey family house in northern Vietnamese timber, brick and terracotta, kept wholly inside the 13.5 × 19.7 m road-side ONT band. The entrance hall (Huyền Quan) is on the road. Living space runs north towards the garden. A 2.5 × 4 m east light court brings daylight and air into the middle of the deep plan. A 1.5 m service passage on the west side serves the wet kitchen and laundry without crossing the living rooms. Upstairs, three bedrooms, an altar room and a family lounge open onto a 2.2 m shaded balcony that looks over the existing garden land towards the river. It is designed for a Vietnamese street, with a 3-storey house assumed on each side. The east wall is blank because it faces the neighbour's party wall 0.6 m away. The west wall has only high-level windows onto the service passage. Daylight comes from the street, the light court and the garden. The only structure on the DNN land is the pair of boundary walls running down to the water.",
+  "footprint": [
+    1.5,
+    2.4,
+    12.9,
+    18.9
+  ],
+  "service_passage": [
+    0.0,
+    1.5
+  ],
   "labels": {
-    "laundry": "Laundry / WC", "genkan": "Entry (Huyền Quan)", "pantry": "Pantry / Store",
-    "wetkitchen": "Wet Kitchen", "hall": "Hall", "kitchen": "Kitchen", "stair": "Stair",
-    "dining": "Dining", "courtyard": "Light Court", "ensuite": "Ensuite", "dress": "Robe",
-    "gallery": "Gallery", "living": "Living (garden view)", "master": "Master Suite",
-    "bath2": "Bathroom", "landing": "Landing", "bedroom1": "Bedroom 1", "bedroom2": "Bedroom 2",
-    "bath3": "Bathroom 2", "linen": "Linen", "hall2": "Gallery", "altar": "Altar Room",
-    "family": "Family Lounge", "bedroom3": "Bedroom 3", "balcony": "Shaded Balcony"
+    "laundry": "Laundry / WC",
+    "genkan": "Entry (Huyền Quan)",
+    "pantry": "Pantry / Store",
+    "wetkitchen": "Wet Kitchen",
+    "hall": "Hall",
+    "kitchen": "Kitchen",
+    "stair": "Stair",
+    "dining": "Dining",
+    "courtyard": "Light Court",
+    "ensuite": "Ensuite",
+    "dress": "Robe",
+    "gallery": "Gallery",
+    "living": "Living (garden view)",
+    "master": "Master Suite",
+    "bath2": "Bathroom",
+    "landing": "Landing",
+    "bedroom1": "Bedroom 1",
+    "bedroom2": "Bedroom 2",
+    "bath3": "Bathroom 2",
+    "linen": "Linen",
+    "hall2": "Gallery",
+    "altar": "Altar Room",
+    "family": "Family Lounge",
+    "bedroom3": "Bedroom 3",
+    "balcony": "Shaded Balcony"
   },
   "levels": [
     {
-      "name": "GROUND FLOOR", "short": "Ground", "z": 0.45, "ztop": 3.75, "floor": "cement_tile",
-      "open": ["hall", "kitchen", "dining", "gallery", "living"],
+      "name": "GROUND FLOOR",
+      "short": "Ground",
+      "z": 0.45,
+      "ztop": 3.75,
+      "floor": "cement_tile",
+      "open": [
+        "hall",
+        "kitchen",
+        "dining",
+        "gallery",
+        "living"
+      ],
       "rooms": [
-        ["laundry",    1.5,  2.4,  4.5,  4.8, "serv"],
-        ["genkan",     4.5,  2.4,  8.7,  4.8, "circ"],
-        ["pantry",     8.7,  2.4, 12.9,  4.8, "store"],
-        ["wetkitchen", 1.5,  4.8,  4.5,  8.0, "serv"],
-        ["hall",       4.5,  4.8,  8.7,  8.0, "circ"],
-        ["kitchen",    8.7,  4.8, 12.9,  8.0, "serv"],
-        ["stair",      1.5,  8.0,  4.5, 12.0, "circ"],
-        ["dining",     4.5,  8.0, 10.4, 12.0, "hab"],
-        ["courtyard", 10.4,  8.0, 12.9, 12.0, "plant"],
-        ["ensuite",    1.5, 12.0,  3.9, 14.4, "serv"],
-        ["dress",      3.9, 12.0,  6.3, 14.4, "hab"],
-        ["gallery",    6.3, 12.0, 12.9, 13.8, "circ"],
-        ["master",     1.5, 14.4,  6.3, 18.9, "hab"],
-        ["living",     6.3, 13.8, 12.9, 18.9, "hab"]
+        [
+          "laundry",
+          1.5,
+          2.4,
+          4.5,
+          4.8,
+          "serv"
+        ],
+        [
+          "genkan",
+          4.5,
+          2.4,
+          8.7,
+          4.8,
+          "circ"
+        ],
+        [
+          "pantry",
+          8.7,
+          2.4,
+          12.9,
+          4.8,
+          "store"
+        ],
+        [
+          "wetkitchen",
+          1.5,
+          4.8,
+          4.5,
+          8.0,
+          "serv"
+        ],
+        [
+          "hall",
+          4.5,
+          4.8,
+          8.7,
+          8.0,
+          "circ"
+        ],
+        [
+          "kitchen",
+          8.7,
+          4.8,
+          12.9,
+          8.0,
+          "serv"
+        ],
+        [
+          "stair",
+          1.5,
+          8.0,
+          4.5,
+          12.0,
+          "circ"
+        ],
+        [
+          "dining",
+          4.5,
+          8.0,
+          10.4,
+          12.0,
+          "hab"
+        ],
+        [
+          "courtyard",
+          10.4,
+          8.0,
+          12.9,
+          12.0,
+          "plant"
+        ],
+        [
+          "ensuite",
+          1.5,
+          12.0,
+          3.9,
+          14.4,
+          "serv"
+        ],
+        [
+          "dress",
+          3.9,
+          12.0,
+          6.3,
+          14.4,
+          "hab"
+        ],
+        [
+          "gallery",
+          6.3,
+          12.0,
+          12.9,
+          13.8,
+          "circ"
+        ],
+        [
+          "master",
+          1.5,
+          14.4,
+          6.3,
+          18.9,
+          "hab"
+        ],
+        [
+          "living",
+          6.3,
+          13.8,
+          12.9,
+          18.9,
+          "hab"
+        ]
       ],
       "doors": [
-        ["x", 2.4,  6.6, 1.8, "door"],
-        ["x", 4.8,  6.6, 2.0, "door"],
-        ["y", 4.5,  3.6, 0.8, "door"],
-        ["y", 8.7,  3.6, 0.8, "door"],
-        ["x", 4.8, 12.35, 0.75, "door"],
-        ["y", 4.5,  6.4, 0.9, "door"],
-        ["y", 1.5,  6.4, 0.9, "door"],
-        ["y", 1.5,  3.6, 0.9, "door"],
-        ["y", 4.5,  8.9, 1.4, "door"],
-        ["y", 6.3, 12.9, 0.9, "door"],
-        ["x", 14.4, 5.1, 0.9, "door"],
-        ["y", 3.9, 13.2, 0.8, "door"]
+        [
+          "x",
+          2.4,
+          6.6,
+          1.8,
+          "door"
+        ],
+        [
+          "x",
+          4.8,
+          6.6,
+          2.0,
+          "door"
+        ],
+        [
+          "y",
+          4.5,
+          3.6,
+          0.8,
+          "door"
+        ],
+        [
+          "y",
+          8.7,
+          3.6,
+          0.8,
+          "door"
+        ],
+        [
+          "x",
+          4.8,
+          12.35,
+          0.75,
+          "door"
+        ],
+        [
+          "y",
+          4.5,
+          6.4,
+          0.9,
+          "door"
+        ],
+        [
+          "y",
+          1.5,
+          6.4,
+          0.9,
+          "door"
+        ],
+        [
+          "y",
+          1.5,
+          3.6,
+          0.9,
+          "door"
+        ],
+        [
+          "y",
+          4.5,
+          8.9,
+          1.4,
+          "door"
+        ],
+        [
+          "y",
+          6.3,
+          12.9,
+          0.9,
+          "door"
+        ],
+        [
+          "x",
+          14.4,
+          5.1,
+          0.9,
+          "door"
+        ],
+        [
+          "y",
+          3.9,
+          13.2,
+          0.8,
+          "door"
+        ]
       ]
     },
     {
-      "name": "UPPER FLOOR", "short": "Upper", "z": 3.75, "ztop": 6.85, "floor": "timber",
-      "open": ["landing", "hall", "hall2", "family"],
-      "voids": ["stair", "courtyard"],
+      "name": "UPPER FLOOR",
+      "short": "Upper",
+      "z": 3.75,
+      "ztop": 6.85,
+      "floor": "timber",
+      "open": [
+        "landing",
+        "hall",
+        "hall2",
+        "family"
+      ],
+      "voids": [
+        "stair",
+        "courtyard"
+      ],
       "rooms": [
-        ["bath2",      1.5,  2.4,  4.5,  4.8, "serv"],
-        ["bedroom1",   4.5,  2.4,  8.7,  6.2, "hab"],
-        ["bedroom2",   8.7,  2.4, 12.9,  6.2, "hab"],
-        ["landing",    1.5,  4.8,  4.5,  8.0, "circ"],
-        ["hall",       4.5,  6.2, 12.9,  8.0, "circ"],
-        ["stair",      1.5,  8.0,  4.5, 12.0, "circ"],
-        ["bath3",      4.5,  8.0,  7.5, 10.6, "serv"],
-        ["linen",      4.5, 10.6,  7.5, 12.0, "store"],
-        ["hall2",      7.5,  8.0, 10.4, 12.0, "circ"],
-        ["courtyard", 10.4,  8.0, 12.9, 12.0, "plant"],
-        ["altar",      1.5, 12.0,  4.5, 16.7, "spec"],
-        ["family",     4.5, 12.0,  8.7, 16.7, "hab"],
-        ["bedroom3",   8.7, 12.0, 12.9, 16.7, "hab"],
-        ["balcony",    1.5, 16.7, 12.9, 18.9, "out"]
+        [
+          "bath2",
+          1.5,
+          2.4,
+          4.5,
+          4.8,
+          "serv"
+        ],
+        [
+          "bedroom1",
+          4.5,
+          2.4,
+          8.7,
+          6.2,
+          "hab"
+        ],
+        [
+          "bedroom2",
+          8.7,
+          2.4,
+          12.9,
+          6.2,
+          "hab"
+        ],
+        [
+          "landing",
+          1.5,
+          4.8,
+          4.5,
+          8.0,
+          "circ"
+        ],
+        [
+          "hall",
+          4.5,
+          6.2,
+          12.9,
+          8.0,
+          "circ"
+        ],
+        [
+          "stair",
+          1.5,
+          8.0,
+          4.5,
+          12.0,
+          "circ"
+        ],
+        [
+          "bath3",
+          4.5,
+          8.0,
+          7.5,
+          10.6,
+          "serv"
+        ],
+        [
+          "linen",
+          4.5,
+          10.6,
+          7.5,
+          12.0,
+          "store"
+        ],
+        [
+          "hall2",
+          7.5,
+          8.0,
+          10.4,
+          12.0,
+          "circ"
+        ],
+        [
+          "courtyard",
+          10.4,
+          8.0,
+          12.9,
+          12.0,
+          "plant"
+        ],
+        [
+          "altar",
+          1.5,
+          12.0,
+          4.5,
+          16.7,
+          "spec"
+        ],
+        [
+          "family",
+          4.5,
+          12.0,
+          8.7,
+          16.7,
+          "hab"
+        ],
+        [
+          "bedroom3",
+          8.7,
+          12.0,
+          12.9,
+          16.7,
+          "hab"
+        ],
+        [
+          "balcony",
+          1.5,
+          16.7,
+          12.9,
+          18.9,
+          "out"
+        ]
       ],
       "doors": [
-        ["x", 8.0,  3.75, 1.4, "door"],
-        ["x", 4.8,  3.0, 0.8, "door"],
-        ["x", 6.2,  6.6, 0.9, "door"],
-        ["x", 6.2, 10.8, 0.9, "door"],
-        ["x", 8.0,  6.0, 0.8, "door"],
-        ["y", 7.5, 11.3, 0.8, "door"],
-        ["x", 12.0, 9.5, 0.9, "door"],
-        ["y", 4.5, 14.4, 0.9, "door"],
-        ["x", 16.7, 3.0, 1.6, "sldoor"],
-        ["x", 16.7, 6.6, 3.0, "sldoor"],
-        ["x", 16.7, 10.8, 2.4, "sldoor"]
+        [
+          "x",
+          8.0,
+          3.75,
+          1.4,
+          "door"
+        ],
+        [
+          "x",
+          4.8,
+          3.0,
+          0.8,
+          "door"
+        ],
+        [
+          "x",
+          6.2,
+          6.6,
+          0.9,
+          "door"
+        ],
+        [
+          "x",
+          6.2,
+          10.8,
+          0.9,
+          "door"
+        ],
+        [
+          "x",
+          8.0,
+          6.0,
+          0.8,
+          "door"
+        ],
+        [
+          "y",
+          7.5,
+          11.3,
+          0.8,
+          "door"
+        ],
+        [
+          "x",
+          12.0,
+          9.5,
+          0.9,
+          "door"
+        ],
+        [
+          "y",
+          4.5,
+          14.4,
+          0.9,
+          "door"
+        ],
+        [
+          "x",
+          16.7,
+          3.0,
+          1.6,
+          "sldoor"
+        ],
+        [
+          "x",
+          16.7,
+          6.6,
+          3.0,
+          "sldoor"
+        ],
+        [
+          "x",
+          16.7,
+          10.8,
+          2.4,
+          "sldoor"
+        ]
       ]
     }
   ],
-  "stair": {"x0": 1.5, "y0": 8.0, "x1": 4.5, "y1": 12.0, "z0": 0.45, "z1": 3.75,
-            "risers": 20, "tread": 0.25, "bottom_landing": 0.75, "type": "U", "first_dir": "north"},
-  "roofs": [
-    {"kind": "hip", "x0": 1.5, "y0": 2.4, "x1": 12.9, "y1": 18.9, "ze": 7.0, "zr": 10.1, "overhang": 0.6, "mat": "tile_roof"},
-    {"kind": "hip", "x0": 4.0, "y0": 1.0, "x1": 9.2, "y1": 2.4, "ze": 3.35, "zr": 4.25, "overhang": 0.3, "mat": "tile_roof"}
-  ],
-  "porch": {"x0": 4.0, "y0": 1.0, "x1": 9.2, "y1": 2.4, "posts": [[4.15, 1.15], [9.05, 1.15]], "steps": 3},
-  "plinth": {"height": 0.45},
-  "fence": {
-    "front": {"y": 0.15, "height": 1.9, "gate": [5.1, 8.1], "passage_gate": [0.15, 1.35], "breeze_panels": true},
-    "sides": {"y1": 19.6, "height": 1.9}
+  "stair": {
+    "x0": 1.5,
+    "y0": 8.0,
+    "x1": 4.5,
+    "y1": 12.0,
+    "z0": 0.45,
+    "z1": 3.75,
+    "risers": 20,
+    "tread": 0.25,
+    "bottom_landing": 0.75,
+    "type": "U",
+    "first_dir": "north"
   },
-  "planting_ont": [[0.8, 0.9, "shrub"], [12.6, 0.9, "shrub"], [10.6, 1.3, "palm"], [2.6, 1.2, "palm"], [11.6, 10.0, "court"]],
-  "planting_dnn": [[1.4, 24.0, "tree"], [12.3, 26.0, "tree"], [0.8, 38.0, "tree"], [2.5, 41.0, "tree"],
-                   [11.0, 44.0, "tree"], [7.0, 51.0, "tree"], [9.0, 55.5, "tree"], [11.6, 62.5, "tree"],
-                   [1.2, 30.0, "shrub"], [12.4, 36.0, "shrub"], [12.4, 50.0, "shrub"]],
+  "roofs": [
+    {
+      "kind": "hip",
+      "x0": 1.5,
+      "y0": 2.4,
+      "x1": 12.9,
+      "y1": 18.9,
+      "ze": 7.0,
+      "zr": 10.1,
+      "overhang": 0.6,
+      "mat": "tile_roof"
+    },
+    {
+      "kind": "hip",
+      "x0": 4.0,
+      "y0": 1.0,
+      "x1": 9.2,
+      "y1": 2.4,
+      "ze": 3.35,
+      "zr": 4.25,
+      "overhang": 0.3,
+      "mat": "tile_roof"
+    }
+  ],
+  "porch": {
+    "x0": 4.0,
+    "y0": 1.0,
+    "x1": 9.2,
+    "y1": 2.4,
+    "posts": [
+      [
+        4.15,
+        1.15
+      ],
+      [
+        9.05,
+        1.15
+      ]
+    ],
+    "steps": 3
+  },
+  "plinth": {
+    "height": 0.45
+  },
+  "fence": {
+    "front": {
+      "y": 0.15,
+      "height": 1.9,
+      "gate": [
+        5.1,
+        8.1
+      ],
+      "passage_gate": [
+        0.15,
+        1.35
+      ],
+      "breeze_panels": true
+    },
+    "sides": {
+      "y1": 65.0,
+      "height": 1.9,
+      "breeze_panels": true,
+      "breaks": [
+        [
+          "west",
+          58.5,
+          64.5
+        ]
+      ],
+      "note": "Boundary walls run to the water on both property lines (owner instruction)."
+    }
+  },
+  "planting_ont": [
+    [
+      0.8,
+      0.9,
+      "shrub"
+    ],
+    [
+      12.6,
+      0.9,
+      "shrub"
+    ],
+    [
+      10.6,
+      1.3,
+      "palm"
+    ],
+    [
+      2.6,
+      1.2,
+      "palm"
+    ],
+    [
+      11.6,
+      10.0,
+      "court"
+    ]
+  ],
+  "planting_dnn": [
+    [
+      1.4,
+      24.0,
+      "tree"
+    ],
+    [
+      12.3,
+      26.0,
+      "tree"
+    ],
+    [
+      0.8,
+      38.0,
+      "tree"
+    ],
+    [
+      2.5,
+      41.0,
+      "tree"
+    ],
+    [
+      11.0,
+      44.0,
+      "tree"
+    ],
+    [
+      7.0,
+      51.0,
+      "tree"
+    ],
+    [
+      9.0,
+      55.5,
+      "tree"
+    ],
+    [
+      11.6,
+      62.5,
+      "tree"
+    ],
+    [
+      1.2,
+      30.0,
+      "shrub"
+    ],
+    [
+      12.4,
+      36.0,
+      "shrub"
+    ],
+    [
+      12.4,
+      50.0,
+      "shrub"
+    ]
+  ],
   "section_cut": 7.0,
   "viewpoints": {
-    "street":   {"pos": [6.6, -7.5, 1.65], "look": [6.6, 6.0, 3.0]},
-    "entry":    {"pos": [6.6, 3.2, 2.1], "look": [6.6, 12.0, 1.8]},
-    "living":   {"pos": [7.3, 14.6, 2.1], "look": [11.5, 18.5, 1.6]},
-    "kitchen":  {"pos": [6.0, 10.8, 2.1], "look": [11.5, 6.0, 1.4]},
-    "master":   {"pos": [5.6, 15.0, 2.1], "look": [2.2, 18.6, 1.5]},
-    "lounge":   {"pos": [5.0, 12.6, 5.4], "look": [7.5, 18.9, 4.9]},
-    "balcony":  {"pos": [2.3, 17.5, 5.4], "look": [12.0, 26.0, 4.2]},
-    "garden":   {"pos": [10.5, 30.5, 1.7], "look": [6.6, 12.0, 4.2]},
-    "aerial":   {"pos": [-14.0, -16.0, 24.0], "look": [6.6, 14.0, 2.0]}
+    "street": {
+      "pos": [
+        6.6,
+        -7.5,
+        1.65
+      ],
+      "look": [
+        6.6,
+        6.0,
+        3.0
+      ]
+    },
+    "entry": {
+      "pos": [
+        6.6,
+        3.2,
+        2.1
+      ],
+      "look": [
+        6.6,
+        12.0,
+        1.8
+      ]
+    },
+    "living": {
+      "pos": [
+        7.3,
+        14.6,
+        2.1
+      ],
+      "look": [
+        11.5,
+        18.5,
+        1.6
+      ]
+    },
+    "kitchen": {
+      "pos": [
+        6.0,
+        10.8,
+        2.1
+      ],
+      "look": [
+        11.5,
+        6.0,
+        1.4
+      ]
+    },
+    "master": {
+      "pos": [
+        5.6,
+        15.0,
+        2.1
+      ],
+      "look": [
+        2.2,
+        18.6,
+        1.5
+      ]
+    },
+    "lounge": {
+      "pos": [
+        5.0,
+        12.6,
+        5.4
+      ],
+      "look": [
+        7.5,
+        18.9,
+        4.9
+      ]
+    },
+    "balcony": {
+      "pos": [
+        2.3,
+        17.5,
+        5.4
+      ],
+      "look": [
+        12.0,
+        26.0,
+        4.2
+      ]
+    },
+    "garden": {
+      "pos": [
+        10.5,
+        30.5,
+        1.7
+      ],
+      "look": [
+        6.6,
+        12.0,
+        4.2
+      ]
+    },
+    "aerial": {
+      "pos": [
+        -14.0,
+        -16.0,
+        24.0
+      ],
+      "look": [
+        6.6,
+        14.0,
+        2.0
+      ]
+    },
+    "riverside": {
+      "pos": [
+        6.8,
+        63.0,
+        1.65
+      ],
+      "look": [
+        6.6,
+        12.0,
+        4.5
+      ]
+    }
+  },
+  "facade_rules": {
+    "east": "blind",
+    "west": "high"
   }
 }

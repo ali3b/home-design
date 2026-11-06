@@ -226,7 +226,7 @@ namespace HomeWalk.EditorTools
             wt.ontRect = Rect.MinMaxRect(0, (float)ont["y0"], (float)S["site"]["width"], (float)ont["y1"]);
             wt.siteRect = Rect.MinMaxRect(0, 0, (float)S["site"]["width"], (float)S["site"]["depth_west"]);
             var vps = new List<Viewpoint>();
-            var order = new[] { "street", "entry", "living", "kitchen", "master", "lounge", "balcony", "garden", "aerial" };
+            var order = new[] { "street", "entry", "living", "kitchen", "master", "lounge", "balcony", "garden", "aerial", "riverside" };
             var V = (JObject)C["viewpoints"];
             foreach (var key in order)
             {
@@ -344,6 +344,8 @@ namespace HomeWalk.EditorTools
             { "asphalt", (Color.white, .15f, "asphalt") },
             { "soil", (Color.white, .05f, "soil") },
             { "existing", (Color.white, .1f, "existing") },
+            { "neigh_a", (new Color(.95f, .84f, .58f), .1f, "plaster") },
+            { "neigh_b", (new Color(.80f, .87f, .90f), .1f, "plaster") },
             { "white", (new Color(.95f, .93f, .88f), .3f, null) },
             { "white2", (new Color(.85f, .84f, .82f), .3f, null) },
             { "river", (new Color(.22f, .34f, .36f), .92f, null) },

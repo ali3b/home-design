@@ -18,7 +18,7 @@ def main(outdir, key):
     os.makedirs(dst, exist_ok=True)
     items = [{'src': 'img/concept1.png', 'caption': 'Concept 1 brief image'}]
     groups = [
-        ('render', ['street', 'garden', 'aerial', 'balcony', 'massing'], 'Blender · '),
+        ('render', ['street', 'garden', 'riverside', 'aerial', 'balcony', 'massing'], 'Blender · '),
         ('unity', None, 'Walkthrough · '),
         ('sheets', ['01_site', '02_plans_a', '03_roof', '04_section', '05_schedule'], 'Drawing · '),
     ]

@@ -31,7 +31,7 @@ NO_RENDER = '--no-render' in argv
 def materials(massing=False):
     M = B.build_materials(massing=massing)
     if massing:
-        for k in ('brick', 'breeze', 'asphalt', 'paver', 'soil', 'existing', 'rail'):
+        for k in ('brick', 'breeze', 'asphalt', 'paver', 'soil', 'existing', 'rail', 'neigh_a', 'neigh_b'):
             M[k] = M['plaster']
         return M
     # terracotta roof of the concept image (warmer than the option-study tile)
@@ -43,6 +43,8 @@ def materials(massing=False):
     M['paver'] = B.mat('paver', (0.55, 0.50, 0.44), 0.88, tex='brick', texscale=1.4)
     M['soil'] = B.mat('soil', (0.22, 0.15, 0.09), 0.97)
     M['existing'] = B.mat('existing', (0.62, 0.62, 0.60), 0.9)
+    M['neigh_a'] = B.mat('neigh_a', (0.80, 0.70, 0.45), 0.9, tex='noise', texscale=0.8)
+    M['neigh_b'] = B.mat('neigh_b', (0.66, 0.72, 0.74), 0.9, tex='noise', texscale=0.8)
     M['rail'] = M['timber_dk']
     # brick/tile textures read on vertical faces: rotate object-space mapping so rows run horizontally
     for k in ('brick', 'paver'):
@@ -330,10 +332,65 @@ def build_fence(S, M):
         box(p0, y - 0.04, 0.02, p1, y + 0.04, 1.8, M['timber_dk'], cn)
     sd = f.get('sides')
     if sd:
-        y0 = fr['y'] if fr else 0.0
-        for x in (0.11, W - 0.11):
-            box(x - 0.11, y0, 0, x + 0.11, sd['y1'], sd['height'], M['brick'], cn)
-            box(x - 0.13, y0, sd['height'], x + 0.13, sd['y1'], sd['height'] + 0.08, M['stone'], cn)
+        y0 = fr['y'] + 0.2 if fr else 0.0
+        h = sd['height']
+        for side, x in (('west', 0.11), ('east', W - 0.11)):
+            # split the run around any breaks (e.g. the existing NW building forms the boundary there)
+            spans, cur = [], y0
+            for bside, b0, b1 in sorted(b for b in sd.get('breaks', []) if b[0] == side):
+                if b0 > cur:
+                    spans.append((cur, b0))
+                cur = max(cur, b1)
+            if sd['y1'] > cur:
+                spans.append((cur, sd['y1']))
+            for a, b in spans:
+                box(x - 0.11, a, 0, x + 0.11, b, 0.9, M['brick'], cn)
+                box(x - 0.13, a, h - 0.08, x + 0.13, b, h, M['stone'], cn)
+                n = max(1, int(round((b - a) / 2.4)))
+                for i in range(n + 1):
+                    y = a + (b - a) * i / n
+                    box(x - 0.18, y - 0.18, 0, x + 0.18, y + 0.18, h + 0.1, M['brick'], cn)
+                for i in range(n):
+                    ya_ = a + (b - a) * i / n + 0.18
+                    yb_ = a + (b - a) * (i + 1) / n - 0.18
+                    if sd.get('breeze_panels') and ya_ > 19.7:
+                        # open breeze-block panels along the garden: light and river breeze through
+                        k = max(1, int((yb_ - ya_) / 0.2))
+                        for j in range(k + 1):
+                            yy = ya_ + (yb_ - ya_) * j / k
+                            box(x - 0.06, yy - 0.03, 0.9, x + 0.06, yy + 0.03, h - 0.08, M['breeze'], cn)
+                        for zz in (1.12, 1.36, 1.6):
+                            box(x - 0.06, ya_, zz - 0.03, x + 0.06, yb_, zz + 0.03, M['breeze'], cn)
+                    else:
+                        box(x - 0.09, ya_, 0.9, x + 0.09, yb_, h - 0.08, M['brick'], cn)
+            # end pier at the water
+            box(x - 0.22, sd['y1'] - 0.4, 0, x + 0.22, sd['y1'], h + 0.25, M['brick'], cn)
+
+
+def build_neighbours(S, M):
+    """Assumed 3-storey neighbours (typical Vietnamese tube houses) built to the property line."""
+    cn = 'NEIGHBOURS'
+    for nb in S['site'].get('neighbours', []):
+        x0, x1, y0, y1, H = nb['x0'], nb['x1'], nb['y0'], nb['y1'], nb['height']
+        m = M[nb.get('mat', 'existing')]
+        st = nb.get('storeys', 3)
+        fh = (H - 1.0) / st
+        box(x0, y0 + 1.0, 0, x1, y1, H - 1.0, m, cn)                       # body (front set back 1 m)
+        box(x0, y0 + 1.0, H - 1.0, x1, y1, H, m, cn)                       # parapet / roof
+        box(x0 + 0.15, y0 + 1.15, H - 0.3, x1 - 0.15, y1 - 0.15, H - 0.05, M['stone_dk'], cn)
+        for k in range(st):
+            z = k * fh
+            if k == 0:   # ground-floor shopfront / garage door
+                box(x0 + 0.4, y0 + 0.97, 0.05, x1 - 0.4, y0 + 1.0, 2.9, M['charcoal'], cn)
+            else:        # balcony slab + rail + glazed doors on the street face
+                box(x0 + 0.1, y0, z - 0.12, x1 - 0.1, y0 + 1.0, z, m, cn)
+                box(x0 + 0.1, y0, z, x1 - 0.1, y0 + 0.06, z + 1.0, M['charcoal'], cn)
+                box(x0 + 0.6, y0 + 0.97, z + 0.1, x1 - 0.6, y0 + 1.0, z + 2.5, M['glass_dk'], cn)
+            box(x0, y0 + 0.9, z + fh - 0.25, x1, y0 + 1.05, z + fh, M['white2'], cn)   # floor band
+        # rear (garden) windows
+        for k in range(st):
+            z = k * fh
+            box(x0 + 1.0, y1 - 0.03, z + 1.0, x1 - 1.0, y1 + 0.01, z + 2.4, M['glass_dk'], cn)
 
 
 # ---------------------------------------------------------------------- site --
@@ -380,10 +437,11 @@ def build_all(S, massing=False, trees=True):
     B.COLL.clear()
     B.NOFRAME.clear()
     M = materials(massing)
-    for c in ('L0', 'L1', 'GLASS', 'STAIR', 'ROOF', 'PORCH', 'FENCE', 'SITE', 'TREES'):
+    for c in ('L0', 'L1', 'GLASS', 'STAIR', 'ROOF', 'PORCH', 'FENCE', 'NEIGHBOURS', 'SITE', 'TREES'):
         coll(c)
     build_house(S, M)
     build_fence(S, M)
+    build_neighbours(S, M)
     build_site(S, M, trees=trees)
     B.repair_normals()
     return sc, M
@@ -457,6 +515,7 @@ def render_views(S, outdir):
         'garden': dict(V['garden'], lens=30),
         'aerial': dict(V['aerial'], lens=35),
         'balcony': dict(V['balcony'], lens=22),
+        'riverside': dict(V['riverside'], lens=30),
     }
     # pass 1 — clay massing
     sc, M = build_all(S, massing=True, trees=False)

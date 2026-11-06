@@ -20,6 +20,8 @@ def load(concept_path, site_path=None):
         L = dict(lv)
         L['rooms'] = [tuple(r) for r in lv['rooms']]
         L['doors'] = [tuple(d) for d in lv.get('doors', [])]
+        L['facade_rules'] = C.get('facade_rules', {})
+        L['footprint'] = C['footprint']
         for r in L['rooms']:
             kind_of.setdefault(r[0], r[5])
         levels.append(L)

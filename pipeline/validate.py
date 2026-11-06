@@ -46,7 +46,17 @@ def main(argv):
     if 'front' in f:
         inside_ont('front fence', 0, f['front']['y'] - 0.12, W, f['front']['y'] + 0.12, boundary_ok=True)
     if 'sides' in f:
-        inside_ont('side fences', 0, 0, W, f['sides']['y1'], boundary_ok=True)
+        # Exception (owner instruction): boundary walls may run the full plot length ON the two
+        # property lines, down to the water. They are walls only, at most 0.25 m off the line.
+        y1 = f['sides']['y1']
+        if y1 > site['site']['depth_west'] + TOL:
+            errors.append('side boundary walls run past the plot end (%.2f m)' % y1)
+        if f['sides'].get('height', 0) > 2.5:
+            errors.append('side boundary walls taller than 2.5 m')
+        if y1 > ont['y1'] + TOL:
+            warns.append('boundary walls run %.1f m through the DNN band on the property lines (owner instruction) '
+                         '- confirm a boundary wall is permitted on DNN land' % (y1 - ont['y1']))
+            report['dnn_boundary_wall_m'] = round(2 * (y1 - ont['y1']), 1)
     for extra in C.get('structures', []):
         inside_ont(extra.get('name', 'structure'), *extra['rect'])
 

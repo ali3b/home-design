@@ -84,6 +84,18 @@ def derive(lv, kind_of=None):
         nm, k = p['rooms'][0], p['kinds'][0]
         mid = (p['t0'] + p['t1']) / 2
         north = p['axis'] == 'x' and p['side'] == 1 and p['coord'] > 15
+        rules, fpt = lv.get('facade_rules', {}), lv.get('footprint')
+        face = None
+        if fpt and p['axis'] == 'y':
+            face = 'west' if abs(p['coord'] - fpt[0]) < EPS else 'east' if abs(p['coord'] - fpt[2]) < EPS else None
+        rule = rules.get(face) if face else None
+        if rule == 'blind':
+            continue                     # party-wall side: no openings
+        if rule == 'high':
+            if L >= 1.4 and k != 'circ':
+                ww = min(1.8, L - 0.9)
+                p['openings'].append((mid - ww / 2, mid + ww / 2, 1.75, 2.45, 'window'))
+            continue
         if k in ('hab', 'spec'):
             if L < 1.4:
                 continue

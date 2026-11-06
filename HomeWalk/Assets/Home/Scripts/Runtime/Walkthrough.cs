@@ -12,7 +12,7 @@ namespace HomeWalk
     public class Walkthrough : MonoBehaviour
     {
         public string conceptTitle = "Concept";
-        public string note = "CONCEPT ONLY — NOT FOR CONSTRUCTION · subject to survey, legal merger, setbacks and permits";
+        public string note = "CONCEPT ONLY — NOT FOR CONSTRUCTION · subject to survey, legal merger, setbacks and permits · neighbours assumed (3 storeys)";
         public FirstPersonController player;
         public Light sun;
         public GameObject[] roofObjects;
@@ -41,6 +41,7 @@ namespace HomeWalk
             if (kb == null) return;
             for (int i = 0; i < 9 && viewpoints != null && i < viewpoints.Length; i++)
                 if (kb[Key.Digit1 + i].wasPressedThisFrame || kb[Key.Numpad1 + i].wasPressedThisFrame) Go(i);
+            if (viewpoints != null && viewpoints.Length > 9 && (kb.digit0Key.wasPressedThisFrame || kb.numpad0Key.wasPressedThisFrame)) Go(9);
             if (kb.rKey.wasPressedThisFrame) { _roof = !_roof; ApplyVis(); Toast(_roof ? "Roof on" : "Roof off"); }
             if (kb.uKey.wasPressedThisFrame) { _upper = !_upper; ApplyVis(); Toast(_upper ? "Upper floor on" : "Dollhouse: upper floor hidden"); }
             if (kb.tKey.wasPressedThisFrame) { _tod = (_tod + 1) % TodNames.Length; ApplyTod(); Toast(TodNames[_tod]); }
@@ -128,8 +129,8 @@ namespace HomeWalk
             if (_help)
             {
                 string vp = "";
-                for (int i = 0; i < viewpoints.Length && i < 9; i++) vp += $"{i + 1} {viewpoints[i].name}   ";
-                GUI.Box(new Rect(12, 72, 420, 132),
+                for (int i = 0; i < viewpoints.Length && i < 10; i++) vp += $"{(i + 1) % 10} {viewpoints[i].name}   ";
+                GUI.Box(new Rect(12, 72, 420, 150),
                     "WASD walk · mouse look · Shift run · Space jump\n" +
                     "R roof · U dollhouse · T time of day · F fly · M plan\n" +
                     "Esc free mouse · click to look · H hide help\n" + vp, _box);

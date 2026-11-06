@@ -109,7 +109,7 @@ def main(concept, outdir):
 
     # renders
     rnd = [('street', 'Street view'), ('garden', 'From the garden (DNN land, planting only)'),
-           ('aerial', 'Aerial'), ('balcony', 'Upper balcony looking north'), ('massing', 'Clay massing')]
+           ('riverside', 'From the river end, between the boundary walls'), ('aerial', 'Aerial'), ('balcony', 'Upper balcony looking north'), ('massing', 'Clay massing')]
     have = [(os.path.join(outdir, 'render', k + '.png'), t) for k, t in rnd if os.path.exists(os.path.join(outdir, 'render', k + '.png'))]
     for i in range(0, len(have), 2):
         im, d = page('Blender views', 'Cycles renders from the same data as the drawings and the walkthrough')

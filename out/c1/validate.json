@@ -1,4 +1,5 @@
 {
+ "dnn_boundary_wall_m": 90.5,
  "Ground": {
   "gfa": 178.1,
   "outdoor": 0
@@ -11,5 +12,7 @@
  "ont_coverage_pct": 70.6,
  "total_gfa_m2": 331.1,
  "errors": [],
- "warnings": []
+ "warnings": [
+  "boundary walls run 45.3 m through the DNN band on the property lines (owner instruction) - confirm a boundary wall is permitted on DNN land"
+ ]
 }
