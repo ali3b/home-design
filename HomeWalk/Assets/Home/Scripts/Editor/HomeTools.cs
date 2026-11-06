@@ -7,6 +7,7 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using Unity.AI.Navigation;
 
@@ -218,6 +219,49 @@ namespace HomeWalk.EditorTools
         [MenuItem("Home/Build/Windows")] public static void BuildWindows() => Build(BuildTarget.StandaloneWindows64, "Builds/Windows/HomeWalk.exe");
         [MenuItem("Home/Build/WebGL")] public static void BuildWebGL() => Build(BuildTarget.WebGL, Path.Combine(HomeBuilder.Root, "docs", "play"));
 
+        static void UsePipeline(RenderPipelineAsset p)
+        {
+            GraphicsSettings.defaultRenderPipeline = p;
+            int cur = QualitySettings.GetQualityLevel();
+            for (int i = 0; i < QualitySettings.names.Length; i++) { QualitySettings.SetQualityLevel(i, false); QualitySettings.renderPipeline = p; }
+            QualitySettings.SetQualityLevel(cur, false);
+            AssetDatabase.SaveAssets();
+        }
+
+        /// WebGL2 can't run Forward+ (needs storage buffers), APV or heavy SSAO: a copy of the desktop URP asset
+        /// set to plain Forward, legacy light probes, no renderer features, no MSAA, shorter shadows.
+        static RenderPipelineAsset WebGLPipeline()
+        {
+            const string dir = "Assets/Home/Settings/";
+            AssetDatabase.DeleteAsset(dir + "WebGL_URP.asset");
+            AssetDatabase.DeleteAsset(dir + "WebGL_Renderer.asset");
+            AssetDatabase.CopyAsset(dir + "CW_Renderer.asset", dir + "WebGL_Renderer.asset");
+            AssetDatabase.CopyAsset(dir + "CW_URP.asset", dir + "WebGL_URP.asset");
+            var rd = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(dir + "WebGL_Renderer.asset");
+            rd.renderingMode = RenderingMode.Forward;
+            foreach (var f in rd.rendererFeatures.ToArray()) if (f) Object.DestroyImmediate(f, true);
+            rd.rendererFeatures.Clear();
+            var rso = new SerializedObject(rd);
+            var map = rso.FindProperty("m_RendererFeatureMap"); if (map != null) map.arraySize = 0;
+            rso.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(rd);
+            var pipe = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(dir + "WebGL_URP.asset");
+            var pso = new SerializedObject(pipe);
+            var list = pso.FindProperty("m_RendererDataList");
+            list.arraySize = 1; list.GetArrayElementAtIndex(0).objectReferenceValue = rd;
+            pso.FindProperty("m_DefaultRendererIndex").intValue = 0;
+            var lp = pso.FindProperty("m_LightProbeSystem"); if (lp != null) lp.enumValueIndex = 0;
+            pso.ApplyModifiedPropertiesWithoutUndo();
+            pipe.msaaSampleCount = 1;
+            pipe.shadowDistance = 40f;
+            pipe.supportsHDR = false;
+            pipe.supportsCameraOpaqueTexture = false;
+            EditorUtility.SetDirty(pipe);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Home] WebGL pipeline: Forward, no features, legacy probes");
+            return pipe;
+        }
+
         static void Build(BuildTarget target, string path)
         {
             PlayerSettings.productName = "HomeWalk";
@@ -243,7 +287,11 @@ namespace HomeWalk.EditorTools
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
             }
             var opts = new BuildPlayerOptions { scenes = new[] { HomeBuilder.ScenePath }, locationPathName = path, target = target, options = BuildOptions.None };
-            var report = BuildPipeline.BuildPlayer(opts);
+            var desktopPipe = GraphicsSettings.defaultRenderPipeline;
+            if (target == BuildTarget.WebGL) UsePipeline(WebGLPipeline());
+            BuildReport report;
+            try { report = BuildPipeline.BuildPlayer(opts); }
+            finally { if (target == BuildTarget.WebGL) UsePipeline(desktopPipe); }
             var s = report.summary;
             Debug.Log($"[Home] player build {target}: {s.result}, {s.totalSize / (1024 * 1024)} MB, {s.totalErrors} errors, {s.totalTime.TotalMinutes:F1} min -> {path}");
             if (s.result != BuildResult.Succeeded && Application.isBatchMode) EditorApplication.Exit(1);

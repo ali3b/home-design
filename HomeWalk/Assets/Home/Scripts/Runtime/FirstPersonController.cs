@@ -23,8 +23,11 @@ namespace HomeWalk
 
         void OnEnable()
         {
+#if !UNITY_WEBGL || UNITY_EDITOR
+            // Browsers only allow pointer lock from a user click, so on WebGL we wait for the first click.
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+#endif
             _pitch = 0f; _vy = 0f;
         }
 

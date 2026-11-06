@@ -31,6 +31,7 @@ namespace HomeWalk
 
         void Start()
         {
+            Debug.Log("[HomeWalk] scene started: " + conceptTitle);
             ApplyTod();
             if (viewpoints != null && viewpoints.Length > 0) Go(0);
         }
@@ -120,7 +121,7 @@ namespace HomeWalk
                 _big = new GUIStyle(GUI.skin.label) { fontSize = 26, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
                 _big.normal.textColor = Color.white;
             }
-            float s = Mathf.Max(1f, Screen.height / 900f);
+            float s = Mathf.Clamp(Screen.height / 1000f, 0.55f, 2f);
             var m = GUI.matrix; GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1));
             float W = Screen.width / s, H = Screen.height / s;
             var room = CurrentRoom(out int lvl);
@@ -133,7 +134,7 @@ namespace HomeWalk
                 GUI.Box(new Rect(12, 72, 420, 150),
                     "WASD walk · mouse look · Shift run · Space jump\n" +
                     "R roof · U dollhouse · T time of day · F fly · M plan\n" +
-                    "Esc free mouse · click to look · H hide help\n" + vp, _box);
+                    "Esc free mouse · CLICK the view to look around · H hide help\n" + vp, _box);
             }
             if (_map) DrawMap(W, H, lvl);
             if (_toast != null && Time.unscaledTime < _toastT)
