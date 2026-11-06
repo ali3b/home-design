@@ -1,0 +1,94 @@
+[
+ {
+  "src": "img/concept2.png",
+  "caption": "Concept 2 brief image"
+ },
+ {
+  "src": "img/c2/render_street.jpg",
+  "caption": "Blender \u00b7 Street"
+ },
+ {
+  "src": "img/c2/render_carport.jpg",
+  "caption": "Blender \u00b7 Carport"
+ },
+ {
+  "src": "img/c2/render_riverside.jpg",
+  "caption": "Blender \u00b7 Riverside"
+ },
+ {
+  "src": "img/c2/render_aerial.jpg",
+  "caption": "Blender \u00b7 Aerial"
+ },
+ {
+  "src": "img/c2/render_balcony.jpg",
+  "caption": "Blender \u00b7 Balcony"
+ },
+ {
+  "src": "img/c2/render_massing.jpg",
+  "caption": "Blender \u00b7 Massing"
+ },
+ {
+  "src": "img/c2/unity_01_street.jpg",
+  "caption": "Walkthrough \u00b7 Street"
+ },
+ {
+  "src": "img/c2/unity_02_carport.jpg",
+  "caption": "Walkthrough \u00b7 Carport"
+ },
+ {
+  "src": "img/c2/unity_03_entry.jpg",
+  "caption": "Walkthrough \u00b7 Entry"
+ },
+ {
+  "src": "img/c2/unity_04_atrium.jpg",
+  "caption": "Walkthrough \u00b7 Atrium"
+ },
+ {
+  "src": "img/c2/unity_05_living.jpg",
+  "caption": "Walkthrough \u00b7 Living"
+ },
+ {
+  "src": "img/c2/unity_06_master.jpg",
+  "caption": "Walkthrough \u00b7 Master"
+ },
+ {
+  "src": "img/c2/unity_07_lounge.jpg",
+  "caption": "Walkthrough \u00b7 Lounge"
+ },
+ {
+  "src": "img/c2/unity_08_balcony.jpg",
+  "caption": "Walkthrough \u00b7 Balcony"
+ },
+ {
+  "src": "img/c2/unity_09_aerial.jpg",
+  "caption": "Walkthrough \u00b7 Aerial"
+ },
+ {
+  "src": "img/c2/unity_10_riverside.jpg",
+  "caption": "Walkthrough \u00b7 Riverside"
+ },
+ {
+  "src": "img/c2/unity_11_dollhouse_ground.jpg",
+  "caption": "Walkthrough \u00b7 Dollhouse Ground"
+ },
+ {
+  "src": "img/c2/sheets_01_site.jpg",
+  "caption": "Drawing \u00b7 Site"
+ },
+ {
+  "src": "img/c2/sheets_02_plans_a.jpg",
+  "caption": "Drawing \u00b7 Plans A"
+ },
+ {
+  "src": "img/c2/sheets_03_roof.jpg",
+  "caption": "Drawing \u00b7 Roof"
+ },
+ {
+  "src": "img/c2/sheets_04_section.jpg",
+  "caption": "Drawing \u00b7 Section"
+ },
+ {
+  "src": "img/c2/sheets_05_schedule.jpg",
+  "caption": "Drawing \u00b7 Schedule"
+ }
+]

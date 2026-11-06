@@ -1,0 +1,29 @@
+Walk test (agent radius 0.22, climb 0.3) from road gate
+  OK   L0 Entry (Huyền Quan)     path   7.0 m  walkable  92% of floor
+  OK   L0 Flexible Room / Study  path  12.0 m  walkable  26% of floor
+  OK   L0 Accessible Bath        path  14.5 m  walkable  69% of floor
+  OK   L0 Utility                path  17.4 m  walkable  71% of floor
+  OK   L0 Hall                   path  10.2 m  walkable 100% of floor
+  OK   L0 Master Suite (older couple) path  14.4 m  walkable  68% of floor
+  OK   L0 Hall                   path  12.7 m  walkable 100% of floor
+  OK   L0 Wet Kitchen            path  22.7 m  walkable  63% of floor
+  OK   L0 Kitchen                path  22.9 m  walkable  72% of floor
+  OK   L0 Living                 path  21.7 m  walkable  89% of floor
+  OK   L0 Dining                 path  25.2 m  walkable  62% of floor
+  OK   L1 Bedroom 1              path  35.1 m  walkable  57% of floor
+  OK   L1 Bedroom 2              path  39.6 m  walkable  43% of floor
+  OK   L1 Hall                   path  34.9 m  walkable 100% of floor
+  OK   L1 Hall                   path  28.9 m  walkable 100% of floor
+  OK   L1 Linen                  path  26.9 m  walkable 100% of floor
+  OK   L1 Bath 2                 path  38.6 m  walkable  30% of floor
+  OK   L1 Bedroom 3              path  28.2 m  walkable  39% of floor
+  OK   L1 Landing                path  25.0 m  walkable  99% of floor
+  OK   L1 Family Lounge          path  27.6 m  walkable  76% of floor
+  OK   L1 Shaded Balcony         path  30.5 m  walkable  63% of floor
+21/21 rooms reachable
+  stair probe (6.60, 0.50, 11.20): navmesh y=0.46 reachable
+  stair probe (5.70, 1.00, 10.20): navmesh y=0.99 reachable
+  stair probe (6.50, 2.10, 7.80): navmesh y=2.12 reachable
+  stair probe (7.20, 3.00, 9.60): navmesh y=2.96 reachable
+  stair probe (7.20, 3.80, 11.20): navmesh y=3.77 reachable
+  stair probe (7.20, 3.80, 12.20): navmesh y=3.76 reachable
