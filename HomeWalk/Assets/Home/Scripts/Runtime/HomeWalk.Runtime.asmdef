@@ -1,0 +1,5 @@
+{
+  "name": "HomeWalk.Runtime",
+  "references": ["Unity.InputSystem", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
+  "autoReferenced": true
+}

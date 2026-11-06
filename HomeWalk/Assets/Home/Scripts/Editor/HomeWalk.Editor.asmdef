@@ -1,0 +1,8 @@
+{
+  "name": "HomeWalk.Editor",
+  "references": ["HomeWalk.Runtime", "Unity.InputSystem", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.AI.Navigation", "Unity.AI.Navigation.Editor"],
+  "includePlatforms": ["Editor"],
+  "precompiledReferences": ["Newtonsoft.Json.dll"],
+  "overrideReferences": true,
+  "autoReferenced": true
+}

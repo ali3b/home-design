@@ -1,0 +1,26 @@
+Walk test (agent radius 0.22, climb 0.3) from road gate
+  FAIL L0 Laundry / WC           path   0.0 m  (no navmesh in room)
+  OK   L0 Entry (Huyền Quan)     path   6.6 m
+  FAIL L0 Pantry / Store         path  10.8 m
+  FAIL L0 Wet Kitchen            path   9.9 m
+  OK   L0 Hall                   path   9.4 m
+  OK   L0 Kitchen                path  10.8 m
+  FAIL L0 Dining                 path   0.0 m  (no navmesh in room)
+  FAIL L0 Ensuite                path   0.0 m  (no navmesh in room)
+  FAIL L0 Robe                   path   0.0 m  (no navmesh in room)
+  OK   L0 Gallery                path  16.4 m
+  FAIL L0 Master Suite           path  20.4 m
+  OK   L0 Living (garden view)   path  21.7 m
+  FAIL L1 Bathroom               path   0.0 m  (no navmesh in room)
+  FAIL L1 Bedroom 1              path   0.0 m  (no navmesh in room)
+  FAIL L1 Bedroom 2              path   0.0 m  (no navmesh in room)
+  FAIL L1 Landing                path   9.9 m
+  FAIL L1 Hall                   path  10.7 m
+  FAIL L1 Bathroom 2             path   0.0 m  (no navmesh in room)
+  FAIL L1 Linen                  path   0.0 m  (no navmesh in room)
+  FAIL L1 Gallery                path  13.4 m
+  FAIL L1 Altar Room             path  34.8 m
+  FAIL L1 Family Lounge          path  18.2 m
+  FAIL L1 Bedroom 3              path  17.7 m
+  FAIL L1 Shaded Balcony         path   0.0 m  (no navmesh in room)
+5/24 rooms reachable
