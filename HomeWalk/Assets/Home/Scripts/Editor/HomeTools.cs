@@ -42,6 +42,9 @@ namespace HomeWalk.EditorTools
             foreach (var r in Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
                 if (r.name.StartsWith("SITE__asphalt") || r.name.StartsWith("SITE__river") || r.name.StartsWith("SITE__existing"))
                     Debug.Log($"[Home] DIAG {r.name} bounds {r.bounds.min:F1}..{r.bounds.max:F1} lossyScale={r.transform.lossyScale}");
+            // warm-up: the first render after loading has no valid shadow map (renders the scene in shadow)
+            go.transform.position = extra[0].pos + Vector3.up * 1.6f;
+            for (int w = 0; w < 3; w++) cam.Render();
             foreach (var v in extra)
             {
                 bool doll = v.name.StartsWith("Dollhouse");
@@ -86,6 +89,14 @@ namespace HomeWalk.EditorTools
             foreach (var rr in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
                 if (rr.shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.Off && (rr.bounds.size.x > 25 || rr.bounds.size.y > 15 || rr.bounds.size.z > 25))
                     Debug.Log($"[Home] SUNTEST big caster {rr.name} parent={(rr.transform.parent ? rr.transform.parent.name : "-")} bounds {rr.bounds.min:F0}..{rr.bounds.max:F0}");
+            wt.ApplyTod();
+            foreach (var pp in new[] { false, true })
+            {
+                cam.GetUniversalAdditionalCameraData().renderPostProcessing = pp;
+                cam.Render(); RenderTexture.active = rt; tex.ReadPixels(new Rect(0, 0, 800, 500), 0, 0); tex.Apply();
+                File.WriteAllBytes(Path.Combine(OutDir, $"suntest_tod_pp{pp}.png"), tex.EncodeToPNG());
+            }
+            Debug.Log($"[Home] SUNTEST tod sun fwd {wt.sun.transform.forward:F2} shadows {wt.sun.shadows} intensity {wt.sun.intensity}");
             var mr = Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None).First(r => r.name.StartsWith("L0__brick"));
             var mesh = mr.GetComponent<MeshFilter>().sharedMesh;
             int south = 0, north = 0;
