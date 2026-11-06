@@ -13,6 +13,6 @@
  "total_gfa_m2": 331.1,
  "errors": [],
  "warnings": [
-  "boundary walls run 45.3 m through the DNN band on the property lines (owner instruction) - confirm a boundary wall is permitted on DNN land"
+  "boundary walls run 45.3 m through the DNN band on the property lines (owner instruction) - confirm a 3.0 m solid boundary wall is permitted on DNN land"
  ]
 }
