@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home Design Concepts</title>
+<style>
+:root{--bg:#f6f1ea;--fg:#2a2420;--mut:#7a6d62;--acc:#a8472b;--card:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1715;--fg:#efe6dc;--mut:#a8998b;--acc:#e07a55;--card:#26201d}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:24px 16px}
+h1{margin:.2em 0}.warn{color:var(--acc);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+figure{margin:0;background:var(--card);border-radius:10px;overflow:hidden}
+figure img{width:100%;display:block}figcaption{padding:8px 12px;color:var(--mut);font-size:14px}
+#log{background:var(--card);border-radius:10px;padding:12px 18px;white-space:pre-wrap;font-size:14px}
+a.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;margin:8px 0}
+</style></head><body><main>
+<h1>Home Design Concepts</h1>
+<p class="warn">Concept studies only. Not for construction. Subject to survey, legal merger, setbacks and permits.</p>
+<p>Site: three joined plots, 13.5 m × 65 m. Buildings are allowed only in the 20 m road-side (ONT) band. The 45 m river-side (DNN) band is kept as land and planting only.</p>
+<p><a class="btn" href="play/">▶ Walk through Concept 1 (WebGL)</a> <span id="playnote" style="color:var(--mut)"></span></p>
+<h2>Concept 1: Courtyard House</h2>
+<div class="grid" id="gallery"><figure><img src="img/concept1.png" alt="Concept 1 brief image"><figcaption>Concept 1 brief image</figcaption></figure></div>
+<h2>Progress</h2><div id="log">Loading…</div>
+<script>
+fetch('progress.md').then(r=>r.text()).then(t=>{document.getElementById('log').textContent=t}).catch(()=>{});
+fetch('gallery.json').then(r=>r.json()).then(items=>{const g=document.getElementById('gallery');
+ items.forEach(it=>{const f=document.createElement('figure');f.innerHTML=`<a href="${it.src}"><img loading="lazy" src="${it.src}" alt=""></a><figcaption></figcaption>`;f.querySelector('img').alt=it.caption;f.querySelector('figcaption').textContent=it.caption;g.appendChild(f)})}).catch(()=>{});
+fetch('play/index.html',{method:'HEAD'}).then(r=>{if(!r.ok)document.getElementById('playnote').textContent='(walkthrough build still in progress)'});
+</script>
+</main></body></html>

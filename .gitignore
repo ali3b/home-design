@@ -1,0 +1,29 @@
+# Private site/title data - never publish
+Concepts and Plan/Architect_Property_Pack.pdf
+*.pdf
+!docs/**/*.pdf
+concepts/*.private.json
+
+# Unity
+HomeWalk/[Ll]ibrary/
+HomeWalk/[Tt]emp/
+HomeWalk/[Ll]ogs/
+HomeWalk/[Bb]uilds/
+HomeWalk/[Uu]ser[Ss]ettings/
+HomeWalk/[Oo]bj/
+HomeWalk/*.csproj
+HomeWalk/*.sln*
+HomeWalk/Assets/Synty/
+HomeWalk/Assets/Synty.meta
+HomeWalk/Assets/ThirdParty/
+HomeWalk/Assets/ThirdParty.meta
+
+# Paid asset sources
+*.unitypackage
+*.zip
+
+# Blender / python
+*.blend1
+__pycache__/
+out/**/*.blend
+.autopush.stop
