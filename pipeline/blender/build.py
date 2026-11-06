@@ -44,6 +44,11 @@ def materials(massing=False):
     M['soil'] = B.mat('soil', (0.22, 0.15, 0.09), 0.97)
     M['existing'] = B.mat('existing', (0.62, 0.62, 0.60), 0.9)
     M['rail'] = M['timber_dk']
+    # brick/tile textures read on vertical faces: rotate object-space mapping so rows run horizontally
+    for k in ('brick', 'paver'):
+        for n in M[k].node_tree.nodes:
+            if n.type == 'MAPPING':
+                n.inputs['Rotation'].default_value = (math.pi / 2, 0, 0)
     return M
 
 
