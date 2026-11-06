@@ -12,6 +12,10 @@
   "caption": "Blender \u00b7 Garden"
  },
  {
+  "src": "img/c1/render_riverside.jpg",
+  "caption": "Blender \u00b7 Riverside"
+ },
+ {
   "src": "img/c1/render_aerial.jpg",
   "caption": "Blender \u00b7 Aerial"
  },
@@ -60,7 +64,11 @@
   "caption": "Walkthrough \u00b7 Aerial"
  },
  {
-  "src": "img/c1/unity_10_dollhouse_ground.jpg",
+  "src": "img/c1/unity_10_riverside.jpg",
+  "caption": "Walkthrough \u00b7 Riverside"
+ },
+ {
+  "src": "img/c1/unity_11_dollhouse_ground.jpg",
   "caption": "Walkthrough \u00b7 Dollhouse Ground"
  },
  {
