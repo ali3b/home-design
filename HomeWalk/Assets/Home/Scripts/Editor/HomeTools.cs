@@ -63,6 +63,15 @@ namespace HomeWalk.EditorTools
             Debug.Log("[Home] shots written to " + OutDir);
         }
 
+        /// Everything: rebuild scene, shots, walk test, Linux + Windows players, WebGL into docs/play.
+        public static void ReleaseAll()
+        {
+            BuildAndShoot();
+            BuildLinux();
+            BuildWindows();
+            BuildWebGL();
+        }
+
         public static void BuildAndShoot()
         {
             HomeBuilder.BatchBuild();
