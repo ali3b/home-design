@@ -1,0 +1,33 @@
+Walk test (agent radius 0.22, climb 0.3) from road gate
+  OK   L0 Laundry / WC           path   8.9 m  walkable  84% of floor
+  OK   L0 Entry (Huyền Quan)     path   6.6 m  walkable  95% of floor
+  OK   L0 Pantry / Store         path   9.5 m  walkable  90% of floor
+  OK   L0 Wet Kitchen            path  11.4 m  walkable  67% of floor
+  OK   L0 Hall                   path   9.3 m  walkable 100% of floor
+  OK   L0 Kitchen                path  10.9 m  walkable  41% of floor
+  OK   L0 Dining                 path  13.5 m  walkable  79% of floor
+  OK   L0 Ensuite                path  20.4 m  walkable  61% of floor
+  OK   L0 Robe                   path  18.0 m  walkable  71% of floor
+  OK   L0 Gallery                path  16.3 m  walkable  99% of floor
+  OK   L0 Master Suite           path  20.9 m  walkable  77% of floor
+  OK   L0 Living (garden view)   path  22.9 m  walkable  79% of floor
+  OK   L1 Bathroom               path  25.1 m  walkable 100% of floor
+  OK   L1 Bedroom 1              path  26.5 m  walkable  43% of floor
+  OK   L1 Bedroom 2              path  30.0 m  walkable  46% of floor
+  OK   L1 Landing                path  22.5 m  walkable 100% of floor
+  OK   L1 Hall                   path  25.6 m  walkable 100% of floor
+  OK   L1 Bathroom 2             path  24.1 m  walkable  79% of floor
+  OK   L1 Linen                  path  29.8 m  walkable 100% of floor
+  OK   L1 Gallery                path  27.3 m  walkable  99% of floor
+  OK   L1 Altar Room             path  34.5 m  walkable  84% of floor
+  OK   L1 Family Lounge          path  31.6 m  walkable  70% of floor
+  OK   L1 Bedroom 3              path  31.6 m  walkable  47% of floor
+  OK   L1 Shaded Balcony         path  35.2 m  walkable  72% of floor
+24/24 rooms reachable
+  stair probe (3.80, 0.50, 8.60): navmesh y=0.46 reachable
+  stair probe (2.20, 0.50, 8.40): navmesh y=0.46 reachable
+  stair probe (2.20, 1.00, 9.40): navmesh y=1.00 reachable
+  stair probe (3.00, 2.10, 11.50): navmesh y=2.12 reachable
+  stair probe (3.80, 2.90, 9.80): navmesh y=2.97 reachable
+  stair probe (3.80, 3.80, 8.40): navmesh y=3.77 reachable
+  stair probe (3.80, 3.80, 7.50): navmesh y=3.76 reachable

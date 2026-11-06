@@ -69,7 +69,7 @@ namespace HomeWalk
             if (!sun) return;
             // sun azimuth measured from north (+Z), clockwise; the road is south
             float[] elev = { 22f, 70f, 19f, 4f };
-            float[] az = { 100f, 180f, 222f, 262f };
+            float[] az = { 100f, 180f, 240f, 262f };
             float[] inten = { 1.6f, 2.6f, 2.2f, 0.25f };
             Color[] col = { new Color(1f, .9f, .78f), Color.white, new Color(1f, .74f, .48f), new Color(.7f, .6f, .75f) };
             // direction TO the sun (x east, z north); the light travels the opposite way

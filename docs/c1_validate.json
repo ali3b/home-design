@@ -1,0 +1,15 @@
+{
+ "Ground": {
+  "gfa": 178.1,
+  "outdoor": 0
+ },
+ "Upper": {
+  "gfa": 153.0,
+  "outdoor": 25.1
+ },
+ "footprint_m2": 188.1,
+ "ont_coverage_pct": 70.6,
+ "total_gfa_m2": 331.1,
+ "errors": [],
+ "warnings": []
+}

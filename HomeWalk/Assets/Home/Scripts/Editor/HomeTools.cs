@@ -63,6 +63,37 @@ namespace HomeWalk.EditorTools
             Debug.Log("[Home] shots written to " + OutDir);
         }
 
+        public static void SunTest()
+        {
+            EditorSceneManager.OpenScene(HomeBuilder.ScenePath);
+            var wt = Object.FindAnyObjectByType<Walkthrough>();
+            var go = new GameObject("ShotCam"); var cam = go.AddComponent<Camera>(); cam.fieldOfView = 70;
+            var rt = new RenderTexture(800, 500, 24); cam.targetTexture = rt; var tex = new Texture2D(800, 500, TextureFormat.RGB24, false);
+            var v = wt.viewpoints[0];
+            go.transform.position = v.pos + Vector3.up * 1.6f; go.transform.rotation = Quaternion.Euler(v.pitch, v.yaw, 0);
+            foreach (var az in new[] { 222f, 200f, 240f, 180f })
+            {
+                float e = (az == 240f ? 19f : 30f) * Mathf.Deg2Rad, a = az * Mathf.Deg2Rad;
+                var toSun = new Vector3(Mathf.Sin(a) * Mathf.Cos(e), Mathf.Sin(e), Mathf.Cos(a) * Mathf.Cos(e));
+                wt.sun.transform.rotation = Quaternion.LookRotation(-toSun);
+                foreach (var shad in new[] { true, false })
+                {
+                    wt.sun.shadows = shad ? LightShadows.Soft : LightShadows.None;
+                    cam.Render(); RenderTexture.active = rt; tex.ReadPixels(new Rect(0, 0, 800, 500), 0, 0); tex.Apply();
+                    File.WriteAllBytes(Path.Combine(OutDir, $"suntest_{az}_{(shad ? "sh" : "nosh")}.png"), tex.EncodeToPNG());
+                }
+            }
+            foreach (var rr in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+                if (rr.shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.Off && (rr.bounds.size.x > 25 || rr.bounds.size.y > 15 || rr.bounds.size.z > 25))
+                    Debug.Log($"[Home] SUNTEST big caster {rr.name} parent={(rr.transform.parent ? rr.transform.parent.name : "-")} bounds {rr.bounds.min:F0}..{rr.bounds.max:F0}");
+            var mr = Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None).First(r => r.name.StartsWith("L0__brick"));
+            var mesh = mr.GetComponent<MeshFilter>().sharedMesh;
+            int south = 0, north = 0;
+            var nrm = mesh.normals; var vtx = mesh.vertices;
+            for (int i = 0; i < nrm.Length; i++) { if (vtx[i].z < 2.3f) { if (nrm[i].z < -0.5f) south++; if (nrm[i].z > 0.5f) north++; } }
+            Debug.Log($"[Home] SUNTEST brick verts at south face z<2.3: normals -z={south} +z={north}; mr.transform {mr.transform.lossyScale} {mr.transform.eulerAngles}");
+        }
+
         /// Everything: rebuild scene, shots, walk test, Linux + Windows players, WebGL into docs/play.
         public static void ReleaseAll()
         {

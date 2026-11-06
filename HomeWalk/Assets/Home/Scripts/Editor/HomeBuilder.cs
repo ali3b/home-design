@@ -51,7 +51,8 @@ namespace HomeWalk.EditorTools
                 var mname = parts.Length > 1 ? parts[1].Split('.')[0] : "plaster";
                 if (mats.TryGetValue(mname, out var m)) r.sharedMaterial = m;
                 else Debug.LogWarning("[Home] no material for " + nm);
-                r.shadowCastingMode = mname == "glass" ? ShadowCastingMode.Off : ShadowCastingMode.On;
+                // glass and flat ground planes never cast shadows (huge thin casters wreck the shadow map at low sun)
+                r.shadowCastingMode = (mname == "glass" || (coll == "SITE" && mname != "existing")) ? ShadowCastingMode.Off : ShadowCastingMode.On;
                 if (!r.GetComponent<MeshCollider>()) r.gameObject.AddComponent<MeshCollider>();
                 GameObjectUtility.SetStaticEditorFlags(r.gameObject, StaticEditorFlags.BatchingStatic | StaticEditorFlags.NavigationStatic | StaticEditorFlags.OccluderStatic | StaticEditorFlags.OccludeeStatic);
                 if (coll == "ROOF") roof.Add(r.gameObject);
