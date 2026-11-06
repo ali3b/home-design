@@ -366,23 +366,7 @@ def build_fence(S, M):
         for a, b in spans:
             if b - a < 0.05:
                 continue
-            box(a, y - 0.11, 0, b, y + 0.11, 0.9, M['brick'], cn)       # base
-            box(a, y - 0.13, h - 0.08, b, y + 0.13, h, M['stone'], cn)   # coping
-            # piers every ~1.6 m, breeze-block lattice between
-            n = max(1, int(round((b - a) / 1.6)))
-            for i in range(n + 1):
-                x = a + (b - a) * i / n
-                box(x - 0.18, y - 0.18, 0, x + 0.18, y + 0.18, h + 0.12, M['brick'], cn)
-            if fr.get('breeze_panels'):
-                for i in range(n):
-                    xa = a + (b - a) * i / n + 0.18
-                    xb = a + (b - a) * (i + 1) / n - 0.18
-                    k = max(1, int((xb - xa) / 0.2))
-                    for j in range(k + 1):
-                        xx = xa + (xb - xa) * j / k
-                        box(xx - 0.03, y - 0.06, 0.9, xx + 0.03, y + 0.06, h - 0.08, M['breeze'], cn)
-                    for zz in (1.12, 1.36, 1.6):
-                        box(xa, y - 0.06, zz - 0.03, xb, y + 0.06, zz + 0.03, M['breeze'], cn)
+            fence_span(a, b, y, h, M, cn, fr.get('breeze_panels', True))
         # gate: two timber leaves standing open (inward) so the walkthrough can pass
         L = (g1 - g0) / 2
         box(g0 - 0.02, y + 0.1, 0.05, g0 + 0.06, y + 0.1 + L * 0.95, h - 0.15, M['timber_dk'], cn)
