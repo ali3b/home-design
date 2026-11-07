@@ -57,14 +57,16 @@ def main(argv):
             warns.append('boundary walls run %.1f m through the DNN band on the property lines (owner instruction) '
                          '- confirm a %.1f m solid boundary wall is permitted on DNN land' % (y1 - ont['y1'], f['sides'].get('height', 0)))
             report['dnn_boundary_wall_m'] = round(2 * (y1 - ont['y1']), 1)
-    for extra in C.get('structures', []):
+    for extra in C.get('structures', []) + C.get('features', []):
         inside_ont(extra.get('name', 'structure'), *extra['rect'])
 
     for lv in S['levels']:
         rs = lv['rooms']
         for nm, x0, y0, x1, y1, k in rs:
             inside_ont('%s/%s' % (lv['short'], nm), x0, y0, x1, y1)
-            if x0 < fx0 - TOL or y0 < fy0 - TOL or x1 > fx1 + TOL or y1 > fy1 + TOL:
+            outside_fp = x0 < fx0 - TOL or y0 < fy0 - TOL or x1 > fx1 + TOL or y1 > fy1 + TOL
+            # a ground-level outdoor room (terrace / alfresco) may sit beyond the house footprint, still in ONT
+            if outside_fp and not (k == 'out' and lv['z'] < 1.0 and C.get('style', {}).get('ground_out_open')):
                 errors.append('%s/%s is outside the footprint' % (lv['short'], nm))
         for i, a in enumerate(rs):
             for b in rs[i + 1:]:

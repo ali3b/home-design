@@ -36,6 +36,18 @@ namespace HomeWalk.EditorTools
             UseC2(); Build(BuildTarget.WebGL, Path.Combine(HomeBuilder.Root, "docs", "play2"));
         }
 
+        static void UseC3() { Key = "c3"; Scene = HomeBuilder.ScenePathC3; }
+
+        // ---- Concept 3 (separate scene, separate players, WebGL at docs/play3) ----
+        public static void BuildAndShootC3() { HomeSetup.Configure(); HomeBuilder.BuildC3(); UseC3(); Shoot(); WalkTest(); }
+        public static void ReleaseC3()
+        {
+            BuildAndShootC3();
+            UseC3(); Build(BuildTarget.StandaloneLinux64, "Builds/C3/Linux/HomeWalk-C3.x86_64");
+            UseC3(); Build(BuildTarget.StandaloneWindows64, "Builds/C3/Windows/HomeWalk-C3.exe");
+            UseC3(); Build(BuildTarget.WebGL, Path.Combine(HomeBuilder.Root, "docs", "play3"));
+        }
+
         [MenuItem("Home/Review/Render Viewpoint Shots")]
         public static void Shoot()
         {
@@ -215,7 +227,8 @@ namespace HomeWalk.EditorTools
             }
             sb.AppendLine($"{ok}/{total} rooms reachable");
             // stair diagnostics: navmesh heights along both flights
-            var stairPts = Key == "c2" ? new[] { new Vector3(6.6f, 0.5f, 11.2f), new Vector3(5.7f, 1.0f, 10.2f), new Vector3(6.5f, 2.1f, 7.8f), new Vector3(7.2f, 3.0f, 9.6f), new Vector3(7.2f, 3.8f, 11.2f), new Vector3(7.2f, 3.8f, 12.2f) } : new[] { new Vector3(3.8f, 0.5f, 8.6f), new Vector3(2.2f, 0.5f, 8.4f), new Vector3(2.2f, 1.0f, 9.4f), new Vector3(3.0f, 2.1f, 11.5f), new Vector3(3.8f, 2.9f, 9.8f), new Vector3(3.8f, 3.8f, 8.4f), new Vector3(3.8f, 3.8f, 7.5f) };
+            var stairPts = Key == "c3" ? new[] { new Vector3(5.8f, 0.3f, 6.8f), new Vector3(4.6f, 1.0f, 6.8f), new Vector3(3.2f, 1.7f, 7.35f), new Vector3(4.2f, 2.5f, 7.9f), new Vector3(5.8f, 3.25f, 7.9f), new Vector3(6.4f, 3.25f, 7.3f) }
+                         : Key == "c2" ? new[] { new Vector3(6.6f, 0.5f, 11.2f), new Vector3(5.7f, 1.0f, 10.2f), new Vector3(6.5f, 2.1f, 7.8f), new Vector3(7.2f, 3.0f, 9.6f), new Vector3(7.2f, 3.8f, 11.2f), new Vector3(7.2f, 3.8f, 12.2f) } : new[] { new Vector3(3.8f, 0.5f, 8.6f), new Vector3(2.2f, 0.5f, 8.4f), new Vector3(2.2f, 1.0f, 9.4f), new Vector3(3.0f, 2.1f, 11.5f), new Vector3(3.8f, 2.9f, 9.8f), new Vector3(3.8f, 3.8f, 8.4f), new Vector3(3.8f, 3.8f, 7.5f) };
             foreach (var spt in stairPts)
             {
                 var qf2 = new NavMeshQueryFilter { agentTypeID = settings.agentTypeID, areaMask = NavMesh.AllAreas };

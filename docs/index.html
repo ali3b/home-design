@@ -25,12 +25,19 @@ a.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 16px;bo
 <p><a class="btn" href="play2/">▶ Walk through Concept 2 (WebGL)</a> <a class="btn" href="c2_review.pdf">Concept 2 review set (PDF)</a></p>
 <p style="color:var(--mut);font-size:14px">Same keys as Concept 1 · 1–9 and 0 jump to viewpoints, including the carport and the stair atrium. Constraint check: <a href="c2_validate.json">c2_validate.json</a> · walk test: <a href="c2_walktest.txt">c2_walktest.txt</a></p>
 <div class="grid" id="gallery2"></div>
+<h2>Concept 3: Four-Bed Garage House</h2>
+<p>Modern two-storey house with flat roofs behind parapets, white render and cladding · double garage against the east party wall · home office at the front · open kitchen, meals and family room to a covered rear alfresco · four bedrooms, a rumpus and a covered deck upstairs · 2.8 m garden strip on the west.</p>
+<p><a class="btn" href="play3/">▶ Walk through Concept 3 (WebGL)</a> <a class="btn" href="c3_review.pdf">Concept 3 review set (PDF)</a></p>
+<p style="color:var(--mut);font-size:14px">Same keys as Concept 1 · 1–9 and 0 jump to viewpoints, including the garage, the rumpus and the deck. Constraint check: <a href="c3_validate.json">c3_validate.json</a> · walk test: <a href="c3_walktest.txt">c3_walktest.txt</a></p>
+<div class="grid" id="gallery3"></div>
 <h2>Progress</h2><div id="log">Loading…</div>
 <script>
 fetch('progress.md').then(r=>r.text()).then(t=>{document.getElementById('log').textContent=t}).catch(()=>{});
 fetch('gallery.json').then(r=>r.json()).then(items=>{const g=document.getElementById('gallery');
  items.forEach(it=>{const f=document.createElement('figure');f.innerHTML=`<a href="${it.src}"><img loading="lazy" src="${it.src}" alt=""></a><figcaption></figcaption>`;f.querySelector('img').alt=it.caption;f.querySelector('figcaption').textContent=it.caption;g.appendChild(f)})}).catch(()=>{});
 fetch('gallery_c2.json').then(r=>r.json()).then(items=>{const g=document.getElementById('gallery2');
+ items.forEach(it=>{const f=document.createElement('figure');f.innerHTML=`<a href="${it.src}"><img loading="lazy" src="${it.src}" alt=""></a><figcaption></figcaption>`;f.querySelector('img').alt=it.caption;f.querySelector('figcaption').textContent=it.caption;g.appendChild(f)})}).catch(()=>{});
+fetch('gallery_c3.json').then(r=>r.json()).then(items=>{const g=document.getElementById('gallery3');
  items.forEach(it=>{const f=document.createElement('figure');f.innerHTML=`<a href="${it.src}"><img loading="lazy" src="${it.src}" alt=""></a><figcaption></figcaption>`;f.querySelector('img').alt=it.caption;f.querySelector('figcaption').textContent=it.caption;g.appendChild(f)})}).catch(()=>{});
 fetch('play/index.html',{method:'HEAD'}).then(r=>{if(!r.ok)document.getElementById('playnote').textContent='(walkthrough build still in progress)'});
 </script>

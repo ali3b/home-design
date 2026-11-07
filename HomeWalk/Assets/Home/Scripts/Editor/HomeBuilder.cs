@@ -26,6 +26,10 @@ namespace HomeWalk.EditorTools
         [MenuItem("Home/Build Concept 2")]
         public static void BuildC2() => Build("c2_multigen_house", "c2_furnishing", "Assets/Home/Models/c2_architecture.fbx", ScenePathC2);
 
+        public const string ScenePathC3 = "Assets/Home/Scenes/C3_Walkthrough.unity";
+        [MenuItem("Home/Build Concept 3")]
+        public static void BuildC3() => Build("c3_garage_house", "c3_furnishing", "Assets/Home/Models/c3_architecture.fbx", ScenePathC3);
+
         static Vector3 U(double x, double y, double z) => new Vector3((float)x, (float)z, (float)y);
 
         // ------------------------------------------------------------------ build --
@@ -220,7 +224,7 @@ namespace HomeWalk.EditorTools
 
             // walkthrough
             var wt = new GameObject("Walkthrough").AddComponent<Walkthrough>();
-            wt.conceptTitle = ((string)C["title"]).Replace("CONCEPT 1 — ", "Concept 1 · ").Replace("CONCEPT 2 — ", "Concept 2 · ");
+            wt.conceptTitle = ((string)C["title"]).Replace("CONCEPT 1 — ", "Concept 1 · ").Replace("CONCEPT 2 — ", "Concept 2 · ").Replace("CONCEPT 3 — ", "Concept 3 · ");
             wt.player = fpc; wt.sun = sun;
             wt.roofObjects = roof.ToArray();
             wt.upperObjects = upper.ToArray();
@@ -233,6 +237,7 @@ namespace HomeWalk.EditorTools
             var vps = new List<Viewpoint>();
             var V = (JObject)C["viewpoints"];
             var order = concept.StartsWith("c1") ? new[] { "street", "entry", "living", "kitchen", "master", "lounge", "balcony", "garden", "aerial", "riverside" }
+                      : concept.StartsWith("c3") ? new[] { "street", "foyer", "family", "kitchen", "garage", "rumpus", "bed1", "deck", "aerial", "riverside" }
                                                  : V.Properties().Select(pp => pp.Name).ToArray();
             foreach (var key in order)
             {
@@ -363,6 +368,13 @@ namespace HomeWalk.EditorTools
             { "charcoal", (new Color(.12f, .12f, .11f), .2f, null) },
             { "glass", (new Color(.55f, .65f, .7f, .22f), .95f, null) },
             { "glass_dk", (new Color(.45f, .55f, .6f, .35f), .95f, null) },
+            // modern palette (Concept 3)
+            { "render_w", (new Color(.93f, .92f, .90f), .15f, "plaster_w") },
+            { "clad_v", (new Color(.95f, .95f, .94f), .3f, null) },
+            { "alu_dk", (new Color(.07f, .07f, .075f), .45f, null) },
+            { "membrane", (new Color(.45f, .45f, .44f), .1f, null) },
+            { "stone_clad", (new Color(.55f, .53f, .50f), .1f, "stone_dk") },
+            { "garage_dark", (new Color(.10f, .095f, .09f), .35f, null) },
         };
 
         public static Dictionary<string, Material> MakeMaterials()

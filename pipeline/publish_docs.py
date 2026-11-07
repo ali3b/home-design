@@ -17,9 +17,11 @@ def main(outdir, key):
     dst = os.path.join(ROOT, 'docs', 'img', key)
     os.makedirs(dst, exist_ok=True)
     n = key[1:]
-    items = [{'src': 'img/concept1.png' if key == 'c1' else 'img/concept%s.png' % n, 'caption': 'Concept %s brief image' % n}]
+    brief = 'img/concept1.png' if key == 'c1' else 'img/concept%s.png' % n
+    # a concept may have no publishable brief image (e.g. a third-party brochure): skip the tile
+    items = [{'src': brief, 'caption': 'Concept %s brief image' % n}] if os.path.exists(os.path.join(ROOT, 'docs', brief)) else []
     groups = [
-        ('render', ['street', 'carport', 'atrium', 'garden', 'riverside', 'aerial', 'balcony', 'massing'], 'Blender · '),
+        ('render', ['street', 'carport', 'atrium', 'foyer', 'family', 'garden', 'riverside', 'aerial', 'balcony', 'deck', 'massing'], 'Blender · '),
         ('unity', None, 'Walkthrough · '),
         ('sheets', ['01_site', '02_plans_a', '03_roof', '04_section', '05_schedule'], 'Drawing · '),
     ]

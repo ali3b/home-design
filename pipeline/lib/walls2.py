@@ -25,6 +25,9 @@ def _room_at(rooms, x, y):
 def derive(lv, kind_of=None):
     rooms = lv['rooms']
     open_ = set(lv.get('open', ()))
+    # ground-level terraces / porches (opt-in): open on their outer edges, and the wall they share
+    # with the house is an external wall facing the terrace
+    gout = bool(lv.get('style', {}).get('ground_out_open')) and lv.get('z', 0) < 1.0
     planes = {}
     for nm, x0, y0, x1, y1, k in rooms:
         for c, a, b in ((y0, x0, x1), (y1, x0, x1)):
@@ -48,6 +51,14 @@ def derive(lv, kind_of=None):
                 continue
             if r1 and r2 and r1[0] in open_ and r2[0] in open_:
                 continue
+            if gout and 'out' in (r1 and r1[5], r2 and r2[5]):
+                if r1 is None or r2 is None or (r1[5] == 'out' and r2[5] == 'out'):
+                    continue
+                inner = r2 if r1[5] == 'out' else r1
+                pieces.append(dict(axis=axis, coord=c, t0=a, t1=b, rooms=(inner[0],), kinds=(inner[5],),
+                                   ext=True, type='solid', thick=T_EXT,
+                                   side=(1 if inner is r1 else -1), openings=[]))
+                continue
             sides = [r for r in (r1, r2) if r]
             kinds = [r[5] for r in sides]
             ext = len(sides) == 1
@@ -70,7 +81,7 @@ def derive(lv, kind_of=None):
         for p in pieces:
             if p['axis'] == axis and abs(p['coord'] - coord) < EPS and p['t0'] < o1 - EPS and p['t1'] > o0 + EPS:
                 p['openings'].append((max(o0, p['t0']), min(o1, p['t1']), 0.0,
-                                      2.15 if kind == 'door' else 2.55, kind))
+                                      {'door': 2.15, 'garage': 2.3}.get(kind, 2.55), kind))
                 p['explicit'] = True
                 hit = True
         if not hit:

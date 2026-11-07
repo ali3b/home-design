@@ -419,6 +419,11 @@ def plan(v, S, lv, sh, sec_at=None, compact=False):
                 _door_swing(v, w, o0, o1)
             elif kind == 'sldoor':
                 _sldoor(v, w, o0, o1)
+            elif kind == 'garage':
+                if w['axis'] == 'x':
+                    v.line((o0, c), (o1, c), 0.45, INK, (2.4, 1.2))
+                else:
+                    v.line((c, o0), (c, o1), 0.45, INK, (2.4, 1.2))
 
     wx = sorted({round(w['coord'], 3) for w in walls if w['axis'] == 'y'})
     wy = sorted({round(w['coord'], 3) for w in walls if w['axis'] == 'x'})
@@ -771,6 +776,16 @@ def _roof_plan(v, S):
         v.rect((ox0, oy0, ox1, oy1), (240, 235, 226), (150, 118, 92), 0.6)
         v.rect((rf['x0'], rf['y0'], rf['x1'], rf['y1']), (247, 244, 238), (176, 150, 126), 0.35)
         ze, zr = rf['ze'], rf['zr']
+        if rf['kind'] == 'flat':
+            pt = 0.2
+            v.rect((rf['x0'] + pt, rf['y0'] + pt, rf['x1'] - pt, rf['y1'] - pt), None, (150, 118, 92), 0.3)
+            xc, yc = (rf['x0'] + rf['x1']) / 2, (rf['y0'] + rf['y1']) / 2
+            L = min(1.6, (rf['y1'] - rf['y0']) * 0.3)
+            v.line((xc, yc + L / 2), (xc, yc - L / 2), 0.45, RED)
+            v.line((xc, yc - L / 2), (xc - 0.25, yc - L / 2 + 0.4), 0.45, RED)
+            v.line((xc, yc - L / 2), (xc + 0.25, yc - L / 2 + 0.4), 0.45, RED)
+            v.text(xc, rf['y0'] + 0.55, 'FLAT %+.2f  parapet %+.2f' % (ze, zr), 1.7, 'mm', c=GREY)
+            continue
         if rf['kind'] == 'gable':
             if rf['axis'] == 'x':
                 for xx in (rf['x0'], rf['x1']):
@@ -834,35 +849,46 @@ def draw_roof(sh, S, sheet_no):
     sh.text(MARG + 6, 30, 'ROOF PLAN  ·  looking down', 3.2, 'ls', True)
     sh.north(MARG + 148, 48, 5.6)
     y = 40 + 214 + 10
-    lg = [('concrete tile on timber — eaves %+.2f, ridge %+.2f' % (roofs[0]['ze'],
+    flat = all(r['kind'] == 'flat' for r in roofs)
+    lg = [(('membrane flat roofs behind parapets — deck %+.2f, parapet %+.2f' if flat else
+            'concrete tile on timber — eaves %+.2f, ridge %+.2f') % (roofs[0]['ze'],
                                                                  max(r['zr'] for r in roofs)),
            (240, 235, 226)),
-          ('ridge / hip line', RED),
-          ('fascia / eaves edge, 1.05 m overhang', (150, 60, 40)),
+          ('fall arrow (to box gutter / outlet)' if flat else 'ridge / hip line', RED),
+          ('parapet inner line' if flat else 'fascia / eaves edge, 1.05 m overhang', (150, 60, 40)),
           ('rain-garden slot, open to the sky', (120, 150, 100)),
           ('outline of the level below (hidden line)', (178, 172, 160))]
-    sh.text(MARG + 6, y, 'ROOF KEY', 2.4, 'ls', True)
+    # roof key and notes live in the right-hand column, clear of the plan view and scale bar
+    if flat:
+        lg = [t for t in lg if t[1] != (120, 150, 100)]
+    kx, y = 276, 80
+    sh.text(kx, y, 'ROOF KEY', 2.4, 'ls', True)
     y += 4.6
     for t, c in lg:
         if c == (240, 235, 226):
-            sh.rect(MARG + 6, y, 5.0, 2.4, c, (150, 118, 92), 0.4)
+            sh.rect(kx, y, 5.0, 2.4, c, (150, 118, 92), 0.4)
         else:
-            sh.line((MARG + 6, y + 1.2), (MARG + 11, y + 1.2), 0.5, c)
-        sh.text(MARG + 12.6, y + 1.2, t, 2.0, 'lm', c=GREY)
+            sh.line((kx, y + 1.2), (kx + 5, y + 1.2), 0.5, c)
+        sh.text(kx + 6.6, y + 1.2, t, 2.0, 'lm', c=GREY)
         y += 4.6
     sh.scalebar(MARG + 6, A3H - MARG - 8, 50, 10)
-    sh.notes(MARG + 6, A3H - MARG - 26, [
-        'Ridge and eaves heights come from the option massing: eaves %+.2f m, ridge '
-        '%+.2f m above datum, %.2f m overhang all round.'
-        % (roofs[0]['ze'], max(r['zr'] for r in roofs), ov),
-        'Hips, ridges and the rain-garden slot are derived from the same rectangles as '
-        'the plans and the 3D model.',
-        'Rainwater from the slot and the roof gardens is the only visible drainage; '
-        'confirm the neighbour-boundary falls before detailing.',
-    ], w=A3W - 2 * MARG - 132)
+    if flat:
+        notes = ['Flat roofs: membrane deck %+.2f m, parapets up to %+.2f m above datum, no overhang. '
+                 'Falls and outlets to be set at design development.' % (roofs[0]['ze'], max(r['zr'] for r in roofs)),
+                 'Roof outlines come from the same rectangles as the plans and the 3D model.',
+                 'Rainwater: box gutters behind the parapets to downpipes inside the site; '
+                 'nothing may discharge onto the neighbours.']
+    else:
+        notes = ['Ridge and eaves heights come from the option massing: eaves %+.2f m, ridge '
+                 '%+.2f m above datum, %.2f m overhang all round.' % (roofs[0]['ze'], max(r['zr'] for r in roofs), ov),
+                 'Hips, ridges and the rain-garden slot are derived from the same rectangles as '
+                 'the plans and the 3D model.',
+                 'Rainwater from the slot and the roof gardens is the only visible drainage; '
+                 'confirm the neighbour-boundary falls before detailing.']
+    sh.notes(kx, y + 6, notes, w=A3W - MARG - kx - 2)
     sh.key(276, 34, [(PAPER, 'none', 'roof covering'),
-                     (RED, 'none', 'ridge / hip'),
-                     ((150, 60, 40), 'none', 'fascia / eaves'),
+                     (RED, 'none', 'fall arrow' if flat else 'ridge / hip'),
+                     ((150, 60, 40), 'none', 'parapet' if flat else 'fascia / eaves'),
                      ((222, 232, 214), 'none', 'open slot below')])
     sh.title_block(S, '1:100 at A3', 'roof plan')
     return sh
@@ -882,6 +908,8 @@ def _roof_z(rf, x, y):
     if not (x0 <= x <= x1 and y0 <= y <= y1):
         return None
     ze, zr = rf['ze'], rf['zr']
+    if rf['kind'] == 'flat':
+        return zr, ze
     xc, yc = (rf['x0'] + rf['x1']) / 2, (rf['y0'] + rf['y1']) / 2
     hx, hy = max(1e-6, (rf['x1'] - rf['x0']) / 2), max(1e-6, (rf['y1'] - rf['y0']) / 2)
     if rf['kind'] == 'gable' and rf.get('axis') == 'y':
@@ -1040,9 +1068,10 @@ def draw_section(sh, S, cut=8.6, sheet_no=None):
             sh.poly(gtop + gbot, (246, 240, 232), None, 0)
         pk = max(run, key=lambda t: t[1])
         sh.line((X(pk[0]), Y(pk[2])), (X(pk[0]), Y(pk[1])), 0.2, LGREY, (2, 1.5))
-        sh.text(X(pk[0]), Y(pk[1]) - 0.8, 'RIDGE %+.2f' % pk[1], 2.0, 'mb', True, GREY)
+        allflat = all(r['kind'] == 'flat' for r in rf)
+        sh.text(X(pk[0]), Y(pk[1]) - 0.8, ('PARAPET %+.2f' if allflat else 'RIDGE %+.2f') % pk[1], 2.0, 'mb', True, GREY)
         for x, z, e in (run[0], run[-1]):
-            sh.text(X(x) + (0.6 if x < HX0 else -0.6), Y(e), 'EAVES %+.2f' % e, 1.95,
+            sh.text(X(x) + (0.6 if x < HX0 else -0.6), Y(e), ('ROOF %+.2f' if allflat else 'EAVES %+.2f') % e, 1.95,
                     'ls' if x < HX0 else 'rs', True, GREY)
     ze_lo = min([e for run in runs for _x, _z, e in run] + [ze])
     sh.line((X(bbx[0]), Y(ze_lo)), (X(bbx[2]), Y(ze_lo)), 0.2, LGREY, (2, 1.5))

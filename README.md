@@ -44,6 +44,33 @@ The roof eaves sit on the east boundary, so a boundary/setback check is needed.
 - `out/c1/c1_review.pdf` is the review set: cover, site plan, plans, roof, section, schedule, renders and walkthrough shots. It is also on the Pages site.
 - `out/c1/unity/walktest.txt` shows that every room is reachable on foot from the road gate (24/24).
 
+## Concept 3: Four-Bed Garage House
+
+`concepts/c3_garage_house.json` adapts a commercial four-bedroom, double-garage floor plan (the owner's brief) to this site. The source brochure is private and is never committed.
+- The house is modern, with flat membrane roofs behind parapets.
+- The ground floor is white render and the upper floor is white vertical cladding.
+- There is a stacked-stone entry pier, a dark garage door and dark aluminium frames.
+
+| | |
+|---|---|
+| Placement | 10.4 m wide house, x 2.8–13.2 m: a 2.8 m garden strip on the west, and the garage 0.3 m off the blank east party wall |
+| Ground floor | Porch, foyer, home office, U-stair, powder room, laundry, IT nook, store, butler's pantry, double garage (5.7 × 5.7 m), and open kitchen / meals / family to a 4.3 × 2.8 m covered alfresco |
+| Upper floor | Rumpus, Bedroom 1 with a double WIR and ensuite, Bedrooms 2–4 (each with a WIR or robe), bathroom, powder room, linen, and a covered deck on the garage roof |
+| Areas | Footprint 137 m² (52 % of ONT). About 121 m² ground + 117 m² upper enclosed, centre-line. Alfresco 12 m² and deck 7 m² |
+| ONT check | Rear wall at y 16.2 m. The alfresco ends at 19.0 m, inside the 19.73 m band |
+
+The plan is adapted from a third-party design for study only. Building it would need that design owner's licence or a new design.
+
+**Outputs:** `out/c3/c3_review.pdf`, `out/c3/unity/walktest.txt`. The browser walkthrough is at https://ali3b.github.io/home-design/play3/.
+
+Pipeline features added for this concept (all opt-in from the concept JSON, so Concepts 1 and 2 build exactly as before):
+- `flat` roofs with parapets
+- per-level wall skins and a frame colour (`style`)
+- ground-level terraces that are open on their outer edges (`style.ground_out_open`)
+- a `garage` door kind
+- free-standing `features` (piers, posts, aprons), which are validated to stay in ONT
+- U-stairs that run along x (`stair.axis: "x"`)
+
 ## Walk through it
 
 **Unity editor:**
@@ -73,6 +100,7 @@ The roof eaves sit on the east boundary, so a boundary/setback check is needed.
 ```
 pipeline/make.sh c1_courtyard_house c1          # full run (about 30–60 min including the WebGL build)
 pipeline/make.sh c1_courtyard_house c1 --fast --no-unity   # data, drawings and quick renders only
+pipeline/make.sh c3_garage_house c3                         # Concept 3 (Unity step runs HomeTools.ReleaseC3)
 ```
 
 The steps are:

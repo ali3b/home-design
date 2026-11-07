@@ -31,7 +31,8 @@ NO_RENDER = '--no-render' in argv
 def materials(massing=False):
     M = B.build_materials(massing=massing)
     if massing:
-        for k in ('brick', 'breeze', 'asphalt', 'paver', 'soil', 'existing', 'rail', 'neigh_a', 'neigh_b'):
+        for k in ('brick', 'breeze', 'asphalt', 'paver', 'soil', 'existing', 'rail', 'neigh_a', 'neigh_b',
+                  'render_w', 'clad_v', 'alu_dk', 'membrane', 'stone_clad', 'garage_dark'):
             M[k] = M['plaster']
         return M
     # terracotta roof of the concept image (warmer than the option-study tile)
@@ -46,8 +47,15 @@ def materials(massing=False):
     M['neigh_a'] = B.mat('neigh_a', (0.80, 0.70, 0.45), 0.9, tex='noise', texscale=0.8)
     M['neigh_b'] = B.mat('neigh_b', (0.66, 0.72, 0.74), 0.9, tex='noise', texscale=0.8)
     M['rail'] = M['timber_dk']
+    # modern palette (Concept 3): white render, white vertical cladding, dark aluminium, stacked stone
+    M['render_w'] = B.mat('render_w', (0.86, 0.85, 0.82), 0.9, tex='noise', texscale=0.5)
+    M['clad_v'] = B.mat('clad_v', (0.90, 0.90, 0.88), 0.7, tex='wave', texscale=2.5)
+    M['alu_dk'] = B.mat('alu_dk', (0.035, 0.035, 0.038), 0.45)
+    M['membrane'] = B.mat('membrane', (0.42, 0.42, 0.41), 0.9, tex='noise', texscale=1.0)
+    M['stone_clad'] = B.mat('stone_clad', (0.30, 0.29, 0.28), 0.92, tex='brick', texscale=3.0)
+    M['garage_dark'] = B.mat('garage_dark', (0.06, 0.055, 0.05), 0.55)
     # brick/tile textures read on vertical faces: rotate object-space mapping so rows run horizontally
-    for k in ('brick', 'paver'):
+    for k in ('brick', 'paver', 'stone_clad'):
         for n in M[k].node_tree.nodes:
             if n.type == 'MAPPING':
                 n.inputs['Rotation'].default_value = (math.pi / 2, 0, 0)
@@ -78,7 +86,7 @@ def merge_pieces(pieces):
     return out
 
 
-def wall_piece(p, z0, z1, M, cn, skin=None):
+def wall_piece(p, z0, z1, M, cn, skin=None, frame=None):
     """One (merged) wall run -> boxes with storey-relative openings.
     External solid walls get an outer cladding skin (brick / timber) and a plaster inner leaf."""
     t = p['thick']
@@ -110,13 +118,13 @@ def wall_piece(p, z0, z1, M, cn, skin=None):
         n = max(1, int(round((b - a) / 1.2)))
         for i in range(n + 1):
             s = a + (b - a) * i / n
-            bx(s - 0.05, s + 0.05, 0, hr, M['timber_dk'])
-        bx(a, b, hr - 0.07, hr, M['timber_dk'])
-        bx(a, b, 0.08, 0.14, M['timber_dk'])
+            bx(s - 0.05, s + 0.05, 0, hr, (frame or M['timber_dk']))
+        bx(a, b, hr - 0.07, hr, (frame or M['timber_dk']))
+        bx(a, b, 0.08, 0.14, (frame or M['timber_dk']))
         k = int((b - a) / 0.14)
         for i in range(1, k):
             s = a + i * (b - a) / k
-            bx(s - 0.015, s + 0.015, 0.14, hr - 0.07, M['timber'])
+            bx(s - 0.015, s + 0.015, 0.14, hr - 0.07, (frame or M['timber']))
         return
     if p['type'] == 'glass':
         # timber-framed full-height glazing to the light court
@@ -136,6 +144,7 @@ def wall_piece(p, z0, z1, M, cn, skin=None):
     ops = sorted(p['openings'])
     cur = a
     m = M['plaster_w']
+    fr = frame or M['timber_dk']
     for o0, o1, sill, head, kind in ops:
         bx(cur, o0, 0, H, m)
         bx(o0, o1, 0, sill, m)
@@ -144,30 +153,40 @@ def wall_piece(p, z0, z1, M, cn, skin=None):
         # frames and glazing
         fw = 0.06
         if kind in ('window', 'sldoor'):
-            bx(o0, o0 + fw, sill, head, M['timber_dk'])
-            bx(o1 - fw, o1, sill, head, M['timber_dk'])
-            bx(o0, o1, head - fw, head, M['timber_dk'])
+            bx(o0, o0 + fw, sill, head, fr)
+            bx(o1 - fw, o1, sill, head, fr)
+            bx(o0, o1, head - fw, head, fr)
             if sill > 0.01:
-                bx(o0 - 0.05, o1 + 0.05, sill - 0.04, sill, M['timber_dk'])
+                bx(o0 - 0.05, o1 + 0.05, sill - 0.04, sill, fr)
             # mullions every ~0.9 m
             k = max(1, int(round((o1 - o0) / 0.9))) if kind == 'window' else 1
             for i in range(1, k):
                 s = o0 + (o1 - o0) * i / k
-                bx(s - 0.03, s + 0.03, sill, head, M['timber_dk'])
+                bx(s - 0.03, s + 0.03, sill, head, fr)
             gt = 0.015
             g0, g1 = o0 + fw, o1 - fw
             if kind == 'sldoor':
                 # one fixed glazed panel, the other bay slid open so the walkthrough can pass
                 g1 = (o0 + o1) / 2
-                bx(g1 - 0.03, g1 + 0.03, sill, head, M['timber_dk'])
+                bx(g1 - 0.03, g1 + 0.03, sill, head, fr)
             if p['axis'] == 'x':
                 box(g0, c - gt, z0 + sill, g1, c + gt, z0 + head - fw, M['glass'], 'GLASS')
             else:
                 box(c - gt, g0, z0 + sill, c + gt, g1, z0 + head - fw, M['glass'], 'GLASS')
+        elif kind == 'garage':
+            # closed sectional panel door, dark, set just inside the opening
+            for d0, d1 in (((-t / 2 + 0.06, -t / 2 + 0.10) if p['side'] != 1 else (t / 2 - 0.10, t / 2 - 0.06)),):
+                if p['axis'] == 'x':
+                    box(o0, c + d0, z0 + 0.0, o1, c + d1, z0 + head, M['garage_dark'], cn)
+                else:
+                    box(c + d0, o0, z0 + 0.0, c + d1, o1, z0 + head, M['garage_dark'], cn)
+            bx(o0 - 0.05, o0, 0, head + 0.05, fr)
+            bx(o1, o1 + 0.05, 0, head + 0.05, fr)
+            bx(o0 - 0.05, o1 + 0.05, head, head + 0.05, fr)
         elif kind == 'door':
-            bx(o0 - 0.05, o0, 0, head + 0.05, M['timber_dk'])
-            bx(o1, o1 + 0.05, 0, head + 0.05, M['timber_dk'])
-            bx(o0 - 0.05, o1 + 0.05, head, head + 0.05, M['timber_dk'])
+            bx(o0 - 0.05, o0, 0, head + 0.05, fr)
+            bx(o1, o1 + 0.05, 0, head + 0.05, fr)
+            bx(o0 - 0.05, o1 + 0.05, head, head + 0.05, fr)
     bx(cur, b, 0, H, m)
 
 
@@ -177,7 +196,18 @@ def build_stair(st, M):
     flight 2 south (east half) -> arrival slab at the upper floor over the bottom landing."""
     cn = 'STAIR'
     x0, y0, x1, y1 = st['x0'], st['y0'], st['x1'], st['y1']
-    if st.get('first_dir', 'north') == 'south':
+    if st.get('axis') == 'x':
+        # flights run along x. Work in a local frame (across = world y, along = world x) and map back.
+        # first_dir 'west': flight 1 runs west along the south half; 'east': east along the south half.
+        X0, X1 = x0, x1
+        west = st.get('first_dir', 'west') == 'west'
+        x0, x1, y0, y1 = st['y0'], st['y1'], st['x0'], st['x1']
+
+        def sb(xa, ya, za, xb, yb, zb, m, c):
+            if west:
+                return box(X0 + X1 - yb, xa, za, X0 + X1 - ya, xb, zb, m, c)
+            return box(ya, xa, za, yb, xb, zb, m, c)
+    elif st.get('first_dir', 'north') == 'south':
         # mirrored: bottom landing + arrival at the north side, flight 1 runs south
         def sb(xa, ya, za, xb, yb, zb, m, c):
             return box(xa, y0 + y1 - yb, za, xb, y0 + y1 - ya, zb, m, c)
@@ -242,16 +272,31 @@ def build_house(S, M):
                 fm = M['terracotta']
             thick = 0.02 if i == 0 else 0.22
             box(x0, y0, z0 - thick, x1, y1, z0, fm, cn)
+            if i > 0 and C.get('style', {}).get('skins') and k != 'out':
+                box(x0, y0, z0 - thick - 0.02, x1, y1, z0 - thick, M['plaster_w'], cn)   # white ceiling below
             # ceiling (top level only; lower levels get the next slab's underside)
             if i == len(levels) - 1 and k != 'plant':
                 box(x0, y0, z1 - 0.12, x1, y1, z1, M['timber'] if k == 'out' else M['plaster_w'], cn)
         skin = M['brick'] if i == 0 else M['timber']
+        style = C.get('style', {})
+        if str(i) in style.get('skins', {}):
+            skin = M[style['skins'][str(i)]]
+        frame = M[style['frame']] if style.get('frame') else None
         for p in merge_pieces(walls2.derive(lv)):
-            wall_piece(p, z0, z1, M, cn, skin=skin)
+            wall_piece(p, z0, z1, M, cn, skin=skin, frame=frame)
+        if i == 0:
+            # ground-level terraces outside the footprint sit on their own plinth
+            for nm, x0, y0, x1, y1, k in lv['rooms']:
+                if k == 'out' and (x0 < fx0 - 0.01 or y0 < fy0 - 0.01 or x1 > fx1 + 0.01 or y1 > fy1 + 0.01):
+                    box(x0, y0, 0.0, x1, y1, z0 - 0.02, M['stone_dk'], cn)
         # upper slab edge band where lower level has no slab (court/stair void handled by walls)
     # wall-head band between top storey and roof
     zt = levels[-1]['ztop']
-    ze = max(r['ze'] for r in C['roofs'] if r['x0'] <= fx0 + 0.01 and r.get('kind', 'hip') in ('hip', 'gable'))
+    pitched = [r for r in C['roofs'] if r['x0'] <= fx0 + 0.01 and r.get('kind', 'hip') in ('hip', 'gable')]
+    if not pitched:
+        build_flat_house_top(S, M)
+        return
+    ze = max(r['ze'] for r in pitched)
     t = 0.25
     for (a0, b0, a1, b1) in ((fx0 - t / 2, fy0 - t / 2, fx1 + t / 2, fy0 + t / 2),
                              (fx0 - t / 2, fy1 - t / 2, fx1 + t / 2, fy1 + t / 2),
@@ -295,6 +340,40 @@ def build_house(S, M):
         for (x, y) in p['posts']:
             box(x - 0.12, y + 0.4, z_gf, x + 0.12, y + 0.64, p.get('post_top', C['roofs'][1]['ze']), M['timber_dk'], 'PORCH')
             box(x - 0.2, y + 0.32, z_gf, x + 0.2, y + 0.72, z_gf + 0.3, M['stone'], 'PORCH')
+    if C.get('stair'):
+        build_stair(C['stair'], M)
+
+
+def build_flat_roof(r, M, frame):
+    """Flat roof slab with a parapet upstand. Slab top at ze, parapet top at zr. The slab edge and
+    parapet are rendered white so the roof reads as a crisp box (modern style)."""
+    cn = 'ROOF'
+    x0, y0, x1, y1, ze, zr = r['x0'], r['y0'], r['x1'], r['y1'], r['ze'], r['zr']
+    o = r.get('overhang', 0.0)
+    x0, y0, x1, y1 = x0 - o, y0 - o, x1 + o, y1 + o
+    edge = M[r.get('edge', 'render_w')]
+    box(x0, y0, ze - 0.32, x1, y1, ze - 0.02, M['plaster_w'], cn)                 # slab (white soffit)
+    box(x0 + 0.2, y0 + 0.2, ze - 0.02, x1 - 0.2, y1 - 0.2, ze, M[r.get('mat', 'membrane')], cn)
+    pt = 0.2
+    for (a0, b0, a1, b1) in ((x0, y0, x1, y0 + pt), (x0, y1 - pt, x1, y1),
+                             (x0, y0 + pt, x0 + pt, y1 - pt), (x1 - pt, y0 + pt, x1, y1 - pt)):
+        box(a0, b0, ze - 0.32, a1, b1, zr, edge, cn)
+    # thin dark capping on the parapet
+    for (a0, b0, a1, b1) in ((x0, y0, x1, y0 + pt), (x0, y1 - pt, x1, y1),
+                             (x0, y0 + pt, x0 + pt, y1 - pt), (x1 - pt, y0 + pt, x1, y1 - pt)):
+        box(a0 - 0.01, b0 - 0.01, zr, a1 + 0.01, b1 + 0.01, zr + 0.03, frame, cn)
+
+
+def build_flat_house_top(S, M):
+    C = S['concept']
+    frame = M[C.get('style', {}).get('frame', 'timber_dk')]
+    for r in C['roofs']:
+        if r.get('kind') == 'flat':
+            build_flat_roof(r, M, frame)
+    for f in C.get('features', []):
+        x0, y0, x1, y1 = f['rect']
+        z0, z1 = f['z']
+        box(x0, y0, z0, x1, y1, z1, M[f.get('mat', 'stone')], f.get('coll', 'PORCH'))
     if C.get('stair'):
         build_stair(C['stair'], M)
 
@@ -463,7 +542,7 @@ def build_front_gates(fr, W, M, cn):
             box(g1 - 0.1, y + 0.12, 0.05, g1 - 0.02, y + 0.12 + L * 0.95, h - 0.15, M['timber_dk'], cn)
         else:
             box(g0 + 0.02, y + 0.12, 0.05, g0 + 0.1, y + 0.12 + (g1 - g0) * 0.95, h - 0.15, M['timber_dk'], cn)
-            box(g0 - 0.35, y - 0.35, top, g1 + 0.35, y + 0.4, top + 0.12, M['tile_roof'], cn)
+            box(g0 - 0.35, y - 0.35, top, g1 + 0.35, y + 0.4, top + 0.12, M[fr.get('cap_mat', 'tile_roof')], cn)
             for x in (g0 - 0.125, g1 + 0.125):
                 box(x - 0.09, y - 0.32, h - 0.1, x + 0.09, y - 0.25, h + 0.2, M['white'], cn)
 
@@ -616,11 +695,11 @@ def render_views(S, outdir):
         'street': dict(V['street'], lens=24),
         **({'garden': dict(V['garden'], lens=30)} if 'garden' in V else {}),
         'aerial': dict(V['aerial'], lens=35),
-        'balcony': dict(V['balcony'], lens=22),
+        **({'balcony': dict(V['balcony'], lens=22)} if 'balcony' in V else {}),
         'riverside': dict(V['riverside'], lens=30),
     }
     shots = {k: v for k, v in shots.items() if True}
-    for extra, lens in (('carport', 28), ('atrium', 22)):
+    for extra, lens in (('carport', 28), ('atrium', 22), ('deck', 22), ('family', 22), ('foyer', 22)):
         if extra in V:
             shots[extra] = dict(V[extra], lens=lens)
     # pass 1 — clay massing

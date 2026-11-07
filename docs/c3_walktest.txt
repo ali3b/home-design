@@ -1,0 +1,40 @@
+Walk test (agent radius 0.22, climb 0.3) from road gate
+  OK   L0 Home Office            path   9.7 m  walkable  91% of floor
+  OK   L0 Porch                  path   6.6 m  walkable 100% of floor
+  OK   L0 Foyer                  path   8.2 m  walkable  97% of floor
+  OK   L0 Double Garage          path  17.0 m  walkable  41% of floor
+  OK   L0 Hall                   path  11.1 m  walkable 100% of floor
+  OK   L0 Powder 2               path  13.4 m  walkable  38% of floor
+  OK   L0 Hall                   path  12.1 m  walkable 100% of floor
+  OK   L0 Laundry                path  14.6 m  walkable  22% of floor
+  OK   L0 Hall                   path  13.6 m  walkable 100% of floor
+  OK   L0 IT Nook                path  14.4 m  walkable 100% of floor
+  OK   L0 Store                  path  17.0 m  walkable 100% of floor
+  OK   L0 Butler's Pantry        path  18.2 m  walkable   8% of floor
+  OK   L0 Family                 path  18.1 m  walkable  88% of floor
+  OK   L0 Meals                  path  19.3 m  walkable  58% of floor
+  OK   L0 Kitchen                path  18.5 m  walkable  68% of floor
+  OK   L0 Alfresco               path  21.9 m  walkable  46% of floor
+  OK   L1 Rumpus                 path  19.1 m  walkable  66% of floor
+  OK   L1 WIR                    path  19.0 m  walkable  67% of floor
+  OK   L1 Bedroom 4              path  22.0 m  walkable  33% of floor
+  OK   L1 Covered Deck           path  23.1 m  walkable  78% of floor
+  OK   L1 Landing                path  16.7 m  walkable  98% of floor
+  OK   L1 Bathroom               path  18.9 m  walkable  20% of floor
+  OK   L1 Ensuite                path  27.9 m  walkable  66% of floor
+  OK   L1 Powder 1               path  18.9 m  walkable  60% of floor
+  OK   L1 Hall                   path  20.1 m  walkable 100% of floor
+  OK   L1 Bedroom 3              path  20.0 m  walkable  41% of floor
+  OK   L1 WIR (his / hers)       path  25.7 m  walkable  65% of floor
+  OK   L1 Linen                  path  22.6 m  walkable 100% of floor
+  OK   L1 Hall                   path  21.8 m  walkable 100% of floor
+  OK   L1 Bedroom 2              path  23.5 m  walkable  43% of floor
+  OK   L1 Bedroom 1              path  24.0 m  walkable  49% of floor
+  OK   L1 WIR                    path  24.9 m  walkable  83% of floor
+32/32 rooms reachable
+  stair probe (5.80, 0.30, 6.80): navmesh y=0.18 reachable
+  stair probe (4.60, 1.00, 6.80): navmesh y=0.98 reachable
+  stair probe (3.20, 1.70, 7.35): navmesh y=1.66 reachable
+  stair probe (4.20, 2.50, 7.90): navmesh y=2.18 reachable
+  stair probe (5.80, 3.25, 7.90): navmesh y=3.18 reachable
+  stair probe (6.40, 3.25, 7.30): navmesh y=3.16 reachable

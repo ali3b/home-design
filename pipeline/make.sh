@@ -11,7 +11,9 @@ python3 pipeline/textures.py HomeWalk/Assets/Home/Textures >/dev/null
 blender -b --factory-startup --python pipeline/blender/build.py -- "$C" $OUT/render $FAST \
     --fbx HomeWalk/Assets/Home/Models/${KEY}_architecture.fbx | grep -E "FBX_OK|RENDER_|Traceback"
 if [[ " $* " != *" --no-unity "* ]]; then
-  pipeline/unity.sh HomeWalk.EditorTools.HomeTools.ReleaseAll Logs/release.log
+  # c1 keeps the original ReleaseAll entry point; later concepts have ReleaseC2, ReleaseC3, ...
+  REL=ReleaseAll; [[ "$KEY" != "c1" ]] && REL=Release${KEY^^}
+  pipeline/unity.sh HomeWalk.EditorTools.HomeTools.$REL Logs/release_$KEY.log
 fi
 python3 pipeline/review.py "$C" $OUT
 python3 pipeline/publish_docs.py $OUT $KEY

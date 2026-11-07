@@ -70,7 +70,7 @@ def main(concept, outdir):
     # cover
     im, d = page(C['title'], C.get('tagline', ''))
     root = os.path.dirname(os.path.dirname(os.path.abspath(concept)))
-    brief = os.path.join(root, 'Concepts and Plan', 'concept.png')
+    brief = os.path.join(root, 'Concepts and Plan', 'concept.png') if C['key'] == 'C1' else ''
     if C.get('brief'):
         # publishable copy with the header (place names) cropped off
         brief = os.path.join(root, C['brief']['published'])
@@ -81,6 +81,9 @@ def main(concept, outdir):
     if os.path.exists(brief):
         p, xy = fit(brief, (1580, 170, 830, 560)); im.paste(p, xy)
         d.text((1580, 740), 'Concept %s brief image (inspiration)' % C['key'][1:], fill=GREY, font=font(22))
+    elif os.path.exists(os.path.join(outdir, 'render', 'aerial.png')):
+        p, xy = fit(os.path.join(outdir, 'render', 'aerial.png'), (1580, 170, 830, 560)); im.paste(p, xy)
+        d.text((1580, 740), 'Blender render — aerial from the south-west', fill=GREY, font=font(22))
     y = 800
     d.text((1580, y), 'THE CONCEPT IN NUMBERS', fill=INK, font=font(28, True)); y += 46
     rows = [('Footprint', '%.1f m²  (%.0f%% of ONT band)' % (rep['footprint_m2'], rep['ont_coverage_pct'])),
@@ -113,7 +116,7 @@ def main(concept, outdir):
 
     # renders
     rnd = [('street', 'Street view'), ('garden', 'From the garden (DNN land, planting only)'),
-           ('riverside', 'From the river end, between the boundary walls'), ('carport', 'Drive-through carport / service bay'), ('atrium', 'Stair atrium under the skylight'), ('aerial', 'Aerial'), ('balcony', 'Upper balcony looking north'), ('massing', 'Clay massing')]
+           ('riverside', 'From the river end, between the boundary walls'), ('carport', 'Drive-through carport / service bay'), ('atrium', 'Stair atrium under the skylight'), ('foyer', 'Foyer looking down the hall to the living area'), ('family', 'Family, meals and kitchen opening to the alfresco'), ('aerial', 'Aerial'), ('balcony', 'Upper balcony looking north'), ('deck', 'Covered deck on the garage roof'), ('massing', 'Clay massing')]
     have = [(os.path.join(outdir, 'render', k + '.png'), t) for k, t in rnd if os.path.exists(os.path.join(outdir, 'render', k + '.png'))]
     for i in range(0, len(have), 2):
         im, d = page('Blender views', 'Cycles renders from the same data as the drawings and the walkthrough')

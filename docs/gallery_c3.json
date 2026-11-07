@@ -1,0 +1,98 @@
+[
+ {
+  "src": "img/c3/render_street.jpg",
+  "caption": "Blender \u00b7 Street"
+ },
+ {
+  "src": "img/c3/render_foyer.jpg",
+  "caption": "Blender \u00b7 Foyer"
+ },
+ {
+  "src": "img/c3/render_family.jpg",
+  "caption": "Blender \u00b7 Family"
+ },
+ {
+  "src": "img/c3/render_garden.jpg",
+  "caption": "Blender \u00b7 Garden"
+ },
+ {
+  "src": "img/c3/render_riverside.jpg",
+  "caption": "Blender \u00b7 Riverside"
+ },
+ {
+  "src": "img/c3/render_aerial.jpg",
+  "caption": "Blender \u00b7 Aerial"
+ },
+ {
+  "src": "img/c3/render_deck.jpg",
+  "caption": "Blender \u00b7 Deck"
+ },
+ {
+  "src": "img/c3/render_massing.jpg",
+  "caption": "Blender \u00b7 Massing"
+ },
+ {
+  "src": "img/c3/unity_01_street.jpg",
+  "caption": "Walkthrough \u00b7 Street"
+ },
+ {
+  "src": "img/c3/unity_02_foyer.jpg",
+  "caption": "Walkthrough \u00b7 Foyer"
+ },
+ {
+  "src": "img/c3/unity_03_family.jpg",
+  "caption": "Walkthrough \u00b7 Family"
+ },
+ {
+  "src": "img/c3/unity_04_kitchen.jpg",
+  "caption": "Walkthrough \u00b7 Kitchen"
+ },
+ {
+  "src": "img/c3/unity_05_garage.jpg",
+  "caption": "Walkthrough \u00b7 Garage"
+ },
+ {
+  "src": "img/c3/unity_06_rumpus.jpg",
+  "caption": "Walkthrough \u00b7 Rumpus"
+ },
+ {
+  "src": "img/c3/unity_07_bed1.jpg",
+  "caption": "Walkthrough \u00b7 Bed1"
+ },
+ {
+  "src": "img/c3/unity_08_deck.jpg",
+  "caption": "Walkthrough \u00b7 Deck"
+ },
+ {
+  "src": "img/c3/unity_09_aerial.jpg",
+  "caption": "Walkthrough \u00b7 Aerial"
+ },
+ {
+  "src": "img/c3/unity_10_riverside.jpg",
+  "caption": "Walkthrough \u00b7 Riverside"
+ },
+ {
+  "src": "img/c3/unity_11_dollhouse_ground.jpg",
+  "caption": "Walkthrough \u00b7 Dollhouse Ground"
+ },
+ {
+  "src": "img/c3/sheets_01_site.jpg",
+  "caption": "Drawing \u00b7 Site"
+ },
+ {
+  "src": "img/c3/sheets_02_plans_a.jpg",
+  "caption": "Drawing \u00b7 Plans A"
+ },
+ {
+  "src": "img/c3/sheets_03_roof.jpg",
+  "caption": "Drawing \u00b7 Roof"
+ },
+ {
+  "src": "img/c3/sheets_04_section.jpg",
+  "caption": "Drawing \u00b7 Section"
+ },
+ {
+  "src": "img/c3/sheets_05_schedule.jpg",
+  "caption": "Drawing \u00b7 Schedule"
+ }
+]

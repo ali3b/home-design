@@ -1,0 +1,20 @@
+{
+ "dnn_boundary_wall_m": 90.5,
+ "Ground": {
+  "gfa": 121.2,
+  "outdoor": 14.0
+ },
+ "Upper": {
+  "gfa": 116.9,
+  "outdoor": 7.4
+ },
+ "footprint_m2": 137.3,
+ "ont_coverage_pct": 51.5,
+ "total_gfa_m2": 238.1,
+ "errors": [],
+ "warnings": [
+  "boundary walls run 45.3 m through the DNN band on the property lines (owner instruction) - confirm a 3.0 m solid boundary wall is permitted on DNN land",
+  "Ground: rooms cover 135.2 m\u00b2 of the 137.3 m\u00b2 footprint",
+  "Upper: rooms cover 124.3 m\u00b2 of the 137.3 m\u00b2 footprint"
+ ]
+}
