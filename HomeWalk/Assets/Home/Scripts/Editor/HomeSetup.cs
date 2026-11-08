@@ -27,6 +27,7 @@ namespace HomeWalk.EditorTools
                 QualitySettings.SetQualityLevel(QualitySettings.names.Length - 1, false);
             }
             else Debug.LogError("[Home] URP asset missing at " + Pipe);
+            HomeLook.ConfigurePipeline();
             PlayerSettings.colorSpace = ColorSpace.Linear;
             PlayerSettings.productName = "HomeWalk";
             PlayerSettings.companyName = "HomeDesign";

@@ -132,7 +132,11 @@ def main(concept, outdir):
         for j, f in enumerate(shots[i:i + 4]):
             x, y = M + (j % 2) * 1190, 160 + (j // 2) * 770
             p, xy = fit(f, (x, y, 1150, 710)); im.paste(p, xy)
-            d.text((x, xy[1] + p.height + 6), os.path.basename(f)[3:-4].replace('_', ' ').title(), fill=GREY, font=font(22))
+            lab = os.path.basename(f)[3:-4]
+            if lab.startswith('sun_'):
+                _, season, hhmm = lab.split('_')
+                lab = 'Sun study: %s solstice, %s:%s solar time' % (season, hhmm[:2], hhmm[2:])
+            d.text((x, xy[1] + p.height + 6), lab.replace('_', ' ')[:1].upper() + lab.replace('_', ' ')[1:] if lab.startswith('Sun') else lab.replace('_', ' ').title(), fill=GREY, font=font(22))
         pages.append(im)
 
     out = os.path.join(outdir, '%s_review.pdf' % C['key'].lower())

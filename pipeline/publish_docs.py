@@ -37,7 +37,11 @@ def main(outdir, key):
             out = os.path.join(dst, '%s_%s.jpg' % (sub, name))
             im.save(out, quality=86, optimize=True)
             label = name.split('_', 1)[-1] if sub == 'unity' else name.split('_', 1)[-1] if sub == 'sheets' else name
-            items.append({'src': os.path.relpath(out, os.path.join(ROOT, 'docs')), 'caption': prefix + label.replace('_', ' ').title()})
+            cap = prefix + label.replace('_', ' ').title()
+            if sub == 'unity' and label.startswith('sun_'):      # sun_winter_0900 -> Sun study · Winter solstice 09:00 (solar time)
+                _, season, hhmm = label.split('_')
+                cap = 'Sun study · %s solstice %s:%s (solar time)' % (season.title(), hhmm[:2], hhmm[2:])
+            items.append({'src': os.path.relpath(out, os.path.join(ROOT, 'docs')), 'caption': cap})
     pdf = glob.glob(os.path.join(outdir, '*_review.pdf'))
     if pdf:
         shutil.copy(pdf[0], os.path.join(ROOT, 'docs', os.path.basename(pdf[0])))

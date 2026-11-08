@@ -160,12 +160,13 @@ namespace HomeWalk.EditorTools
             // lighting
             var sunGo = new GameObject("Sun");
             var sun = sunGo.AddComponent<Light>();
-            sun.type = LightType.Directional; sun.shadows = LightShadows.Soft; sun.shadowStrength = 0.85f;
-            var sky = AssetDatabase.LoadAssetAtPath<Material>("Assets/Home/Settings/CW_Sky.mat");
+            sun.type = LightType.Directional; sun.shadows = LightShadows.Soft; sun.shadowStrength = 0.92f;
+            sun.shadowNormalBias = 0.35f; sun.shadowBias = 0.04f;
+            var sky = HomeLook.Sky();
             if (sky) RenderSettings.skybox = sky;
             RenderSettings.sun = sun;
             RenderSettings.ambientMode = AmbientMode.Skybox;
-            RenderSettings.fog = true; RenderSettings.fogMode = FogMode.Exponential; RenderSettings.fogDensity = 0.0035f;
+            RenderSettings.fog = true; RenderSettings.fogMode = FogMode.Exponential; RenderSettings.fogDensity = 0.0018f;
             RenderSettings.fogColor = new Color(0.78f, 0.80f, 0.82f);
             var lightsRoot = new GameObject("InteriorLights");
             var lights = new List<Light>();
@@ -184,11 +185,11 @@ namespace HomeWalk.EditorTools
                     var lgo = new GameObject("Light_" + li + "_" + nm);
                     lgo.transform.SetParent(lightsRoot.transform);
                     float ceil = li == levels.Count - 1 ? zt - 0.15f : (float)levels[li + 1]["z"] - 0.3f;
-                    lgo.transform.position = new Vector3((x0 + x1) / 2, ceil - 0.25f, (y0 + y1) / 2);
+                    lgo.transform.position = new Vector3((x0 + x1) / 2, ceil - 0.5f, (y0 + y1) / 2);
                     var l = lgo.AddComponent<Light>();
                     l.type = LightType.Point; l.shadows = LightShadows.None;
-                    l.color = new Color(1f, 0.82f, 0.62f);
-                    l.range = Mathf.Max(x1 - x0, y1 - y0) * 0.9f + 1.5f;
+                    l.color = new Color(1f, 0.84f, 0.66f);          // ~3000 K warm white
+                    l.range = Mathf.Max(x1 - x0, y1 - y0) * 0.8f + 2.0f;
                     l.intensity = 1.6f;
                     lights.Add(l);
                     if (li > 0) upper.Add(lgo);
@@ -204,7 +205,7 @@ namespace HomeWalk.EditorTools
             }
 
             // post-processing volume
-            var prof = AssetDatabase.LoadAssetAtPath<VolumeProfile>("Assets/Home/Settings/CW_PostFX.asset");
+            var prof = HomeLook.PostFX();
             if (prof)
             {
                 var vgo = new GameObject("PostFX");
@@ -225,7 +226,7 @@ namespace HomeWalk.EditorTools
             // walkthrough
             var wt = new GameObject("Walkthrough").AddComponent<Walkthrough>();
             wt.conceptTitle = ((string)C["title"]).Replace("CONCEPT 1 — ", "Concept 1 · ").Replace("CONCEPT 2 — ", "Concept 2 · ").Replace("CONCEPT 3 — ", "Concept 3 · ");
-            wt.player = fpc; wt.sun = sun;
+            wt.player = fpc; wt.sun = sun; wt.sky = sky;
             wt.roofObjects = roof.ToArray();
             wt.upperObjects = upper.ToArray();
             wt.interiorLights = lights.ToArray();
@@ -253,6 +254,8 @@ namespace HomeWalk.EditorTools
             wt.viewpoints = vps.ToArray();
             var v0 = vps[0];
             player.transform.position = v0.pos; player.transform.rotation = Quaternion.Euler(0, v0.yaw, 0);
+            wt.ApplyTod();
+            HomeLook.BakeProbes(concept.Substring(0, 2), wt, (float)S["site"]["width"], (float)S["site"]["depth_west"]);
             wt.ApplyTod();
 
             Directory.CreateDirectory(Path.GetDirectoryName(scenePath));
@@ -336,8 +339,8 @@ namespace HomeWalk.EditorTools
         // -------------------------------------------------------------- materials --
         static readonly Dictionary<string, (Color c, float smooth, string tex)> MatDefs = new()
         {
-            { "plaster", (new Color(.93f, .90f, .84f), .15f, "plaster") },
-            { "plaster_w", (new Color(1f, 1f, 1f), .15f, "plaster_w") },
+            { "plaster", (Color.white, .2f, "plaster") },
+            { "plaster_w", (Color.white, .2f, "plaster_w") },
             { "plaster_s", (new Color(.75f, .72f, .68f), .1f, "plaster") },
             { "brick", (Color.white, .12f, "brick") },
             { "brick_red", (Color.white, .12f, "brick") },
@@ -346,7 +349,7 @@ namespace HomeWalk.EditorTools
             { "timber", (Color.white, .3f, "timber") },
             { "timber_dk", (Color.white, .35f, "timber_dk") },
             { "slat", (Color.white, .3f, "timber") },
-            { "cement_tile", (Color.white, .45f, "cement_tile") },
+            { "cement_tile", (Color.white, .6f, "cement_tile") },
             { "terracotta", (Color.white, .3f, "terracotta") },
             { "stone", (Color.white, .2f, "stone") },
             { "stone_dk", (Color.white, .2f, "stone_dk") },
@@ -366,11 +369,11 @@ namespace HomeWalk.EditorTools
             { "leaf2", (new Color(.3f, .48f, .2f), .1f, null) },
             { "dark", (new Color(.08f, .08f, .07f), .2f, null) },
             { "charcoal", (new Color(.12f, .12f, .11f), .2f, null) },
-            { "glass", (new Color(.55f, .65f, .7f, .22f), .95f, null) },
+            { "glass", (new Color(.5f, .6f, .64f, .18f), .97f, null) },
             { "glass_dk", (new Color(.45f, .55f, .6f, .35f), .95f, null) },
             // modern palette (Concept 3)
-            { "render_w", (new Color(.93f, .92f, .90f), .15f, "plaster_w") },
-            { "clad_v", (new Color(.95f, .95f, .94f), .3f, null) },
+            { "render_w", (Color.white, .2f, "render_w") },
+            { "clad_v", (Color.white, .35f, "clad_v") },
             { "alu_dk", (new Color(.07f, .07f, .075f), .45f, null) },
             { "membrane", (new Color(.45f, .45f, .44f), .1f, null) },
             { "stone_clad", (new Color(.55f, .53f, .50f), .1f, "stone_dk") },
@@ -392,13 +395,28 @@ namespace HomeWalk.EditorTools
                 m.SetColor("_BaseColor", c);
                 m.SetFloat("_Smoothness", sm);
                 m.SetFloat("_Metallic", 0f);
+                m.SetTexture("_BaseMap", null); m.SetTexture("_BumpMap", null);
+                m.DisableKeyword("_NORMALMAP"); m.DisableKeyword("_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A");
+                m.SetFloat("_SmoothnessTextureChannel", 0);
                 if (tex != null)
                 {
+                    // albedo (RGB) + smoothness variation (A); normal map from the same height field
                     var tpath = $"Assets/Home/Textures/{tex}.png";
-                    var ti = AssetImporter.GetAtPath(tpath) as TextureImporter;
-                    if (ti != null && (ti.wrapMode != TextureWrapMode.Repeat || ti.anisoLevel < 4))
-                    { ti.wrapMode = TextureWrapMode.Repeat; ti.anisoLevel = 8; ti.SaveAndReimport(); }
+                    if (AssetImporter.GetAtPath(tpath) is TextureImporter ti &&
+                        (ti.wrapMode != TextureWrapMode.Repeat || ti.anisoLevel < 8 || ti.alphaIsTransparency || ti.alphaSource != TextureImporterAlphaSource.FromInput))
+                    { ti.wrapMode = TextureWrapMode.Repeat; ti.anisoLevel = 8; ti.alphaIsTransparency = false; ti.alphaSource = TextureImporterAlphaSource.FromInput; ti.SaveAndReimport(); }
                     m.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(tpath));
+                    m.SetFloat("_SmoothnessTextureChannel", 1);
+                    m.EnableKeyword("_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A");
+                    var npath = $"Assets/Home/Textures/{tex}_n.png";
+                    if (AssetImporter.GetAtPath(npath) is TextureImporter ni)
+                    {
+                        if (ni.textureType != TextureImporterType.NormalMap || ni.wrapMode != TextureWrapMode.Repeat || ni.anisoLevel < 8)
+                        { ni.textureType = TextureImporterType.NormalMap; ni.wrapMode = TextureWrapMode.Repeat; ni.anisoLevel = 8; ni.SaveAndReimport(); }
+                        m.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(npath));
+                        m.SetFloat("_BumpScale", 1f);
+                        m.EnableKeyword("_NORMALMAP");
+                    }
                 }
                 if (c.a < 0.99f)
                 {

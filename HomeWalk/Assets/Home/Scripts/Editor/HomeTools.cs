@@ -58,6 +58,7 @@ namespace HomeWalk.EditorTools
             var cam = go.AddComponent<Camera>();
             cam.fieldOfView = 70; cam.nearClipPlane = 0.05f; cam.farClipPlane = 1500;
             cam.GetUniversalAdditionalCameraData().renderPostProcessing = true;
+            cam.allowHDR = true;
             const int W = 1600, H = 1000;
             var rt = new RenderTexture(W, H, 24, RenderTextureFormat.ARGB32) { antiAliasing = 4 };
             cam.targetTexture = rt;
@@ -89,6 +90,21 @@ namespace HomeWalk.EditorTools
             }
             foreach (var g in wt.roofObjects) g.SetActive(true);
             foreach (var g in wt.upperObjects) g.SetActive(true);
+            // sun study: aerial view at 09:00 / 12:00 / 15:00 solar time on the winter and summer solstices
+            var aer = wt.viewpoints.FirstOrDefault(v => v.name == "Aerial") ?? wt.viewpoints[0];
+            go.transform.position = aer.pos + new Vector3(0, 1.6f, 0);
+            go.transform.rotation = Quaternion.Euler(aer.pitch, aer.yaw, 0);
+            cam.fieldOfView = 50;
+            foreach (var (season, decl) in new[] { ("winter", -23.44f), ("summer", 23.44f) })
+                foreach (var hh in new[] { 9, 12, 15 })
+                {
+                    wt.SetSolar(decl, hh * 60f);
+                    cam.Render(); cam.Render();
+                    RenderTexture.active = rt;
+                    tex.ReadPixels(new Rect(0, 0, W, H), 0, 0); tex.Apply();
+                    File.WriteAllBytes(Path.Combine(OutDir, $"{++i:00}_sun_{season}_{hh:00}00.png"), tex.EncodeToPNG());
+                }
+            wt.ApplyTod();
             RenderTexture.active = null; cam.targetTexture = null;
             Object.DestroyImmediate(go); Object.DestroyImmediate(rt);
             Debug.Log("[Home] shots written to " + OutDir);
@@ -284,6 +300,9 @@ namespace HomeWalk.EditorTools
             pipe.msaaSampleCount = 1;
             pipe.shadowDistance = 40f;
             pipe.supportsHDR = false;
+            pipe.colorGradingMode = ColorGradingMode.LowDynamicRange;
+            pipe.shadowCascadeCount = 2;
+            pipe.mainLightShadowmapResolution = 2048;
             pipe.supportsCameraOpaqueTexture = false;
             EditorUtility.SetDirty(pipe);
             AssetDatabase.SaveAssets();
@@ -317,10 +336,11 @@ namespace HomeWalk.EditorTools
             }
             var opts = new BuildPlayerOptions { scenes = new[] { Scene }, locationPathName = path, target = target, options = BuildOptions.None };
             var desktopPipe = GraphicsSettings.defaultRenderPipeline;
-            if (target == BuildTarget.WebGL) UsePipeline(WebGLPipeline());
+            System.Action undoGrading = () => { };
+            if (target == BuildTarget.WebGL) { UsePipeline(WebGLPipeline()); undoGrading = HomeLook.UseLdrGrading(); }
             BuildReport report;
             try { report = BuildPipeline.BuildPlayer(opts); }
-            finally { if (target == BuildTarget.WebGL) UsePipeline(desktopPipe); }
+            finally { if (target == BuildTarget.WebGL) { UsePipeline(desktopPipe); undoGrading(); } }
             var s = report.summary;
             Debug.Log($"[Home] player build {target}: {s.result}, {s.totalSize / (1024 * 1024)} MB, {s.totalErrors} errors, {s.totalTime.TotalMinutes:F1} min -> {path}");
             if (s.result != BuildResult.Succeeded && Application.isBatchMode) EditorApplication.Exit(1);

@@ -90,10 +90,14 @@ Pipeline features added for this concept (all opt-in from the concept JSON, so C
 | R | Roof on / off |
 | U | Dollhouse (hide the upper floor and roof) |
 | T | Time of day: morning, midday, golden hour, evening |
+| L | Sun timelapse: winter solstice → summer solstice → off. Sunrise to sunset in 30-minute steps (local solar time, latitude rounded to 21°N) |
+| [ / ] | Timelapse slower / faster |
 | F | Fly mode (Space up, C down) |
 | M / Tab | Plan minimap with your position |
 | H | Help on / off |
 | Esc / click | Free / capture the mouse |
+
+**Look:** `pipeline/textures.py` generates the tileable textures. Each one has an albedo, a smoothness channel and a normal map. `HomeLook.cs` sets everything else from code: HDR with ACES grading, bloom, SSAO, 4-cascade soft shadows, a procedural sky and per-room reflection probes baked into each scene. The browser build uses lighter settings: no HDR, no SSAO and 2 shadow cascades.
 
 ## Rebuild everything
 
