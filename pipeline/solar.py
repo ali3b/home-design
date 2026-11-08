@@ -463,6 +463,85 @@ def economics(gen_hourly, W, kwp, e=ECON):
             'payback_years': round(payback, 1) if payback else None, 'net_25y': round(total - cost)}
 
 
+BATT_COST = 5_000_000          # VND per usable kWh, lithium iron phosphate incl. hybrid-inverter share
+BATT_REPLACE = (12, 0.6)       # replaced in year 13 at 60 % of today's price
+HOUSEHOLDS = {'no_ac': ('Without air-con', [300] * 12),
+              'ac': ('With air-con', ECON['load_monthly'])}
+
+
+def battery_run(gen, load, B, eff=0.95, reserve=0.1, years=2):
+    """Hourly dispatch: surplus charges the battery, shortfall draws from it, the rest comes from the grid
+    (or a generator, off-grid). Runs the year twice so the start state does not matter. Returns grid kWh per hour."""
+    lo, soc = reserve * B, 0.5 * B
+    g, l = gen.tolist(), load.tolist()
+    imp = [0.0] * len(g)
+    for _ in range(years):
+        for i in range(len(g)):
+            d = g[i] - l[i]
+            if d >= 0:
+                soc = min(B, soc + d * eff)
+                imp[i] = 0.0
+            else:
+                out = min(-d, max(0.0, (soc - lo) * eff))
+                soc -= out / eff
+                imp[i] = -d - out
+    return np.array(imp)
+
+
+def battery_case(gen, W, n_panels, B, loadm, e=ECON):
+    mon = months_of(W)
+    hr = np.array([(int(r['time(UTC)'][9:11]) + 7) % 24 for r in W])
+    load = np.array(load_profile(loadm))[mon - 1, hr]
+    imp = battery_run(gen, load, B)
+    before = sum(bill(x, e) for x in loadm)
+    after = sum(bill(imp[mon == m].sum(), e) for m in range(1, 13))
+    pv, bc = n_panels * PANEL_WP / 1000 * e['cost_per_kwp'], B * BATT_COST
+    save = before - after
+    cum, pay, tot = -(pv + bc), None, 0.0
+    for y in range(e['years']):
+        s_y = save * (1 - e['degradation']) ** y - pv * e['om_pct'] - (bc * BATT_REPLACE[1] if y == BATT_REPLACE[0] else 0)
+        cum += s_y; tot += s_y
+        if pay is None and cum >= 0 and s_y > 0:
+            pay = y + 1 - cum / s_y
+    seas = {}
+    for nm, _, ms in SEASONS:
+        k = np.isin(mon, ms)
+        seas[nm] = round(100 * (1 - imp[k].sum() / load[k].sum()))
+    daily = imp.reshape(-1, 24).sum(axis=1)
+    short = daily > 0.3
+    run = best = 0
+    for v in short:
+        run = run + 1 if v else 0
+        best = max(best, run)
+    return {'panels': n_panels, 'kwp': round(n_panels * PANEL_WP / 1000, 1), 'battery_kwh': B,
+            'cost': round(pv + bc), 'sun_share_pct': round(100 * (1 - imp.sum() / load.sum())), 'seasons_pct': seas,
+            'grid_free_days': int((~short).sum()), 'grid_kwh': round(float(imp.sum())),
+            'longest_short_run_days': best, 'worst_day_grid_kwh': round(float(daily.max()), 1),
+            'saving_year1': round(save), 'payback_years': round(pay, 1) if pay else None, 'net_25y': round(tot - pv - bc),
+            'bill_before': round(before)}
+
+
+def battery_study(hourly, keep, spec, W, n_best):
+    """Grid-connected battery comparison, and an off-grid test using every panel that fits."""
+    order = sorted(keep, key=lambda i: -spec[i])
+    gen = lambda idx: hourly[idx].sum(axis=0)
+    out = {'battery_cost_per_kwh': BATT_COST, 'households': {}}
+    for hk, (label, loadm) in HOUSEHOLDS.items():
+        rows = []
+        for n in sorted({n_best, len(order)}):
+            for B in (0, 5, 10, 15):
+                rows.append(battery_case(gen(order[:n]), W, n, B, loadm))
+        allp = list(range(len(hourly)))
+        off = []
+        for nm, idx in (('recommended', order), ('every panel that fits', allp)):
+            for B in (10, 20, 40):
+                c = battery_case(gen(idx), W, len(idx), B, loadm)
+                c['array'] = nm
+                off.append(c)
+        out['households'][hk] = {'label': label, 'year_kwh': sum(loadm), 'grid_tied': rows, 'off_grid': off}
+    return out
+
+
 def best_size(hourly, keep, spec, W):
     """Number of panels (best first) with the largest 25-year net saving under the default assumptions."""
     order = sorted(keep, key=lambda i: -spec[i])
@@ -554,6 +633,7 @@ def main():
     if keep:
         n, ec = best_size(hourly, keep, spec, W)
         res['economics']['best_size'] = {'panels': n, 'kwp': round(n * PANEL_WP / 1000, 2), **ec}
+        res['batteries'] = battery_study(hourly, keep, spec, W, n)
     os.makedirs(outdir, exist_ok=True)
     json.dump(res, open(os.path.join(outdir, 'solar.json'), 'w'), indent=1)
     pub = {k: v for k, v in res.items()}
@@ -564,6 +644,11 @@ def main():
     ec = res['economics']
     print(f"   econ: recommended {ec['recommended']}")
     print(f"   econ: best size {ec.get('best_size')}")
+    for hk, h in res.get('batteries', {}).get('households', {}).items():
+        for c in h['grid_tied'] + h['off_grid']:
+            print(f"   {hk:5s} {c.get('array', 'grid'):22s} {c['panels']:2d}p B{c['battery_kwh']:2d} sun {c['sun_share_pct']:3d}% "
+                  f"{c['seasons_pct']} free {c['grid_free_days']:3d} gridkWh {c['grid_kwh']:5d} run {c['longest_short_run_days']:3d} "
+                  f"worst {c['worst_day_grid_kwh']} pay {c['payback_years']} net {c['net_25y']/1e6:.0f}M")
     for s in r['seasons']:
         print(f"   {s['season']:7s} {s['kwh']:6d} kWh  {s['kwh_per_day']:5.1f}/day")
     for b in by.values():

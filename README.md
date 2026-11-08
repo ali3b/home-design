@@ -90,7 +90,7 @@ Panels below 70 % of an ideal unshaded panel are dropped. The rest form the reco
 | C2 | 25 panels, 11.0 kWp | 12,163 | 2,574 · 3,163 · 3,104 · 3,322 | 6 panels, about 6-year payback |
 | C3 | 30 panels, 13.2 kWp (flat roof) | 14,098 | 2,691 · 3,829 · 3,940 · 3,638 | 6 panels, about 6-year payback |
 
-The review PDFs have a solar page. `docs/solar.html` is the calculator: change the household use, cost and buy-back price there.
+The review PDFs have a solar page and a "Batteries and living off-grid" page: grid-connected battery sizes, and an off-grid test for a household with and without air-con. `docs/solar.html` is the calculator, with a battery option: change the household use, cost and buy-back price there.
 
 ## Walk through it
 

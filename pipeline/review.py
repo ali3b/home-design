@@ -178,6 +178,87 @@ def solar_page(C, outdir):
     return im
 
 
+def battery_page(C, outdir):
+    """Batteries (grid-connected) and the off-grid test, from solar.json['batteries']."""
+    sj = os.path.join(outdir, 'solar.json')
+    if not os.path.exists(sj):
+        return None
+    R = json.load(open(sj))
+    Bt = R.get('batteries')
+    if not Bt:
+        return None
+    im, d = page('Batteries and living off-grid',
+                 'Hour-by-hour over a typical year · battery %s per usable kWh incl. hybrid inverter, replaced once (year 13, 60 %%) '
+                 '· nothing paid for surplus power' % mvnd(Bt['battery_cost_per_kwh']))
+    seas = ['Winter', 'Spring', 'Summer', 'Autumn']
+
+    def bars(x, y, sp):
+        for i, k in enumerate(seas):
+            v = sp[k]
+            d.rectangle([x + i * 52, y + 26 - 24 * v / 100, x + i * 52 + 40, y + 26], fill=SEASON_COL[i])
+            d.text((x + i * 52, y + 28), '%d' % v, fill=GREY, font=font(15))
+
+    cols = [M, M + 160, M + 300, M + 480, M + 790, M + 940, M + 1140, M + 1310]
+    heads = ['Panels', 'Battery', 'Cost', 'From sun: W Sp Su Au', 'Year', 'No-grid days', 'Saving / yr', 'Payback']
+    y = 165
+    for hk in ('no_ac', 'ac'):
+        H_ = Bt['households'][hk]
+        d.text((M, y), '%s — example household using about %s kWh a year (bill %s a year)' % (
+            H_['label'].upper(), '{:,}'.format(H_['year_kwh']), mvnd(H_['grid_tied'][0]['bill_before'])), fill=INK, font=font(26, True))
+        y += 44
+        for x, t in zip(cols, heads):
+            d.text((x, y), t, fill=INK, font=font(19, True))
+        d.text((M + 1470, y), 'Net over 25 years', fill=INK, font=font(19, True))
+        y += 30
+        best = max(H_['grid_tied'], key=lambda c: c['net_25y'])
+        for c in H_['grid_tied']:
+            hl = c is best
+            if hl:
+                d.rectangle([M - 12, y - 6, W - M, y + 46], fill=(240, 232, 214))
+            f = font(21, hl)
+            vals = ['%d (%.1f kWp)' % (c['panels'], c['kwp']), 'none' if not c['battery_kwh'] else '%d kWh' % c['battery_kwh'],
+                    mvnd(c['cost']), None, '%d %%' % c['sun_share_pct'], str(c['grid_free_days']), mvnd(c['saving_year1']),
+                    ('%.0f yrs' % c['payback_years']) if c['payback_years'] else '> 25 yrs']
+            for x, t in zip(cols, vals):
+                if t is None:
+                    bars(x, y - 4, c['seasons_pct'])
+                else:
+                    d.text((x, y + 6), t, fill=INK, font=f)
+            d.text((M + 1470, y + 6), mvnd(c['net_25y']) + ('   ← best value' if hl else ''), fill=RED if hl else INK, font=f)
+            y += 52
+        y += 18
+    # off-grid verdicts
+    d.text((M, y), 'CAN THE HOUSE LIVE OFF-GRID?', fill=INK, font=font(28, True)); y += 46
+    for hk in ('no_ac', 'ac'):
+        H_ = Bt['households'][hk]
+        ok = [c for c in H_['off_grid'] if c['grid_kwh'] == 0]
+        if ok:
+            c = min(ok, key=lambda c: c['cost'])
+            v = ('%s: YES in a typical year with %d panels (%.1f kWp%s) and a %d kWh battery, about %s. That costs %s more over '
+                 '25 years than staying on the grid.' % (H_['label'], c['panels'], c['kwp'],
+                                                        ', every panel that fits, including the shaded slopes' if c['array'] != 'recommended' else '',
+                                                        c['battery_kwh'], mvnd(c['cost']), mvnd(-c['net_25y'])))
+        else:
+            c = max(H_['off_grid'], key=lambda c: (c['sun_share_pct'], -c['cost']))
+            v = ('%s: NOT on this roof. The best tested (%d panels, %d kWh battery, %s) runs %d %% of the year\'s power from the sun, '
+                 'but still needs %s kWh from a generator or the grid, with up to %d days in a row short.' % (
+                     H_['label'], c['panels'], c['battery_kwh'], mvnd(c['cost']), c['sun_share_pct'],
+                     '{:,}'.format(c['grid_kwh']), c['longest_short_run_days']))
+        y = wrap(d, v, (M, y), W - 2 * M, font(23), INK) + 6
+        near = [c for c in H_['off_grid'] if 0 < c['grid_kwh'] <= 60]
+        if near:
+            c = min(near, key=lambda c: c['cost'])
+            y = wrap(d, '   Nearly: %d panels with %d kWh covers all but %d kWh a year (%d short days, the worst needing %.1f kWh).'
+                     % (c['panels'], c['battery_kwh'], c['grid_kwh'], 365 - c['grid_free_days'], c['worst_day_grid_kwh']),
+                     (M, y), W - 2 * M, font(21), GREY) + 4
+    y += 8
+    wrap(d, 'A "typical year" leaves out the worst years. Northern winters bring weeks of drizzle and low cloud, so an off-grid house '
+         'needs a margin: about 30 % more battery and panels, or a small generator for bad spells. Off-grid also wastes the summer surplus. '
+         'Staying connected with a 5–10 kWh battery gets most of the benefit for far less money, and keeps the lights on in power cuts.',
+         (M, y), W - 2 * M, font(20), GREY)
+    return im
+
+
 def main(concept, outdir):
     C = json.load(open(concept))
     here = os.path.dirname(os.path.abspath(__file__))
@@ -236,6 +317,9 @@ def main(concept, outdir):
     sp = solar_page(C, outdir)
     if sp:
         pages.append(sp)
+    bp = battery_page(C, outdir)
+    if bp:
+        pages.append(bp)
 
     # renders
     rnd = [('street', 'Street view'), ('garden', 'From the garden (DNN land, planting only)'),

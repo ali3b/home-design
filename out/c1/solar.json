@@ -11396,5 +11396,626 @@
    "kwh_per_kwp_no_neighbours": 1089,
    "keep": false
   }
- ]
+ ],
+ "batteries": {
+  "battery_cost_per_kwh": 5000000,
+  "households": {
+   "no_ac": {
+    "label": "Without air-con",
+    "year_kwh": 3600,
+    "grid_tied": [
+     {
+      "panels": 7,
+      "kwp": 3.1,
+      "battery_kwh": 0,
+      "cost": 43120000,
+      "sun_share_pct": 35,
+      "seasons_pct": {
+       "Winter": 30,
+       "Spring": 36,
+       "Summer": 38,
+       "Autumn": 35
+      },
+      "grid_free_days": 0,
+      "grid_kwh": 2352,
+      "longest_short_run_days": 365,
+      "worst_day_grid_kwh": 8.3,
+      "saving_year1": 3844626,
+      "payback_years": 13.1,
+      "net_25y": 36663827,
+      "bill_before": 9180864
+     },
+     {
+      "panels": 7,
+      "kwp": 3.1,
+      "battery_kwh": 5,
+      "cost": 68120000,
+      "sun_share_pct": 73,
+      "seasons_pct": {
+       "Winter": 63,
+       "Spring": 77,
+       "Summer": 78,
+       "Autumn": 75
+      },
+      "grid_free_days": 0,
+      "grid_kwh": 966,
+      "longest_short_run_days": 365,
+      "worst_day_grid_kwh": 8.3,
+      "saving_year1": 7174221,
+      "payback_years": 10.4,
+      "net_25y": 75095612,
+      "bill_before": 9180864
+     },
+     {
+      "panels": 7,
+      "kwp": 3.1,
+      "battery_kwh": 10,
+      "cost": 93120000,
+      "sun_share_pct": 89,
+      "seasons_pct": {
+       "Winter": 76,
+       "Spring": 93,
+       "Summer": 93,
+       "Autumn": 93
+      },
+      "grid_free_days": 248,
+      "grid_kwh": 404,
+      "longest_short_run_days": 18,
+      "worst_day_grid_kwh": 8.3,
+      "saving_year1": 8350854,
+      "payback_years": 16.2,
+      "net_25y": 62812301,
+      "bill_before": 9180864
+     },
+     {
+      "panels": 7,
+      "kwp": 3.1,
+      "battery_kwh": 15,
+      "cost": 118120000,
+      "sun_share_pct": 90,
+      "seasons_pct": {
+       "Winter": 77,
+       "Spring": 95,
+       "Summer": 96,
+       "Autumn": 94
+      },
+      "grid_free_days": 275,
+      "grid_kwh": 344,
+      "longest_short_run_days": 15,
+      "worst_day_grid_kwh": 8.3,
+      "saving_year1": 8474879,
+      "payback_years": 21.4,
+      "net_25y": 25733848,
+      "bill_before": 9180864
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 0,
+      "cost": 110880000,
+      "sun_share_pct": 40,
+      "seasons_pct": {
+       "Winter": 34,
+       "Spring": 42,
+       "Summer": 45,
+       "Autumn": 38
+      },
+      "grid_free_days": 0,
+      "grid_kwh": 2172,
+      "longest_short_run_days": 365,
+      "worst_day_grid_kwh": 7.4,
+      "saving_year1": 4314029,
+      "payback_years": null,
+      "net_25y": -36978939,
+      "bill_before": 9180864
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 5,
+      "cost": 135880000,
+      "sun_share_pct": 83,
+      "seasons_pct": {
+       "Winter": 75,
+       "Spring": 85,
+       "Summer": 88,
+       "Autumn": 82
+      },
+      "grid_free_days": 0,
+      "grid_kwh": 624,
+      "longest_short_run_days": 365,
+      "worst_day_grid_kwh": 6.3,
+      "saving_year1": 7898724,
+      "payback_years": 23.7,
+      "net_25y": 7461948,
+      "bill_before": 9180864
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 10,
+      "cost": 160880000,
+      "sun_share_pct": 99,
+      "seasons_pct": {
+       "Winter": 96,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 353,
+      "grid_kwh": 34,
+      "longest_short_run_days": 6,
+      "worst_day_grid_kwh": 5.0,
+      "saving_year1": 9111327,
+      "payback_years": null,
+      "net_25y": -3974034,
+      "bill_before": 9180864
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 15,
+      "cost": 185880000,
+      "sun_share_pct": 99,
+      "seasons_pct": {
+       "Winter": 98,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 359,
+      "grid_kwh": 20,
+      "longest_short_run_days": 5,
+      "worst_day_grid_kwh": 4.9,
+      "saving_year1": 9139732,
+      "payback_years": null,
+      "net_25y": -43304910,
+      "bill_before": 9180864
+     }
+    ],
+    "off_grid": [
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 10,
+      "cost": 160880000,
+      "sun_share_pct": 99,
+      "seasons_pct": {
+       "Winter": 96,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 353,
+      "grid_kwh": 34,
+      "longest_short_run_days": 6,
+      "worst_day_grid_kwh": 5.0,
+      "saving_year1": 9111327,
+      "payback_years": null,
+      "net_25y": -3974034,
+      "bill_before": 9180864,
+      "array": "recommended"
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 20,
+      "cost": 210880000,
+      "sun_share_pct": 100,
+      "seasons_pct": {
+       "Winter": 98,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 360,
+      "grid_kwh": 14,
+      "longest_short_run_days": 5,
+      "worst_day_grid_kwh": 4.8,
+      "saving_year1": 9152540,
+      "payback_years": null,
+      "net_25y": -83003203,
+      "bill_before": 9180864,
+      "array": "recommended"
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 40,
+      "cost": 310880000,
+      "sun_share_pct": 100,
+      "seasons_pct": {
+       "Winter": 100,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 365,
+      "grid_kwh": 0,
+      "longest_short_run_days": 0,
+      "worst_day_grid_kwh": 0.0,
+      "saving_year1": 9180864,
+      "payback_years": null,
+      "net_25y": -242336014,
+      "bill_before": 9180864,
+      "array": "recommended"
+     },
+     {
+      "panels": 72,
+      "kwp": 31.7,
+      "battery_kwh": 10,
+      "cost": 493520000,
+      "sun_share_pct": 100,
+      "seasons_pct": {
+       "Winter": 100,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 365,
+      "grid_kwh": 0,
+      "longest_short_run_days": 0,
+      "worst_day_grid_kwh": 0.0,
+      "saving_year1": 9180864,
+      "payback_years": null,
+      "net_25y": -418136014,
+      "bill_before": 9180864,
+      "array": "every panel that fits"
+     },
+     {
+      "panels": 72,
+      "kwp": 31.7,
+      "battery_kwh": 20,
+      "cost": 543520000,
+      "sun_share_pct": 100,
+      "seasons_pct": {
+       "Winter": 100,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 365,
+      "grid_kwh": 0,
+      "longest_short_run_days": 0,
+      "worst_day_grid_kwh": 0.0,
+      "saving_year1": 9180864,
+      "payback_years": null,
+      "net_25y": -498136014,
+      "bill_before": 9180864,
+      "array": "every panel that fits"
+     },
+     {
+      "panels": 72,
+      "kwp": 31.7,
+      "battery_kwh": 40,
+      "cost": 643520000,
+      "sun_share_pct": 100,
+      "seasons_pct": {
+       "Winter": 100,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 365,
+      "grid_kwh": 0,
+      "longest_short_run_days": 0,
+      "worst_day_grid_kwh": 0.0,
+      "saving_year1": 9180864,
+      "payback_years": null,
+      "net_25y": -658136014,
+      "bill_before": 9180864,
+      "array": "every panel that fits"
+     }
+    ]
+   },
+   "ac": {
+    "label": "With air-con",
+    "year_kwh": 6890,
+    "grid_tied": [
+     {
+      "panels": 7,
+      "kwp": 3.1,
+      "battery_kwh": 0,
+      "cost": 43120000,
+      "sun_share_pct": 31,
+      "seasons_pct": {
+       "Winter": 29,
+       "Spring": 33,
+       "Summer": 30,
+       "Autumn": 31
+      },
+      "grid_free_days": 0,
+      "grid_kwh": 4771,
+      "longest_short_run_days": 365,
+      "worst_day_grid_kwh": 24.3,
+      "saving_year1": 7725961,
+      "payback_years": 6.0,
+      "net_25y": 128092351,
+      "bill_before": 21059957
+     },
+     {
+      "panels": 7,
+      "kwp": 3.1,
+      "battery_kwh": 5,
+      "cost": 68120000,
+      "sun_share_pct": 48,
+      "seasons_pct": {
+       "Winter": 56,
+       "Spring": 53,
+       "Summer": 39,
+       "Autumn": 52
+      },
+      "grid_free_days": 0,
+      "grid_kwh": 3574,
+      "longest_short_run_days": 365,
+      "worst_day_grid_kwh": 24.3,
+      "saving_year1": 11590785,
+      "payback_years": 6.2,
+      "net_25y": 179131968,
+      "bill_before": 21059957
+     },
+     {
+      "panels": 7,
+      "kwp": 3.1,
+      "battery_kwh": 10,
+      "cost": 93120000,
+      "sun_share_pct": 54,
+      "seasons_pct": {
+       "Winter": 67,
+       "Spring": 61,
+       "Summer": 40,
+       "Autumn": 61
+      },
+      "grid_free_days": 27,
+      "grid_kwh": 3171,
+      "longest_short_run_days": 215,
+      "worst_day_grid_kwh": 24.3,
+      "saving_year1": 12644191,
+      "payback_years": 7.8,
+      "net_25y": 163945938,
+      "bill_before": 21059957
+     },
+     {
+      "panels": 7,
+      "kwp": 3.1,
+      "battery_kwh": 15,
+      "cost": 118120000,
+      "sun_share_pct": 54,
+      "seasons_pct": {
+       "Winter": 67,
+       "Spring": 61,
+       "Summer": 40,
+       "Autumn": 61
+      },
+      "grid_free_days": 30,
+      "grid_kwh": 3162,
+      "longest_short_run_days": 215,
+      "worst_day_grid_kwh": 24.3,
+      "saving_year1": 12665000,
+      "payback_years": 9.9,
+      "net_25y": 124436134,
+      "bill_before": 21059957
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 0,
+      "cost": 110880000,
+      "sun_share_pct": 36,
+      "seasons_pct": {
+       "Winter": 34,
+       "Spring": 38,
+       "Summer": 37,
+       "Autumn": 36
+      },
+      "grid_free_days": 0,
+      "grid_kwh": 4381,
+      "longest_short_run_days": 365,
+      "worst_day_grid_kwh": 19.7,
+      "saving_year1": 9104271,
+      "payback_years": 14.4,
+      "net_25y": 75859766,
+      "bill_before": 21059957
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 5,
+      "cost": 135880000,
+      "sun_share_pct": 59,
+      "seasons_pct": {
+       "Winter": 68,
+       "Spring": 62,
+       "Summer": 52,
+       "Autumn": 60
+      },
+      "grid_free_days": 0,
+      "grid_kwh": 2848,
+      "longest_short_run_days": 365,
+      "worst_day_grid_kwh": 18.2,
+      "saving_year1": 13896557,
+      "payback_years": 10.9,
+      "net_25y": 148746614,
+      "bill_before": 21059957
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 10,
+      "cost": 160880000,
+      "sun_share_pct": 78,
+      "seasons_pct": {
+       "Winter": 93,
+       "Spring": 83,
+       "Summer": 65,
+       "Autumn": 83
+      },
+      "grid_free_days": 116,
+      "grid_kwh": 1525,
+      "longest_short_run_days": 214,
+      "worst_day_grid_kwh": 18.2,
+      "saving_year1": 17380934,
+      "payback_years": 10.1,
+      "net_25y": 190824428,
+      "bill_before": 21059957
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 15,
+      "cost": 185880000,
+      "sun_share_pct": 88,
+      "seasons_pct": {
+       "Winter": 95,
+       "Spring": 94,
+       "Summer": 76,
+       "Autumn": 94
+      },
+      "grid_free_days": 192,
+      "grid_kwh": 858,
+      "longest_short_run_days": 155,
+      "worst_day_grid_kwh": 18.2,
+      "saving_year1": 19130171,
+      "payback_years": 10.6,
+      "net_25y": 192029385,
+      "bill_before": 21059957
+     }
+    ],
+    "off_grid": [
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 10,
+      "cost": 160880000,
+      "sun_share_pct": 78,
+      "seasons_pct": {
+       "Winter": 93,
+       "Spring": 83,
+       "Summer": 65,
+       "Autumn": 83
+      },
+      "grid_free_days": 116,
+      "grid_kwh": 1525,
+      "longest_short_run_days": 214,
+      "worst_day_grid_kwh": 18.2,
+      "saving_year1": 17380934,
+      "payback_years": 10.1,
+      "net_25y": 190824428,
+      "bill_before": 21059957,
+      "array": "recommended"
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 20,
+      "cost": 210880000,
+      "sun_share_pct": 93,
+      "seasons_pct": {
+       "Winter": 96,
+       "Spring": 98,
+       "Summer": 86,
+       "Autumn": 97
+      },
+      "grid_free_days": 266,
+      "grid_kwh": 465,
+      "longest_short_run_days": 42,
+      "worst_day_grid_kwh": 18.2,
+      "saving_year1": 20066727,
+      "payback_years": 11.4,
+      "net_25y": 174090844,
+      "bill_before": 21059957,
+      "array": "recommended"
+     },
+     {
+      "panels": 18,
+      "kwp": 7.9,
+      "battery_kwh": 40,
+      "cost": 310880000,
+      "sun_share_pct": 97,
+      "seasons_pct": {
+       "Winter": 99,
+       "Spring": 100,
+       "Summer": 92,
+       "Autumn": 99
+      },
+      "grid_free_days": 336,
+      "grid_kwh": 240,
+      "longest_short_run_days": 7,
+      "worst_day_grid_kwh": 18.2,
+      "saving_year1": 20544441,
+      "payback_years": 23.5,
+      "net_25y": 25343847,
+      "bill_before": 21059957,
+      "array": "recommended"
+     },
+     {
+      "panels": 72,
+      "kwp": 31.7,
+      "battery_kwh": 10,
+      "cost": 493520000,
+      "sun_share_pct": 83,
+      "seasons_pct": {
+       "Winter": 100,
+       "Spring": 88,
+       "Summer": 71,
+       "Autumn": 87
+      },
+      "grid_free_days": 147,
+      "grid_kwh": 1166,
+      "longest_short_run_days": 214,
+      "worst_day_grid_kwh": 9.8,
+      "saving_year1": 18322285,
+      "payback_years": null,
+      "net_25y": -202801156,
+      "bill_before": 21059957,
+      "array": "every panel that fits"
+     },
+     {
+      "panels": 72,
+      "kwp": 31.7,
+      "battery_kwh": 20,
+      "cost": 543520000,
+      "sun_share_pct": 100,
+      "seasons_pct": {
+       "Winter": 100,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 359,
+      "grid_kwh": 8,
+      "longest_short_run_days": 2,
+      "worst_day_grid_kwh": 3.8,
+      "saving_year1": 21043954,
+      "payback_years": null,
+      "net_25y": -218689644,
+      "bill_before": 21059957,
+      "array": "every panel that fits"
+     },
+     {
+      "panels": 72,
+      "kwp": 31.7,
+      "battery_kwh": 40,
+      "cost": 643520000,
+      "sun_share_pct": 100,
+      "seasons_pct": {
+       "Winter": 100,
+       "Spring": 100,
+       "Summer": 100,
+       "Autumn": 100
+      },
+      "grid_free_days": 365,
+      "grid_kwh": 0,
+      "longest_short_run_days": 0,
+      "worst_day_grid_kwh": 0.0,
+      "saving_year1": 21059957,
+      "payback_years": null,
+      "net_25y": -378312681,
+      "bill_before": 21059957,
+      "array": "every panel that fits"
+     }
+    ]
+   }
+  }
+ }
 }
