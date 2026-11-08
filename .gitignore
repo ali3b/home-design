@@ -32,3 +32,5 @@ out/**/*.blend
 # Publish a cropped/scrubbed copy into docs/img instead (pipeline/scrub_image.py).
 Concepts and Plan/*
 !Concepts and Plan/concept.png
+out/_cache/
+out/*.log

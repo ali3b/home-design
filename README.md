@@ -71,6 +71,27 @@ Pipeline features added for this concept (all opt-in from the concept JSON, so C
 - free-standing `features` (piers, posts, aprons), which are validated to stay in ONT
 - U-stairs that run along x (`stair.axis: "x"`)
 
+## Rooftop solar
+
+`pipeline/solar.py` puts 440 Wp panels on each concept's roof and works out the energy, hour by hour, for a typical year:
+- **Panels:** flush on pitched roofs; on flat roofs, 10° south-facing rows.
+- **Weather:** PVGIS-ERA5 typical year. The site is rounded to whole degrees and cached in the gitignored `out/_cache`. Only "21°N" is published.
+- **Shading:** sun rays from every panel are checked against the assumed 3-storey neighbours, the house's own roofs and parapets, and the other panels.
+- **Losses:** 14 % system losses, plus temperature and glass-angle losses. Results are calibrated to PVGIS PVcalc within 1 %.
+
+Panels below 70 % of an ideal unshaded panel are dropped. The rest form the recommended array, which Blender and Unity build on the roof (`pv_cell` / `pv_frame`, hidden with the roof on R). A simple bill model then gives the payback:
+- the EVN household tiers from 1 Nov 2026 plus VAT
+- an example air-conditioned household
+- nothing paid for exports by default
+
+| | Recommended array | kWh / year | Winter · Spring · Summer · Autumn (kWh) | Best-value size |
+|---|---|---|---|---|
+| C1 | 18 panels, 7.9 kWp (mostly the flat roof top) | 9,718 | 1,881 · 2,621 · 2,680 · 2,535 | 7 panels, about 6-year payback |
+| C2 | 25 panels, 11.0 kWp | 12,163 | 2,574 · 3,163 · 3,104 · 3,322 | 6 panels, about 6-year payback |
+| C3 | 30 panels, 13.2 kWp (flat roof) | 14,098 | 2,691 · 3,829 · 3,940 · 3,638 | 6 panels, about 6-year payback |
+
+The review PDFs have a solar page. `docs/solar.html` is the calculator: change the household use, cost and buy-back price there.
+
 ## Walk through it
 
 **Unity editor:**

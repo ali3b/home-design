@@ -30,6 +30,9 @@ a.btn{display:inline-block;background:var(--acc);color:#fff;padding:10px 16px;bo
 <p><a class="btn" href="play3/">▶ Walk through Concept 3 (WebGL)</a> <a class="btn" href="c3_review.pdf">Concept 3 review set (PDF)</a></p>
 <p style="color:var(--mut);font-size:14px">Same keys as Concept 1 · 1–9 and 0 jump to viewpoints, including the garage, the rumpus and the deck. Constraint check: <a href="c3_validate.json">c3_validate.json</a> · walk test: <a href="c3_walktest.txt">c3_walktest.txt</a></p>
 <div class="grid" id="gallery3"></div>
+<h2>Rooftop solar</h2>
+<p>All three concepts have solar panels on the roof, in the walkthroughs and on a page in each review PDF. Energy per season is worked out hour by hour, including shading from the assumed 3-storey neighbours. The calculator lets you enter your own power use and costs to see whether it pays.</p>
+<p><a class="btn" href="solar.html">☀ Solar calculator: energy per season and payback</a></p>
 <h2>Progress</h2><div id="log">Loading…</div>
 <script>
 fetch('progress.md').then(r=>r.text()).then(t=>{document.getElementById('log').textContent=t}).catch(()=>{});

@@ -32,7 +32,7 @@ def materials(massing=False):
     M = B.build_materials(massing=massing)
     if massing:
         for k in ('brick', 'breeze', 'asphalt', 'paver', 'soil', 'existing', 'rail', 'neigh_a', 'neigh_b',
-                  'render_w', 'clad_v', 'alu_dk', 'membrane', 'stone_clad', 'garage_dark'):
+                  'render_w', 'clad_v', 'alu_dk', 'membrane', 'stone_clad', 'garage_dark', 'pv_cell', 'pv_frame'):
             M[k] = M['plaster']
         return M
     # terracotta roof of the concept image (warmer than the option-study tile)
@@ -54,6 +54,9 @@ def materials(massing=False):
     M['membrane'] = B.mat('membrane', (0.42, 0.42, 0.41), 0.9, tex='noise', texscale=1.0)
     M['stone_clad'] = B.mat('stone_clad', (0.30, 0.29, 0.28), 0.92, tex='brick', texscale=3.0)
     M['garage_dark'] = B.mat('garage_dark', (0.06, 0.055, 0.05), 0.55)
+    # rooftop solar (pipeline/solar.py): dark monocrystalline glass in a silver aluminium frame
+    M['pv_cell'] = B.mat('pv_cell', (0.012, 0.018, 0.04), 0.28, spec=0.3)
+    M['pv_frame'] = B.mat('pv_frame', (0.70, 0.72, 0.74), 0.35, metal=0.8)
     # brick/tile textures read on vertical faces: rotate object-space mapping so rows run horizontally
     for k in ('brick', 'paver', 'stone_clad'):
         for n in M[k].node_tree.nodes:
@@ -613,6 +616,33 @@ def build_site(S, M, trees=True):
 
 
 # --------------------------------------------------------------------- build --
+SOLAR_JSON = None
+
+
+def build_solar(M):
+    """Recommended PV array from out/<key>/solar.json (written by pipeline/solar.py), in the ROOF collection so
+    the walkthrough's roof toggle hides it too. Tilted rows on flat roofs get a rear support leg."""
+    if not SOLAR_JSON or not os.path.exists(SOLAR_JSON):
+        return
+    import json
+    from mathutils import Vector
+    panels = [p for p in json.load(open(SOLAR_JSON))['panels'] if p['keep']]
+    for p in panels:
+        c = [Vector(q) for q in p['corners']]
+        mid = sum(c, Vector()) / 4
+        B._plate([tuple(q) for q in c], 0.04, M['pv_frame'], 'ROOF')
+        inner = [mid + (q - mid) * 0.965 for q in c]
+        nrm = (c[1] - c[0]).cross(c[3] - c[0]).normalized()
+        B._plate([tuple(q + nrm * 0.004) for q in inner], 0.01, M['pv_cell'], 'ROOF')
+        if p['tilt'] < 15:                                   # rack legs on flat roofs (high edge = corners 2, 3)
+            for q in (c[2], c[3], c[0], c[1]):
+                inset = (mid - q) * 0.12
+                x, y, z = q + inset
+                zb = min(cc.z for cc in c) - 0.25
+                box(x - 0.025, y - 0.025, zb, x + 0.025, y + 0.025, z - 0.02, M['pv_frame'], 'ROOF')
+    print('SOLAR panels', len(panels))
+
+
 def build_all(S, massing=False, trees=True):
     sc = B.reset()
     B.COLL.clear()
@@ -621,6 +651,7 @@ def build_all(S, massing=False, trees=True):
     for c in ('L0', 'L1', 'GLASS', 'STAIR', 'ROOF', 'PORCH', 'FENCE', 'NEIGHBOURS', 'SITE', 'TREES'):
         coll(c)
     build_house(S, M)
+    build_solar(M)
     build_fence(S, M)
     build_neighbours(S, M)
     build_site(S, M, trees=trees)
@@ -756,8 +787,10 @@ def render_views(S, outdir):
 
 
 def main():
+    global SOLAR_JSON
     cpath, outdir = argv[0], argv[1]
     S = load(cpath)
+    SOLAR_JSON = os.path.join(os.path.dirname(os.path.abspath(outdir)), 'solar.json')
     os.makedirs(outdir, exist_ok=True)
     fbx = argv[argv.index('--fbx') + 1] if '--fbx' in argv else None
     if fbx:

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rooftop Solar Calculator</title>
+<style>
+:root{--bg:#f6f1ea;--fg:#2a2420;--mut:#7a6d62;--acc:#a8472b;--card:#fff;--line:#e2d9cd;--used:#1f3a66;--exp:#8fb0d6;--dem:#a8472b}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1715;--fg:#efe6dc;--mut:#a8998b;--acc:#e07a55;--card:#26201d;--line:#3a322d;--used:#7fa6e0;--exp:#36557f;--dem:#e07a55}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:24px 16px}
+h1{margin:.2em 0}h2{margin:1.4em 0 .4em}.warn{color:var(--acc);font-weight:600}.mut{color:var(--mut);font-size:14px}
+a{color:var(--acc)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.tabs button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.card{background:var(--card);border-radius:10px;padding:14px 18px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+td,th{padding:5px 6px;text-align:right;border-bottom:1px solid var(--line)}td:first-child,th:first-child{text-align:left}
+th{font-weight:600}tr.tot td{font-weight:700;border-bottom:0}
+.big{font-size:30px;font-weight:700;line-height:1.1}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label{display:grid;grid-template-columns:1fr 130px;gap:8px;align-items:center;margin:6px 0;font-size:15px}
+input[type=number]{width:100%;box-sizing:border-box;padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font:inherit;text-align:right}
+input[type=range]{width:100%}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--mut)}.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+#tip{position:fixed;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;display:none;box-shadow:0 2px 8px #0003}
+</style></head><body><main>
+<p><a href="./">← Home Design Concepts</a></p>
+<h1>Rooftop solar: is it worth it?</h1>
+<p class="warn">Indicative only. This is not a quote or financial advice. Get quotes and a shading check from an installer.</p>
+<p>Each concept's roof was filled with panels. The model then traced the sun every hour of a typical year (PVGIS-ERA5 weather, latitude rounded to 21°N), allowing for shading from the house itself and from the assumed 3-storey neighbours. Panels that would produce less than 70 % of an ideal unshaded panel are left off. Change the numbers below to match your household.</p>
+
+<div class="tabs" role="group" aria-label="Concept" id="tabs"></div>
+
+<div class="kpis" id="kpis"></div>
+
+<div class="cols" style="margin-top:16px">
+ <div class="card">
+  <h2 style="margin-top:0">Energy per season <span class="mut">(for the panels set on the right)</span></h2>
+  <table id="seasons"></table>
+  <p class="mut" id="seasonnote"></p>
+ </div>
+ <div class="card">
+  <h2 style="margin-top:0">Your numbers</h2>
+  <label style="grid-template-columns:1fr 230px">Panels installed <span><input type="range" id="n" min="1" value="1"><span id="nlab" class="mut"></span></span></label>
+  <label>Power use in a cool month (Jan), kWh <input type="number" id="cool" value="350" min="50" step="10"></label>
+  <label>Power use in a hot month (Jul), kWh <input type="number" id="hot" value="900" min="50" step="10"></label>
+  <label>Installed cost per kWp, million VND <input type="number" id="cost" value="14" min="5" step="0.5"></label>
+  <label>Paid for power sent to the grid, VND/kWh <input type="number" id="exp" value="0" min="0" step="100"></label>
+  <label>Share of output that may be sold, % <input type="number" id="cap" value="20" min="0" max="100" step="5"></label>
+  <label>VAT on electricity, % <input type="number" id="vat" value="8" min="0" max="20" step="1"></label>
+  <p class="mut">Tariff: EVN household tiers from 1 Nov 2026 (VND/kWh before VAT): 1,901 for 0–100 · 2,289 for 101–200 · 2,894 for 201–400 · 3,456 for 401–700 · 3,844 above 700. The buy-back rate for surplus rooftop power (Decree 58/2025) has not been published, so it is 0 by default.</p>
+ </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+ <h2 style="margin-top:0">Month by month</h2>
+ <div class="legend"><span><i class="sw" style="background:var(--used)"></i>Used in the house</span><span><i class="sw" style="background:var(--exp)"></i>Sent to the grid</span><span><i class="sw" style="background:var(--dem);height:3px;vertical-align:3px"></i>Household use</span></div>
+ <svg id="chart" viewBox="0 0 900 320" role="img" aria-label="Monthly solar output and household use"></svg>
+ <details><summary class="mut">Table</summary><table id="mtable"></table></details>
+</div>
+
+<h2>How to read this</h2>
+<ul>
+ <li><b>The limit is when you use the power, not how much the roof makes.</b> Without a payment for surplus power, only the energy the house uses as it is generated saves money. A family that is out by day and runs the air-conditioning at night uses only part of it. A smaller system, or a battery, usually pays back faster than filling the roof.</li>
+ <li><b>Tiers help.</b> Solar replaces the most expensive kWh first (the top EVN tier), so it is worth more to a heavy user.</li>
+ <li><b>The neighbours are assumed.</b> Both side neighbours are modelled as 3-storey (11.2 m) blocks. If they are lower, output rises: see the "no neighbours" figure.</li>
+ <li><b>Shading means module-level electronics.</b> Micro-inverters or optimisers are assumed (included in the cost), because the neighbours shade parts of the roof at different times of day.</li>
+ <li>Model: 440 Wp panels, 14 % system losses, panel temperature and glass-angle losses, results calibrated to PVGIS within 1 %. Payback allows for 0.5 %/yr panel ageing and 1 %/yr upkeep, with no price rises.</li>
+</ul>
+<div id="tip"></div>
+<script>
+const KEYS=['c1','c2','c3'], NAMES={c1:'Concept 1: Courtyard House',c2:'Concept 2: Multigenerational House',c3:'Concept 3: Four-Bed Garage House'};
+const TIERS=[[100,1901],[100,2289],[200,2894],[300,3456],[Infinity,3844]];
+const MD=[31,28,31,30,31,30,31,31,30,31,30,31], MN='Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ');
+const BASE=[2,2,2,2,2,3,6,6,4,3,3,3,4,3,3,3,4,6,9,9,8,7,5,3], COOLS=[6,6,6,6,5,4,2,1,1,2,3,4,5,6,6,6,5,4,5,6,7,7,7,7];
+const SHAPE=[350,330,380,500,750,850,900,850,700,500,400,380];      // example year; scaled by the cool/hot inputs
+const D={}; let cur='c1';
+const $=id=>document.getElementById(id), fmt=v=>Math.round(v).toLocaleString('en'), mv=v=>(Math.abs(v)>=1e6?(v/1e6).toFixed(1)+' M':fmt(v))+' VND';
+const monthOf=[]; {let i=0;MD.forEach((d,m)=>{for(let k=0;k<d*24;k++)monthOf[i++]=m})}
+function monthlyUse(){const c=+$('cool').value,h=+$('hot').value;return SHAPE.map(v=>c+(v-350)/(900-350)*(h-c))}
+function loadProfile(mon){const b=Math.min(...mon);const sb=BASE.reduce((a,c)=>a+c),sc=COOLS.reduce((a,c)=>a+c);
+ return mon.map((t,m)=>BASE.map((v,h)=>v/sb*b/MD[m]+COOLS[h]/sc*Math.max(0,t-b)/MD[m]))}
+function bill(k,vat){let left=k,c=0;for(const[s,p]of TIERS){const t=Math.min(left,s);c+=t*p;left-=t;if(left<=0)break}return c*(1+vat)}
+function calc(){
+ const R=D[cur], n=+$('n').value, ys=R.panel_yields_kwh, f=ys.slice(0,n).reduce((a,c)=>a+c,0)/ys.reduce((a,c)=>a+c,0);
+ const mon=monthlyUse(), lp=loadProfile(mon), vat=$('vat').value/100, kwp=n*0.44;
+ const gm=Array(12).fill(0), um=Array(12).fill(0); let gen=0,used=0;
+ R.hourly_kwh.forEach((g0,i)=>{const g=g0*f,m=monthOf[i],h=(i%24+7)%24,u=Math.min(g,lp[m][h]);gm[m]+=g;um[m]+=u;gen+=g;used+=u});
+ let before=0,after=0;mon.forEach((t,m)=>{before+=bill(t,vat);after+=bill(Math.max(0,t-um[m]),vat)});
+ const sold=Math.min(gen-used,$('cap').value/100*gen), cost=kwp*$('cost').value*1e6, s1=before-after+sold*$('exp').value;
+ let cum=-cost,pay=null,tot=0;for(let y=0;y<25;y++){const s=s1*Math.pow(0.995,y)-cost*0.01;cum+=s;tot+=s;if(pay===null&&cum>=0&&s>0)pay=y+1-cum/s}
+ $('nlab').textContent=`${n} × 440 W = ${kwp.toFixed(1)} kWp`;
+ const k=[['Solar output a year',fmt(gen)+' kWh'],['Used in the house',Math.round(100*used/gen)+' %'],['Installed cost',mv(cost)],
+  ['Bill saving, first year',mv(s1)],['Simple payback',pay?pay.toFixed(1)+' years':'over 25 years'],['Net over 25 years',mv(tot-cost)]];
+ $('kpis').innerHTML=k.map(([a,b])=>`<div class="card"><div class="mut">${a}</div><div class="big">${b}</div></div>`).join('');
+ const S=[['Winter','Dec–Feb',[11,0,1]],['Spring','Mar–May',[2,3,4]],['Summer','Jun–Aug',[5,6,7]],['Autumn','Sep–Nov',[8,9,10]]];
+ $('seasons').innerHTML='<tr><th>Season</th><th>kWh</th><th>kWh/day</th><th>Used at home</th></tr>'+S.map(([s,l,ms])=>{const e=ms.reduce((a,m)=>a+gm[m],0),u=ms.reduce((a,m)=>a+um[m],0),d=ms.reduce((a,m)=>a+MD[m],0);
+  return `<tr><td>${s} <span class="mut">${l}</span></td><td>${fmt(e)}</td><td>${(e/d).toFixed(1)}</td><td>${fmt(u)}</td></tr>`}).join('')+`<tr class="tot"><td>Year</td><td>${fmt(gen)}</td><td>${(gen/365).toFixed(1)}</td><td>${fmt(used)}</td></tr>`;
+ $('seasonnote').textContent=`Full recommended array: ${R.recommended.panels} panels (${R.recommended.kwp} kWp), ${fmt(R.recommended.year_kwh)} kWh a year; ${fmt(R.recommended.year_kwh_no_neighbours)} kWh without the assumed neighbours. ${R.all_that_fit.panels} panels physically fit, but the rest are on shaded, east/west or north-facing slopes.`;
+ chart(gm,um,mon);
+ $('mtable').innerHTML='<tr><th>Month</th><th>Solar kWh</th><th>Used at home</th><th>To grid</th><th>Household use</th></tr>'+MN.map((m,i)=>`<tr><td>${m}</td><td>${fmt(gm[i])}</td><td>${fmt(um[i])}</td><td>${fmt(gm[i]-um[i])}</td><td>${fmt(mon[i])}</td></tr>`).join('');
+}
+function chart(gm,um,mon){
+ const W=900,H=320,L=56,B=28,T=10,mx=Math.max(...gm,...mon)*1.08,y=v=>H-B-(H-B-T)*v/mx,bw=(W-L)/12;
+ let s='';const step=mx>2000?500:mx>800?200:100;
+ for(let v=0;v<=mx;v+=step)s+=`<line x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="var(--mut)">${fmt(v)}</text>`;
+ gm.forEach((g,i)=>{const x=L+i*bw+bw*0.18,w=bw*0.64,u=um[i];
+  s+=`<rect x="${x}" y="${y(u)}" width="${w}" height="${y(0)-y(u)}" fill="var(--used)"/>`;
+  s+=`<path d="M${x},${y(u)-2} V${y(g)+4} q0,-4 4,-4 H${x+w-4} q4,0 4,4 V${y(u)-2}Z" fill="var(--exp)"/>`;
+  s+=`<line x1="${x-6}" x2="${x+w+6}" y1="${y(mon[i])}" y2="${y(mon[i])}" stroke="var(--dem)" stroke-width="2.5"/>`;
+  s+=`<text x="${x+w/2}" y="${H-8}" text-anchor="middle" font-size="12" fill="var(--mut)">${MN[i]}</text>`;
+  s+=`<rect class="hit" data-i="${i}" x="${L+i*bw}" y="${T}" width="${bw}" height="${H-B-T}" fill="transparent"/>`});
+ s+=`<text x="4" y="${T+4}" font-size="12" fill="var(--mut)">kWh</text>`;
+ const c=$('chart');c.innerHTML=s;const tip=$('tip');
+ c.querySelectorAll('.hit').forEach(r=>{r.onmousemove=e=>{const i=+r.dataset.i;tip.style.display='block';tip.style.left=e.clientX+14+'px';tip.style.top=e.clientY+14+'px';
+  tip.innerHTML=`<b>${MN[i]}</b><br>Solar ${fmt(gm[i])} kWh<br>Used at home ${fmt(um[i])} kWh<br>To grid ${fmt(gm[i]-um[i])} kWh<br>Household use ${fmt(mon[i])} kWh`};r.onmouseleave=()=>tip.style.display='none'});
+}
+function select(k){cur=k;document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+ const R=D[k],n=$('n');n.max=R.recommended.panels;n.value=(R.economics.best_size||R.recommended).panels;calc()}
+Promise.all(KEYS.map(k=>fetch(`solar_${k}.json`).then(r=>r.json()).then(j=>D[k]=j))).then(()=>{
+ $('tabs').innerHTML=KEYS.map(k=>`<button data-k="${k}">${NAMES[k]}</button>`).join('');
+ document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>select(b.dataset.k));
+ ['n','cool','hot','cost','exp','cap','vat'].forEach(id=>$(id).oninput=calc);select('c1')});
+</script>
+</main></body></html>

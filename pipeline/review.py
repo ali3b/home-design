@@ -59,6 +59,125 @@ def wrap(d, text, xy, width, f, fill=INK, lh=1.35):
     return y
 
 
+NAVY, PALE, SEASON_COL = (24, 38, 82), (205, 200, 190), [(96, 128, 168), (120, 160, 96), (214, 140, 50), (176, 104, 70)]
+
+
+def mvnd(v):
+    return '%.0f M VND' % (v / 1e6) if abs(v) >= 1e6 else '%.0f VND' % v
+
+
+def solar_page(C, outdir):
+    """Rooftop solar: panel plan, energy per season/month, indicative economics (from pipeline/solar.py)."""
+    sj = os.path.join(outdir, 'solar.json')
+    if not os.path.exists(sj):
+        return None
+    R = json.load(open(sj))
+    site = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'concepts', 'site.json')))
+    rec, A = R['recommended'], R['assumptions']
+    im, d = page('Rooftop solar — energy per season',
+                 '%d × %s panels = %.1f kWp on the roof · latitude %s · %s · shaded by the assumed 3-storey neighbours'
+                 % (rec['panels'], A['module'].split(',')[0], rec['kwp'], A['latitude'], A['weather']))
+    # ---- roof plan (left)
+    S, ox, oy = 46, M + 90, 1160            # px per metre; origin = site SW corner
+    T = lambda x, y: (ox + x * S, oy - y * S)
+    for n in site.get('neighbours', []):
+        d.rectangle([T(max(n['x0'], -1.6), n['y1']), T(min(n['x1'], 15.1), n['y0'])], fill=(232, 228, 220), outline=GREY)
+        d.text(T(max(n['x0'], -1.6) + 0.1, n['y1'] - 0.3), '3-storey\nneighbour\n11.2 m\n(assumed)', fill=GREY, font=font(17))
+    d.rectangle([T(0, 19.73), T(13.5, 0)], outline=RED, width=2)
+    d.text(T(0.1, 19.73 + 0.55), 'ONT band 13.5 × 19.73 m — road at the bottom', fill=RED, font=font(18))
+    for r in C['roofs']:
+        o = r.get('overhang', 0) if r.get('kind', 'hip') in ('hip', 'gable', 'flat') else 0
+        d.rectangle([T(r['x0'] - o, r['y1'] + o), T(r['x1'] + o, r['y0'] - o)], outline=INK, width=2)
+    for p in R['panels']:
+        pts = [T(*c[:2]) for c in p['corners']]
+        d.polygon(pts, fill=NAVY if p['keep'] else PALE, outline=PAPER)
+        if not p['keep']:
+            cx = sum(q[0] for q in pts) / 4; cy = sum(q[1] for q in pts) / 4
+            t = str(p['kwh_per_kwp']); d.text((cx - d.textlength(t, font=font(14)) / 2, cy - 8), t, fill=GREY, font=font(14))
+    # north arrow and scale
+    ax, ay = T(16.4, 3.5)
+    d.polygon([(ax, ay - 50), (ax - 14, ay), (ax + 14, ay)], fill=INK); d.text((ax - 8, ay - 82), 'N', fill=INK, font=font(24, True))
+    sx, sy = T(9.5, -0.9)
+    d.line([sx, sy, sx + 5 * S, sy], fill=INK, width=4); d.text((sx, sy + 6), '5 m', fill=INK, font=font(18))
+    ly = oy + 90
+    d.rectangle([M, ly, M + 30, ly + 22], fill=NAVY); d.text((M + 40, ly), 'Recommended panels', fill=INK, font=font(20))
+    d.rectangle([M + 330, ly, M + 360, ly + 22], fill=PALE)
+    d.text((M + 370, ly), 'Fit but not worth it: number = kWh per kWp a year (an unshaded ideal panel gives %d)'
+           % A['reference_kwh_per_kwp'], fill=INK, font=font(20))
+    # surface table
+    y = ly + 50
+    cols = [M, M + 420, M + 600, M + 760, M + 900]
+    for x, t in zip(cols, ['Roof surface', 'Tilt / faces', 'Fit / used', 'kWh/kWp', 'no neighbours']):
+        d.text((x, y), t, fill=INK, font=font(19, True))
+    y += 30
+    for b in R['surfaces']:
+        az = {0: 'N', 90: 'E', 180: 'S', 270: 'W'}.get(b['azimuth'], str(b['azimuth']))
+        for x, t in zip(cols, [b['surface'], '%d° %s' % (b['tilt'], az), '%d / %d' % (b['panels'], b['kept']),
+                               str(b['kwh_per_kwp']), str(b['kwh_per_kwp_no_neighbours'])]):
+            d.text((x, y), t, fill=GREY, font=font(19))
+        y += 27
+    # ---- seasons (right)
+    X = 1330
+    d.text((X, 170), 'ENERGY FROM THE RECOMMENDED ARRAY', fill=INK, font=font(28, True))
+    y = 220
+    for x, t in zip((X, X + 200, X + 400, X + 600, X + 820), ('Season', 'Months', 'kWh', 'kWh / day', 'Share')):
+        d.text((x, y), t, fill=INK, font=font(22, True))
+    y += 38
+    for i, s in enumerate(rec['seasons']):
+        d.rectangle([X - 22, y + 4, X - 8, y + 22], fill=SEASON_COL[i])
+        for x, t in zip((X, X + 200, X + 400, X + 600, X + 820), (s['season'], s['months'], '{:,}'.format(s['kwh']),
+                        '%.1f' % s['kwh_per_day'], '%d %%' % round(100 * s['kwh'] / rec['year_kwh']))):
+            d.text((x, y), t, fill=INK, font=font(24))
+        y += 38
+    d.line([X, y, X + 1000, y], fill=GREY, width=1); y += 8
+    for x, t in zip((X, X + 400, X + 600), ('Year', '{:,}'.format(rec['year_kwh']), '%.1f' % (rec['year_kwh'] / 365))):
+        d.text((x, y), t, fill=INK, font=font(24, True))
+    y += 44
+    y = wrap(d, 'Without the assumed neighbours the same panels would give {:,} kWh a year ({:+.0f} %). All {} panels that '
+             'physically fit would give {:,} kWh, but the extra ones are on shaded or east/west/north slopes.'.format(
+                 rec['year_kwh_no_neighbours'], 100 * (rec['year_kwh_no_neighbours'] / rec['year_kwh'] - 1),
+                 R['all_that_fit']['panels'], R['all_that_fit']['year_kwh']), (X, y), 1040, font(20), GREY)
+    # monthly bars
+    y += 16
+    bh, bw, top = 230, 70, y + 10
+    mx = max(rec['monthly_kwh'])
+    season_of = {12: 0, 1: 0, 2: 0, 3: 1, 4: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 3, 10: 3, 11: 3}
+    for m, v in enumerate(rec['monthly_kwh']):
+        h = bh * v / mx
+        x0 = X + m * (bw + 16)
+        d.rectangle([x0, top + bh - h, x0 + bw, top + bh], fill=SEASON_COL[season_of[m + 1]])
+        t = '{:,}'.format(v); d.text((x0 + bw / 2 - d.textlength(t, font=font(16)) / 2, top + bh - h - 22), t, fill=INK, font=font(16))
+        d.text((x0 + bw / 2 - 8, top + bh + 6), 'JFMAMJJASOND'[m], fill=GREY, font=font(18))
+    y = top + bh + 40
+    # economics
+    E = R['economics']
+    d.text((X, y), 'IS IT WORTH IT? (indicative)', fill=INK, font=font(28, True)); y += 46
+    b = E.get('best_size'); r_ = E['recommended']
+    cols = (X, X + 470, X + 790)
+    d.text((cols[1], y), 'Recommended', fill=INK, font=font(21, True))
+    d.text((cols[2], y), 'Best-value size', fill=INK, font=font(21, True)); y += 30
+    rows = [('Panels / kWp', '%d / %.1f' % (rec['panels'], rec['kwp']), '%d / %.1f' % (b['panels'], b['kwp'])),
+            ('Installed cost', mvnd(r_['cost']), mvnd(b['cost'])),
+            ('Bill saving, first year', mvnd(r_['saving_year1']), mvnd(b['saving_year1'])),
+            ('Output used in the house', '%d %%' % r_['self_use_pct'], '%d %%' % b['self_use_pct']),
+            ('Share of the bill-kWh covered', '%d %%' % r_['covers_pct'], '%d %%' % b['covers_pct']),
+            ('Simple payback', ('%.0f years' % r_['payback_years']) if r_['payback_years'] else 'over 25 years',
+             ('%.0f years' % b['payback_years']) if b['payback_years'] else 'over 25 years'),
+            ('Net over 25 years', mvnd(r_['net_25y']), mvnd(b['net_25y']))]
+    for k, v1, v2 in rows:
+        d.text((cols[0], y), k, fill=INK, font=font(21)); d.text((cols[1], y), v1, fill=INK, font=font(21))
+        d.text((cols[2], y), v2, fill=INK, font=font(21)); y += 30
+    a = E['assumptions']
+    y += 8
+    wrap(d, 'Assumes: an example air-conditioned family using about {:,} kWh a year (bill {} a year), EVN household tiers '
+         'from 1 Nov 2026 + {:.0f} % VAT, {} per kWp installed, nothing paid for power sent to the grid (the buy-back '
+         'rate is not yet published), 0.5 %/yr panel ageing, 1 %/yr upkeep. Surplus power is the limit: the house uses '
+         'most of its power in the evening. Try other numbers at ali3b.github.io/home-design/solar.html.'.format(
+             sum(a['load_monthly']), mvnd(r_['bill_before']), a['vat'] * 100, mvnd(a['cost_per_kwp'])),
+         (X, y), 1040, font(19), GREY)
+    return im
+
+
 def main(concept, outdir):
     C = json.load(open(concept))
     here = os.path.dirname(os.path.abspath(__file__))
@@ -113,6 +232,10 @@ def main(concept, outdir):
             continue
         im = Image.open(f).convert('RGB').resize((W, H), Image.LANCZOS)
         pages.append(im)
+
+    sp = solar_page(C, outdir)
+    if sp:
+        pages.append(sp)
 
     # renders
     rnd = [('street', 'Street view'), ('garden', 'From the garden (DNN land, planting only)'),

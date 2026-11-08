@@ -7,6 +7,7 @@ C=concepts/$NAME.json; OUT=out/$KEY
 FAST=""; [[ " $* " == *" --fast "* ]] && FAST="--fast"
 python3 pipeline/validate.py "$C" --json $OUT/validate.json
 python3 pipeline/sheets.py "$C" $OUT/sheets --dpi 150
+python3 pipeline/solar.py "$C" $OUT | head -1
 python3 pipeline/textures.py HomeWalk/Assets/Home/Textures >/dev/null
 blender -b --factory-startup --python pipeline/blender/build.py -- "$C" $OUT/render $FAST \
     --fbx HomeWalk/Assets/Home/Models/${KEY}_architecture.fbx | grep -E "FBX_OK|RENDER_|Traceback"

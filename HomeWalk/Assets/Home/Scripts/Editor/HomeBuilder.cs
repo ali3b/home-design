@@ -378,6 +378,9 @@ namespace HomeWalk.EditorTools
             { "membrane", (new Color(.45f, .45f, .44f), .1f, null) },
             { "stone_clad", (new Color(.55f, .53f, .50f), .1f, "stone_dk") },
             { "garage_dark", (new Color(.10f, .095f, .09f), .35f, null) },
+            // rooftop solar
+            { "pv_cell", (new Color(.03f, .045f, .09f), .93f, null) },
+            { "pv_frame", (new Color(.72f, .74f, .76f), .7f, null) },
         };
 
         public static Dictionary<string, Material> MakeMaterials()
