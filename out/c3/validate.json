@@ -13,7 +13,7 @@
  "total_gfa_m2": 238.1,
  "errors": [],
  "warnings": [
-  "boundary walls run 45.3 m through the DNN band on the property lines (owner instruction) - confirm a 3.0 m solid boundary wall is permitted on DNN land",
+  "boundary walls run 45.3 m through the DNN band on the property lines (owner instruction) - confirm a 2.0 m solid boundary wall is permitted on DNN land",
   "Ground: rooms cover 135.2 m\u00b2 of the 137.3 m\u00b2 footprint",
   "Upper: rooms cover 124.3 m\u00b2 of the 137.3 m\u00b2 footprint"
  ]

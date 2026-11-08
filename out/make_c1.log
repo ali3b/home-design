@@ -1,0 +1,58 @@
+Concept C1 — CONCEPT 1 — TERRACOTTA COURTYARD HOUSE
+  dnn_boundary_wall_m 90.5
+  Ground             {'gfa': 178.1, 'outdoor': 0}
+  Upper              {'gfa': 153.0, 'outdoor': 25.1}
+  footprint_m2       188.1
+  ont_coverage_pct   70.6
+  total_gfa_m2       331.1
+  WARN   boundary walls run 45.3 m through the DNN band on the property lines (owner instruction) - confirm a 2.0 m solid boundary wall is permitted on DNN land
+VALIDATE_OK
+sheet: out/c1/sheets/00_index.png
+sheet: out/c1/sheets/01_site.png
+sheet: out/c1/sheets/02_plans_a.png
+sheet: out/c1/sheets/03_roof.png
+sheet: out/c1/sheets/04_section.png
+sheet: out/c1/sheets/05_schedule.png
+SHEETS_OK
+FBX_OK HomeWalk/Assets/Home/Models/c1_architecture.fbx
+RENDER_OK
+VBCSCompilerPreWarmer: ERROR: Couldn't pre-warm as failed to write stub code temporary file (/tmpUnityVBCSPreWarm_1071973.cs)
+[Home] project configured
+[Home] FBX axes: rot=(0.00, 0.00, 0.00) scale=(1.00, 1.00, 1.00) err=0.000
+[Home] SURVEY SM_Prop_Couch_01 size (1.83, 1.06, 1.13) centerOffset (0.00, 0.53, 0.00)
+[Home] SURVEY SM_Prop_Couch_02 size (1.81, 1.13, 0.88) centerOffset (0.00, 0.56, 0.00)
+[Home] SURVEY SM_Prop_Couch_04 size (2.04, 1.16, 0.86) centerOffset (0.00, 0.58, 0.00)
+[Home] SURVEY SM_Prop_Couch_05 size (2.80, 1.19, 0.93) centerOffset (0.00, 0.60, -0.01)
+[Home] SURVEY SM_Prop_Couch_06 size (1.09, 1.24, 1.06) centerOffset (0.00, 0.62, 0.00)
+[Home] SURVEY SM_Prop_Couch_07 size (1.10, 0.98, 0.83) centerOffset (0.00, 0.49, 0.00)
+[Home] SURVEY SM_Prop_CeilingFan_01 size (2.62, 0.49, 3.02) centerOffset (0.39, -0.33, 0.00)
+[Home] SURVEY SM_Prop_DiningTable_01 size (2.10, 0.85, 1.30) centerOffset (0.00, 0.43, 0.00)
+[Home] SURVEY SM_Prop_Bed_Double_01 size (2.09, 1.25, 2.61) centerOffset (0.00, 0.62, 0.00)
+[Home] built Assets/Home/Scenes/C1_Walkthrough.unity: 90 furniture items (0 missing), 28 rooms, 28 lights, 10 viewpoints
+[Home] DIAG sun.forward=(0.82, -0.33, 0.47) euler=(19.0, 60.0, 0.0)
+[Home] DIAG SITE__river bounds (-60.0, -0.9, 65.8)..(75.0, -0.6, 155.2) lossyScale=(1.00, 1.00, 1.00)
+[Home] DIAG SITE__asphalt bounds (-60.0, -0.1, -9.5)..(75.0, 0.0, -1.6) lossyScale=(1.00, 1.00, 1.00)
+[Home] DIAG SITE__existing bounds (-0.3, 0.0, 58.3)..(4.3, 4.5, 64.9) lossyScale=(1.00, 1.00, 1.00)
+[Home] DIAG aerial cam pos=(-14.0, 24.0, -16.0) fwd=(0.48, -0.52, 0.71)
+[Home] shots written to /home/andrew/projects/home-design/out/c1/unity
+[Home] DOORPROBE laundry door: 
+[Home] DOORPROBE   laundry door ray (0.00, 0.00, 1.00) hits L0__plaster_w at 0.40
+[Home] DOORPROBE   laundry door ray (0.00, 0.00, -1.00) hits L0__plaster_w at 0.40
+[Home] DOORPROBE stair bottom gap: 
+[Home] DOORPROBE   stair bottom gap ray (-1.00, 0.00, 0.00) hits L0__plaster_w at 1.38
+[Home] DOORPROBE   stair bottom gap ray (0.00, 0.00, 1.00) hits STAIR__timber_dk at 0.33
+[Home] DOORPROBE   stair bottom gap ray (0.00, 0.00, -1.00) hits L0__plaster_w at 0.34
+[Home] DOORPROBE pantry door: 
+[Home] DOORPROBE   pantry door ray (0.00, 0.00, 1.00) hits L0__plaster_w at 0.40
+[Home] DOORPROBE   pantry door ray (0.00, 0.00, -1.00) hits L0__plaster_w at 0.40
+[Home] NAV triangulation verts=5355 tris=2459
+[Home] NAV verts in laundry=48 bedroom1=58; bounds Center: (-59.76, 0.00, -10.24), Extents: (0.00, 0.00, 0.00)
+[Home] Walk test (agent radius 0.22, climb 0.3) from road gate
+[Home] player build StandaloneLinux64: Succeeded, 177 MB, 0 errors, 0.2 min -> Builds/Linux/HomeWalk.x86_64
+[Home] player build StandaloneWindows64: Succeeded, 177 MB, 0 errors, 0.2 min -> Builds/Windows/HomeWalk.exe
+[Home] WebGL pipeline: Forward, no features, legacy probes
+[Home] player build WebGL: Succeeded, 16 MB, 0 errors, 1.2 min -> /home/andrew/projects/home-design/docs/play
+unity exit=0
+REVIEW_OK out/c1/c1_review.pdf 12 pages
+PUBLISH_OK 23 images
+MAKE_DONE

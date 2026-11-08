@@ -533,7 +533,7 @@
   "plinth": {
     "height": 0.45
   },
-  "fence": {"front": {"y": 0.15, "height": 3.0, "breeze_panels": false, "gates": [{"x0": 0.35, "x1": 3.45, "kind": "vehicle"}, {"x0": 4.3, "x1": 5.5, "kind": "pedestrian"}]}, "sides": {"y1": 65.0, "height": 3.0, "breeze_panels": false, "breaks": [["west", 58.5, 64.5]], "note": "Solid 3.0 m brick boundary walls run to the water on both property lines for privacy and security (owner instruction)."}},
+  "fence": {"front": {"y": 0.15, "height": 2.0, "breeze_panels": false, "gates": [{"x0": 0.35, "x1": 3.45, "kind": "vehicle"}, {"x0": 4.3, "x1": 5.5, "kind": "pedestrian"}]}, "sides": {"y1": 65.0, "height": 2.0, "breeze_panels": false, "breaks": [["west", 58.5, 64.5]], "note": "Solid 2.0 m brick boundary walls run to the water on both property lines for privacy and security (owner instruction)."}},
   "planting_ont": [
     [
       12.6,

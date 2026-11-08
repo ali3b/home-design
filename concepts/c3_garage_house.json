@@ -152,12 +152,12 @@
   ],
   "plinth": {"height": 0.15},
   "fence": {
-    "front": {"y": 0.15, "height": 3.0, "breeze_panels": false, "cap_mat": "alu_dk", "gates": [
+    "front": {"y": 0.15, "height": 2.0, "breeze_panels": false, "cap_mat": "alu_dk", "gates": [
       {"x0": 7.6, "x1": 12.7, "kind": "vehicle"},
       {"x0": 5.4, "x1": 6.6, "kind": "pedestrian"}
     ]},
-    "sides": {"y1": 65.0, "height": 3.0, "breeze_panels": false, "breaks": [["west", 58.5, 64.5]],
-      "note": "Solid 3.0 m brick boundary walls run to the water on both property lines for privacy and security (owner instruction)."}
+    "sides": {"y1": 65.0, "height": 2.0, "breeze_panels": false, "breaks": [["west", 58.5, 64.5]],
+      "note": "Solid 2.0 m brick boundary walls run to the water on both property lines for privacy and security (owner instruction)."}
   },
   "planting_ont": [
     [1.4, 1.2, "palm"],
@@ -196,5 +196,5 @@
     "aerial": {"pos": [-14.0, -16.0, 24.0], "look": [7.0, 12.0, 2.0]},
     "riverside": {"pos": [6.8, 63.0, 1.65], "look": [6.6, 12.0, 4.5]}
   },
-  "review_note": "The house is fitted to the 13.5 m frontage at its brochure width of 10.4 m. That leaves a 2.8 m garden strip on the west, and the garage sits 0.3 m off the east party wall. The rear wall is at y 16.2 m, so the alfresco (4.3 × 2.8 m) stays inside the ONT band, ending at 19.0 m against the 19.73 m limit. Nothing is built on the DNN land except the boundary walls. The garage door is set 3.9 m behind the 3.0 m front wall, which is enough for the gate leaves and a short apron, but not to park in front of the garage. The plan is adapted from a commercial volume-builder design for study only. Building it would need the design owner's licence or a new design."
+  "review_note": "The house is fitted to the 13.5 m frontage at its brochure width of 10.4 m. That leaves a 2.8 m garden strip on the west, and the garage sits 0.3 m off the east party wall. The rear wall is at y 16.2 m, so the alfresco (4.3 × 2.8 m) stays inside the ONT band, ending at 19.0 m against the 19.73 m limit. Nothing is built on the DNN land except the boundary walls. The garage door is set 3.9 m behind the 2.0 m front wall, which is enough for the gate leaves and a short apron, but not to park in front of the garage. The plan is adapted from a commercial volume-builder design for study only. Building it would need the design owner's licence or a new design."
 }
