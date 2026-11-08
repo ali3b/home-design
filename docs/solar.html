@@ -45,6 +45,8 @@ svg{display:block;width:100%;height:auto;overflow:visible}
   <label>Power use in a cool month (Jan), kWh <input type="number" id="cool" value="350" min="50" step="10"></label>
   <label>Power use in a hot month (Jul), kWh <input type="number" id="hot" value="900" min="50" step="10"></label>
   <label>Installed cost per kWp, million VND <input type="number" id="cost" value="14" min="5" step="0.5"></label>
+  <label>Battery size, kWh usable (0 = none) <input type="number" id="batt" value="0" min="0" max="40" step="2.5"></label>
+  <label>Battery cost per kWh, million VND (incl. hybrid inverter) <input type="number" id="bcost" value="5" min="1" step="0.5"></label>
   <label>Paid for power sent to the grid, VND/kWh <input type="number" id="exp" value="0" min="0" step="100"></label>
   <label>Share of output that may be sold, % <input type="number" id="cap" value="20" min="0" max="100" step="5"></label>
   <label>VAT on electricity, % <input type="number" id="vat" value="8" min="0" max="20" step="1"></label>
@@ -54,7 +56,7 @@ svg{display:block;width:100%;height:auto;overflow:visible}
 
 <div class="card" style="margin-top:16px">
  <h2 style="margin-top:0">Month by month</h2>
- <div class="legend"><span><i class="sw" style="background:var(--used)"></i>Used in the house</span><span><i class="sw" style="background:var(--exp)"></i>Sent to the grid</span><span><i class="sw" style="background:var(--dem);height:3px;vertical-align:3px"></i>Household use</span></div>
+ <div class="legend"><span><i class="sw" style="background:var(--used)"></i>Used in the house (directly or via the battery)</span><span><i class="sw" style="background:var(--exp)"></i>Sent to the grid</span><span><i class="sw" style="background:var(--dem);height:3px;vertical-align:3px"></i>Household use</span></div>
  <svg id="chart" viewBox="0 0 900 320" role="img" aria-label="Monthly solar output and household use"></svg>
  <details><summary class="mut">Table</summary><table id="mtable"></table></details>
 </div>
@@ -62,6 +64,7 @@ svg{display:block;width:100%;height:auto;overflow:visible}
 <h2>How to read this</h2>
 <ul>
  <li><b>The limit is when you use the power, not how much the roof makes.</b> Without a payment for surplus power, only the energy the house uses as it is generated saves money. A family that is out by day and runs the air-conditioning at night uses only part of it. A smaller system, or a battery, usually pays back faster than filling the roof.</li>
+ <li><b>A battery moves daytime sun into the evening.</b> A 5–10 kWh battery typically lifts the share of the home run by the sun from about a third to well over half. Battery cost assumes about 5 M VND per usable kWh (lithium iron phosphate with a hybrid inverter), with a replacement at year 13 at 60 % of today's price. It also keeps the lights on in a power cut.</li>
  <li><b>Tiers help.</b> Solar replaces the most expensive kWh first (the top EVN tier), so it is worth more to a heavy user.</li>
  <li><b>The neighbours are assumed.</b> Both side neighbours are modelled as 3-storey (11.2 m) blocks. If they are lower, output rises: see the "no neighbours" figure.</li>
  <li><b>Shading means module-level electronics.</b> Micro-inverters or optimisers are assumed (included in the cost), because the neighbours shade parts of the roof at different times of day.</li>
@@ -84,18 +87,22 @@ function bill(k,vat){let left=k,c=0;for(const[s,p]of TIERS){const t=Math.min(lef
 function calc(){
  const R=D[cur], n=+$('n').value, ys=R.panel_yields_kwh, f=ys.slice(0,n).reduce((a,c)=>a+c,0)/ys.reduce((a,c)=>a+c,0);
  const mon=monthlyUse(), lp=loadProfile(mon), vat=$('vat').value/100, kwp=n*0.44;
- const gm=Array(12).fill(0), um=Array(12).fill(0); let gen=0,used=0;
- R.hourly_kwh.forEach((g0,i)=>{const g=g0*f,m=monthOf[i],h=(i%24+7)%24,u=Math.min(g,lp[m][h]);gm[m]+=g;um[m]+=u;gen+=g;used+=u});
- let before=0,after=0;mon.forEach((t,m)=>{before+=bill(t,vat);after+=bill(Math.max(0,t-um[m]),vat)});
- const sold=Math.min(gen-used,$('cap').value/100*gen), cost=kwp*$('cost').value*1e6, s1=before-after+sold*$('exp').value;
- let cum=-cost,pay=null,tot=0;for(let y=0;y<25;y++){const s=s1*Math.pow(0.995,y)-cost*0.01;cum+=s;tot+=s;if(pay===null&&cum>=0&&s>0)pay=y+1-cum/s}
+ const B=+$('batt').value, lo=0.1*B, eff=0.95; let soc=0.5*B;
+ const gm=Array(12).fill(0), um=Array(12).fill(0), im=Array(12).fill(0), lm=Array(12).fill(0); let gen=0,used=0,imp=0,dimp=0,free=0;
+ R.hourly_kwh.forEach((g0,i)=>{const g=g0*f,m=monthOf[i],h=(i%24+7)%24,l=lp[m][h];let d=g-l,x=0,u=Math.min(g,l);
+  if(d>=0){const c=Math.min(d*eff,B-soc);soc+=c;u+=c/eff}else{const out=Math.min(-d,Math.max(0,(soc-lo)*eff));soc-=out/eff;x=-d-out;u+=out/eff}
+  gm[m]+=g;um[m]+=Math.min(u,g);im[m]+=x;lm[m]+=l;gen+=g;used+=Math.min(u,g);imp+=x;dimp+=x;if(i%24==23){if(dimp<0.3)free++;dimp=0}});
+ let before=0,after=0;mon.forEach((t,m)=>{before+=bill(t,vat);after+=bill(im[m],vat)});
+ const sold=Math.min(Math.max(0,gen-used),$('cap').value/100*gen), pv=kwp*$('cost').value*1e6, bc=B*$('bcost').value*1e6, cost=pv+bc, s1=before-after+sold*$('exp').value;
+ let cum=-cost,pay=null,tot=0;for(let y=0;y<25;y++){const s=s1*Math.pow(0.995,y)-pv*0.01-(y==12?bc*0.6:0);cum+=s;tot+=s;if(pay===null&&cum>=0&&s>0)pay=y+1-cum/s}
+ const share=100*(1-imp/lm.reduce((a,c)=>a+c,0));
  $('nlab').textContent=`${n} × 440 W = ${kwp.toFixed(1)} kWp`;
- const k=[['Solar output a year',fmt(gen)+' kWh'],['Used in the house',Math.round(100*used/gen)+' %'],['Installed cost',mv(cost)],
+ const k=[['Solar output a year',fmt(gen)+' kWh'],['Home powered by the sun',Math.round(share)+' %'],['Days with no grid power needed',free+' / 365'],['Installed cost',mv(cost)],
   ['Bill saving, first year',mv(s1)],['Simple payback',pay?pay.toFixed(1)+' years':'over 25 years'],['Net over 25 years',mv(tot-cost)]];
  $('kpis').innerHTML=k.map(([a,b])=>`<div class="card"><div class="mut">${a}</div><div class="big">${b}</div></div>`).join('');
  const S=[['Winter','Dec–Feb',[11,0,1]],['Spring','Mar–May',[2,3,4]],['Summer','Jun–Aug',[5,6,7]],['Autumn','Sep–Nov',[8,9,10]]];
- $('seasons').innerHTML='<tr><th>Season</th><th>kWh</th><th>kWh/day</th><th>Used at home</th></tr>'+S.map(([s,l,ms])=>{const e=ms.reduce((a,m)=>a+gm[m],0),u=ms.reduce((a,m)=>a+um[m],0),d=ms.reduce((a,m)=>a+MD[m],0);
-  return `<tr><td>${s} <span class="mut">${l}</span></td><td>${fmt(e)}</td><td>${(e/d).toFixed(1)}</td><td>${fmt(u)}</td></tr>`}).join('')+`<tr class="tot"><td>Year</td><td>${fmt(gen)}</td><td>${(gen/365).toFixed(1)}</td><td>${fmt(used)}</td></tr>`;
+ $('seasons').innerHTML='<tr><th>Season</th><th>Solar kWh</th><th>kWh/day</th><th>Home use kWh/day</th><th>Home from sun</th></tr>'+S.map(([s,l,ms])=>{const e=ms.reduce((a,m)=>a+gm[m],0),L=ms.reduce((a,m)=>a+lm[m],0),x=ms.reduce((a,m)=>a+im[m],0),d=ms.reduce((a,m)=>a+MD[m],0);
+  return `<tr><td>${s} <span class="mut">${l}</span></td><td>${fmt(e)}</td><td>${(e/d).toFixed(1)}</td><td>${(L/d).toFixed(1)}</td><td>${Math.round(100*(1-x/L))} %</td></tr>`}).join('')+`<tr class="tot"><td>Year</td><td>${fmt(gen)}</td><td>${(gen/365).toFixed(1)}</td><td>${(lm.reduce((a,c)=>a+c,0)/365).toFixed(1)}</td><td>${Math.round(share)} %</td></tr>`;
  $('seasonnote').textContent=`Full recommended array: ${R.recommended.panels} panels (${R.recommended.kwp} kWp), ${fmt(R.recommended.year_kwh)} kWh a year; ${fmt(R.recommended.year_kwh_no_neighbours)} kWh without the assumed neighbours. ${R.all_that_fit.panels} panels physically fit, but the rest are on shaded, east/west or north-facing slopes.`;
  chart(gm,um,mon);
  $('mtable').innerHTML='<tr><th>Month</th><th>Solar kWh</th><th>Used at home</th><th>To grid</th><th>Household use</th></tr>'+MN.map((m,i)=>`<tr><td>${m}</td><td>${fmt(gm[i])}</td><td>${fmt(um[i])}</td><td>${fmt(gm[i]-um[i])}</td><td>${fmt(mon[i])}</td></tr>`).join('');
@@ -120,6 +127,8 @@ function select(k){cur=k;document.querySelectorAll('#tabs button').forEach(b=>b.
 Promise.all(KEYS.map(k=>fetch(`solar_${k}.json`).then(r=>r.json()).then(j=>D[k]=j))).then(()=>{
  $('tabs').innerHTML=KEYS.map(k=>`<button data-k="${k}">${NAMES[k]}</button>`).join('');
  document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>select(b.dataset.k));
- ['n','cool','hot','cost','exp','cap','vat'].forEach(id=>$(id).oninput=calc);select('c1')});
+ ['n','cool','hot','cost','exp','cap','vat','batt','bcost'].forEach(id=>$(id).oninput=calc);
+ const q=new URLSearchParams(location.search);['cool','hot','cost','exp','cap','vat','batt','bcost'].forEach(id=>{if(q.has(id))$(id).value=q.get(id)});
+ select(KEYS.includes(q.get('c'))?q.get('c'):'c1');if(q.has('n')){$('n').value=q.get('n');calc()}});
 </script>
 </main></body></html>
